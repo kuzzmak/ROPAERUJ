@@ -1,0 +1,19 @@
+package hr.fer.zemris.trisat;
+
+import java.util.Iterator;
+
+public class BitVectorNGenerator implements Iterable<MutableBitVector>{
+
+	private BitVector assignment;
+	
+	public BitVectorNGenerator(BitVector assignment) {
+		this.assignment = assignment;
+	}
+	
+	@Override
+	public Iterator<MutableBitVector> iterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

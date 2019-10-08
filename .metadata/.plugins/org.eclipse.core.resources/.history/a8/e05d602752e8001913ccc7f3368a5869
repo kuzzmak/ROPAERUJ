@@ -1,0 +1,7 @@
+package hr.fer.zemris.trisat;
+
+public class Util {
+	public generatePossibleSolutions(int numberOfBits) {
+		
+	}
+}

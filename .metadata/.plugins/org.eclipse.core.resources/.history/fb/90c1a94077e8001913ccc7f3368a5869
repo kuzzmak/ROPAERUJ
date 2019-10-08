@@ -1,0 +1,26 @@
+package hr.fer.zemris.trisat;
+
+import java.util.List;
+
+public class TriSatSolver {
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args){
+	
+		String path = "C:\\Users\\kuzmi\\OneDrive - fer.hr\\faks\\5sem\\ROPAERUJ\\1zad\\uf20-01.cnf";
+		Parser parser = new Parser(path);
+		SATFormula formula = parser.parse();
+		
+		Algorithm alg = new Algorithm(formula, 1);
+		
+		String bol = "1010101001111";
+		List<String> ls = alg.iterativeSearch();
+		
+		for(String sol: ls) {
+			System.out.println(sol);
+		}
+		
+		
+	}
+}

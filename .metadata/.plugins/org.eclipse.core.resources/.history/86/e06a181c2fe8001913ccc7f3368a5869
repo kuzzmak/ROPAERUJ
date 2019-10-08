@@ -1,0 +1,48 @@
+package hr.fer.zemris.trisat;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Clause {
+	
+	private static List<Integer> indexes;
+	
+	public Clause(List<Integer> indexes) {
+		Clause.indexes = new ArrayList<>(indexes);
+	}
+	
+	public int getSize() {
+		return indexes.size();
+	}
+	
+	public int getLiteral(int index) {
+		return indexes.get(index);
+	}
+	
+	public static List<Integer> getIndexes() {
+		return indexes;
+	}
+
+	public static boolean isSatisfied(BitVector assignment) {
+		BitVector temp = new BitVector(assignment.bits);
+		for(int index: getIndexes()) {
+			if(index < 0) {
+				temp.bits.set(Math.abs(index) - 1, !temp.bits.get(Math.abs(index) - 1));
+			}
+		}
+		if(temp.bits.contains(true)) return true;
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder("[");
+		for(int index: getIndexes()) {
+			sb.append(index).append(", ");
+		}
+		sb.replace(sb.length() - 2, sb.length() - 1, "]");
+		return sb.toString();
+	}
+	
+	
+}

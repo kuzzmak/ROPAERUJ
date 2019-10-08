@@ -1,0 +1,165 @@
+package hr.fer.zemris.trisat;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+public class Algorithm {
+	private SATFormula formula;
+	private int numberOfTheAlgorithm;
+	
+	public Algorithm(SATFormula formula, int numberOfTheAlgorithm) {
+		this.formula = formula;
+		this.numberOfTheAlgorithm = numberOfTheAlgorithm;
+	}
+	
+	public String solve(int numberOfTheAlgorithm) {
+		String solution = null;
+		switch(numberOfTheAlgorithm) {
+			case 1:
+				solution = bruteforce();
+				break;
+			case 2:
+				solution = iterativeSearch();
+				break;
+			default:
+				break;
+		}
+		if(solution != null) return solution;
+		return null;
+	}
+	
+	public BitVector transformStringToBoolean(String vec) {
+		
+		List<Boolean> bitList= new ArrayList<>();
+		int length = vec.length();
+		
+		for(int index = 0; index < length; index++) {
+			char temp = vec.charAt(index);
+			switch(temp) {
+			case '1':
+				bitList.add(true);
+				break;
+			case '0':
+				bitList.add(false);
+				break;
+			default:
+				break;
+			}
+		}
+		return new BitVector(bitList);
+	}
+	
+	public String bruteforce(){
+		
+		List<String> solutions = new ArrayList<>();
+		StringBuilder sb = new StringBuilder("");
+		
+		int numOfVar = formula.getNumberOfVariables();
+		
+		for(int i = 0; i < Math.pow(2, numOfVar); i++) {
+			sb.append(Integer.toBinaryString(i));
+			while(sb.length() < numOfVar) {
+				sb.insert(0, '0');
+			}
+			
+			BitVector assignment = transformStringToBoolean(sb.toString());
+			
+			if(formula.isSatisfied(assignment)) solutions.add(sb.toString());
+			
+			sb.delete(0, sb.length());
+		}
+		
+		return solutions.get(0);
+	}
+	
+	public String iterativeSearch(){
+		
+		Random rand = new Random();
+		BitVector currentSolution = new BitVector(rand, formula.getNumberOfVariables());
+		int currentFitness = fitness(currentSolution, formula);
+		
+		if(currentFitness == formula.getNumberOfClauses()) return currentSolution.toString(); 
+		
+		for(int i = 0; i < 100000; i++) {
+			
+			BitVectorNGenerator ng = new BitVectorNGenerator(new MutableBitVector(currentSolution.bits));
+			List<MutableBitVector> neighbours = ng.createNeighborhood();
+			
+			Map<MutableBitVector, Integer> fit = new HashMap<>();	
+			for(MutableBitVector mbv: neighbours) {
+				fit.put(mbv, fitness(mbv, formula));
+			}
+			
+			int maxFit = 0;
+			for(Map.Entry<MutableBitVector, Integer> m: fit.entrySet()){  			
+				if(m.getValue() >= maxFit) {
+					maxFit = m.getValue();
+				}
+			}
+		
+			List<MutableBitVector> bestNeighbours = new ArrayList<>();
+			for(Map.Entry<MutableBitVector, Integer> m: fit.entrySet()){
+				if(m.getValue() == maxFit) bestNeighbours.add(m.getKey());
+			}
+			
+//			for(MutableBitVector n: neighbours) {
+//				System.out.println(n + " " + fitness(n, formula));
+//			}
+//			for(MutableBitVector n: bestNeighbours) {
+//				System.out.println("\t" + n + " " + fitness(n, formula));
+//			}
+			
+			BitVector bestNeighbour = bestNeighbours.get(rand.nextInt(bestNeighbours.size()));
+//			System.out.println("\t\t" + bestNeighbour + " " + fitness(bestNeighbour, formula));
+			System.out.println("maxfit: "+maxFit);
+			
+			
+			if(maxFit < currentFitness) {
+				
+//				currentSolution = bestNeighbour;
+//				currentFitness = maxFit;
+				break;
+			}else if(maxFit == formula.getNumberOfClauses()){
+				currentSolution = bestNeighbour;
+				currentFitness = maxFit;
+				break;
+			}
+			else {
+				currentSolution = bestNeighbour;
+				currentFitness = maxFit;
+			}
+		}
+			
+		
+		return currentSolution.toString();
+	}
+	
+	public int fitness(BitVector assignment, SATFormula formula) {
+		int satisfiedClauses = 0;
+		
+		for(int i = 0; i < formula.getNumberOfClauses(); i++) {
+			if(formula.getClause(i).isSatisfied(assignment)) satisfiedClauses++;
+		}
+		return satisfiedClauses;
+	}
+	
+//	public BitVector selectNeighbour(List<MutableBitVector> neighbours) {
+//		Set<Integer> fitness = new TreeSet();
+//		
+//		for(MutableBitVector mbv: neighbours) {
+//			fitness.add(fitness(mbv, formula));
+//		}
+//		
+//		
+//		
+//		
+//		
+//	}
+	
+}

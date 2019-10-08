@@ -1,0 +1,18 @@
+package zadaca1;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class clause {
+	private int clauseLength;
+	private List<Integer> indexes = new ArrayList<>();
+	
+	public clause(int clauseLength, List<Integer> indexes) {
+		this.clauseLength = clauseLength;
+		this.indexes = indexes;
+	}
+
+	public List<Integer> getIndexes() {
+		return indexes;
+	}
+}

@@ -1,0 +1,38 @@
+package hr.fer.zemris.trisat;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class BitVector {
+	
+	private int numberOfBits;
+	private List<Boolean> bitNum;
+	
+	public BitVector(Random rand, int numberOfBits) {
+		bitNum = new ArrayList<>();
+		for(int i = 0; i < numberOfBits; i++) {
+			bitNum.add(rand.nextBoolean());
+		}
+	}
+
+	@Override
+	public String toString() {
+		
+		StringBuilder sb = new StringBuilder("");
+		for(int index = 0; index < this.numberOfBits; index++) {
+			
+			System.out.println(numberOfBits);
+			if(bitNum.get(index)) {
+				sb.append("1");
+			}else {
+				sb.append(0);
+			}
+		}
+		return sb.toString();
+	}
+	
+	
+}
+
+

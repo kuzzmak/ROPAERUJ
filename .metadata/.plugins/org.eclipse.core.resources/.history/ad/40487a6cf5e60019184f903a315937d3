@@ -1,0 +1,29 @@
+package zadaca1;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class clause {
+	private int clauseLength;
+	private List<Integer> indexes = new ArrayList<>();
+	
+	public clause(int clauseLength, List<Integer> indexes) {
+		this.clauseLength = clauseLength;
+		this.indexes = indexes;
+	}
+
+	public List<Integer> getIndexes() {
+		return indexes;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < indexes.size(); i++) {
+			sb.append(indexes.get(i));
+		}
+		return sb.toString();
+	}
+	
+	
+}

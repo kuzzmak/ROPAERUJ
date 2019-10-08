@@ -1,0 +1,210 @@
+package hr.fer.zemris.trisat;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class Algorithm {
+	private SATFormula formula;
+	private int numberOfTheAlgorithm;
+	
+	public Algorithm(SATFormula formula, int numberOfTheAlgorithm) {
+		this.formula = formula;
+		this.numberOfTheAlgorithm = numberOfTheAlgorithm;
+	}
+	
+	public String solve(int numberOfTheAlgorithm) {
+		String solution = null;
+		switch(numberOfTheAlgorithm) {
+			case 1:
+				solution = bruteforce();
+				break;
+			case 2:
+				solution = iterativeSearch();
+				break;
+			case 3:
+				solution = alg3();
+				break;
+			default:
+				break;
+		}
+		if(solution != null) return solution;
+		return null;
+	}
+	
+	public BitVector transformStringToBoolean(String vec) {
+		
+		List<Boolean> bitList= new ArrayList<>();
+		int length = vec.length();
+		
+		for(int index = 0; index < length; index++) {
+			char temp = vec.charAt(index);
+			switch(temp) {
+			case '1':
+				bitList.add(true);
+				break;
+			case '0':
+				bitList.add(false);
+				break;
+			default:
+				break;
+			}
+		}
+		return new BitVector(bitList);
+	}
+	
+	public String bruteforce(){
+		
+		List<String> solutions = new ArrayList<>();
+		StringBuilder sb = new StringBuilder("");
+		
+		int numOfVar = formula.getNumberOfVariables();
+		
+		for(int i = 0; i < Math.pow(2, numOfVar); i++) {
+			sb.append(Integer.toBinaryString(i));
+			while(sb.length() < numOfVar) {
+				sb.insert(0, '0');
+			}
+			
+			BitVector assignment = transformStringToBoolean(sb.toString());
+			
+			if(formula.isSatisfied(assignment)) solutions.add(sb.toString());
+			
+			sb.delete(0, sb.length());
+		}
+		
+		return solutions.get(0);
+	}
+	
+	public String iterativeSearch(){
+		
+		Random rand = new Random();
+		BitVector currentSolution = new BitVector(rand, formula.getNumberOfVariables());
+		int currentFitness = fitness(currentSolution, formula);
+		
+		if(currentFitness == formula.getNumberOfClauses()) return currentSolution.toString(); 
+		
+		for(int i = 0; i < 100000; i++) {
+			
+			BitVectorNGenerator ng = new BitVectorNGenerator(new MutableBitVector(currentSolution.bits));
+			List<MutableBitVector> neighbours = ng.createNeighborhood();
+			
+			Map<MutableBitVector, Integer> fit = new HashMap<>();	
+			for(MutableBitVector mbv: neighbours) {
+				fit.put(mbv, fitness(mbv, formula));
+			}
+			
+			int maxFit = 0;
+			for(Map.Entry<MutableBitVector, Integer> m: fit.entrySet()){  			
+				if(m.getValue() >= maxFit) {
+					maxFit = m.getValue();
+				}
+			}
+		
+			List<MutableBitVector> bestNeighbours = new ArrayList<>();
+			for(Map.Entry<MutableBitVector, Integer> m: fit.entrySet()){
+				if(m.getValue() == maxFit) bestNeighbours.add(m.getKey());
+			}
+			
+//			for(MutableBitVector n: neighbours) {
+//				System.out.println(n + " " + fitness(n, formula));
+//			}
+//			for(MutableBitVector n: bestNeighbours) {
+//				System.out.println("\t" + n + " " + fitness(n, formula));
+//			}
+			
+			BitVector bestNeighbour = bestNeighbours.get(rand.nextInt(bestNeighbours.size()));
+//			System.out.println("\t\t" + bestNeighbour + " " + fitness(bestNeighbour, formula));
+			
+			if(maxFit < currentFitness) {
+				break;
+			}else if(maxFit == formula.getNumberOfClauses()){
+				currentSolution = bestNeighbour;
+				currentFitness = maxFit;
+				break;
+			}
+			else {
+				currentSolution = bestNeighbour;
+				currentFitness = maxFit;
+			}
+		}
+		return currentSolution.toString();
+	}
+	
+	public String alg3() {
+		
+		int percentageUnitAmount = 50;
+		int numberOfBest = 2;
+		Random rand = new Random();
+		// trenutno najbolje rješenje
+		BitVector currentSolution = new BitVector(rand, formula.getNumberOfVariables());
+		
+		SATFormulaStats formulaStats = new SATFormulaStats(formula);
+		
+		// ažuriranje statistike o klauzulama
+		Float[] post = formulaStats.getPost();
+		
+		while(true) {
+			
+			BitVectorNGenerator ng = new BitVectorNGenerator(new MutableBitVector(currentSolution.bits));
+			List<MutableBitVector> neighbours = ng.createNeighborhood();
+			
+			formulaStats.setAssignment(currentSolution, true);
+			// mapa kojoj je ključ susjed, a vrijednost broj zadovoljenih klauzula
+			Map<MutableBitVector, Float> fit = new LinkedHashMap<>();	
+			for(MutableBitVector mbv: neighbours) {
+				fit.put(mbv, (float)fitness(mbv, formula));
+				
+				for(int index = 0; index < formula.getNumberOfClauses(); index++) {
+					if(formulaStats.isSatisfied()) {
+						fit.put(mbv, fit.get(mbv) + percentageUnitAmount * (1 - post[index]));
+					}else {
+						fit.put(mbv, fit.get(mbv) - percentageUnitAmount * (1 - post[index]));
+					}
+				}
+			}
+			
+			fit = sortByValue(fit);
+			
+			List<MutableBitVector> bestNeighbours = new ArrayList<>();
+			
+			int count = 0;
+			for(Map.Entry<MutableBitVector, Float> entry: fit.entrySet()) {
+				bestNeighbours.add(entry.getKey());
+				count++;
+				if(count == numberOfBest) break;
+			}
+			
+			currentSolution = bestNeighbours.get(rand.nextInt(bestNeighbours.size()));
+			System.out.println(currentSolution);
+			System.out.println(fitness(currentSolution, formula));
+			if(fitness(currentSolution, formula) == formula.getNumberOfClauses()) return currentSolution.toString();
+		}
+	}
+	
+	public int fitness(BitVector assignment, SATFormula formula) {
+		int satisfiedClauses = 0;
+		
+		for(int i = 0; i < formula.getNumberOfClauses(); i++) {
+			if(formula.getClause(i).isSatisfied(assignment)) satisfiedClauses++;
+		}
+		return satisfiedClauses;
+	}
+	
+	public static Map<MutableBitVector, Float> sortByValue(final Map<MutableBitVector, Float> wordCounts) {
+        return wordCounts.entrySet()
+                .stream()
+                .sorted((Map.Entry.<MutableBitVector, Float>comparingByValue().reversed()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+    }
+	
+	
+
+	
+}
