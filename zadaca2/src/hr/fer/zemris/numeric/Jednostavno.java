@@ -10,6 +10,7 @@ import org.jfree.ui.RefineryUtilities;
 
 public class Jednostavno {
 
+	// parser datoteke za skiciranje grafa trenutnih rješenja
 	public static List<double[]> getGraphData(String fileName){
 		List<double[]> graphData = new ArrayList<>();
 		

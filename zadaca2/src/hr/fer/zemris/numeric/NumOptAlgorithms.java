@@ -1,5 +1,8 @@
 package hr.fer.zemris.numeric;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -12,16 +15,17 @@ public class NumOptAlgorithms {
 	static double low = -5;
 	static double high = 5;
 	
-	public static List<double[]> gradientDescent(IFunction function, int maxIterations) {
+	public static double[] gradientDescent(IFunction function, int maxIterations) throws IOException {
 
 		Random rand = new Random();
 		double[] initial = new double[] {low + (high - low) * rand.nextDouble(), low + (high - low) * rand.nextDouble()};
 		System.out.println("initial: " + initial[0] + " " + initial[1]);
 		int numberOfVariables = function.numOfVariables();
 		double[] current = initial;
-		List<double[]> graphData = new ArrayList<>();
-		graphData.add(current);
-
+		
+		BufferedWriter writer = new BufferedWriter(new FileWriter("graphData"));
+		writer.write(current[0] + "," + current[1] + "\n");
+		
 		for (int i = 0; i < maxIterations; i++) {
 			//System.out.println(i);
 
@@ -36,27 +40,27 @@ public class NumOptAlgorithms {
 				current[j] -= gradient[j] * gamma;
 				
 			}
-			graphData.add(current);
-			if (Math.abs(g_val - f_val) <= precision)
+			writer.write(current[0] + "," + current[1] + "\n");
+			if (Math.abs(g_val - f_val) <= precision) {
+				writer.close();
 				break;
+			}
 			
 		}
 		
 //		System.out.println("prvi " + graphData.get(0)[0] + " " + graphData.get(0)[1]);
 //		System.out.println("pedeseti " + graphData.get(49)[0] + " " + graphData.get(49)[1]);
 //		System.out.println(graphData.size());
-		
-		return graphData;
+		writer.close();
+		return current;
 	}
 
-	public static List<double[]> newton(IHFunction function, int maxIterations) {
+	public static double[] newton(IHFunction function, int maxIterations) {
 		
 		Random rand = new Random();
 		double[] initial = new double[] {low + (high - low) * rand.nextDouble(), low + (high - low) * rand.nextDouble()};
 		double[] current = initial;
 		int numberOfVariables = function.numOfVariables();
-		List<double[]> graphData = new ArrayList<>();
-		graphData.add(current);
 		
 		for(int i = 0; i < maxIterations; i++) {
 			//System.out.println(i);
@@ -72,7 +76,6 @@ public class NumOptAlgorithms {
 			for(int j = 0; j < numberOfVariables; j++) {
 				current[j] -= lambda.get(j, 0);
 			}
-			graphData.add(current);
 			double f_val = function.valueAt(current);
 			hessianData = function.hessian(current);
 			inverseHessian = hessian.inverse();
@@ -85,7 +88,7 @@ public class NumOptAlgorithms {
 			if(Math.abs(g_val - f_val) <= precision) break;
 		}
 
-		return graphData;
+		return current;
 	}
 
 }

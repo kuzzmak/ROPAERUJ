@@ -2,7 +2,6 @@
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="java.io.BufferedReader"/>
 <fullyQualifiedTypeName name="java.io.FileReader"/>
-<fullyQualifiedTypeName name="java.awt.List"/>
 <fullyQualifiedTypeName name="java.util.Iterator"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="zadaca1.clause"/>
@@ -11,14 +10,11 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.trisat.SATFormula"/>
 <fullyQualifiedTypeName name="java.io.Reader"/>
 <fullyQualifiedTypeName name="java.util.NoSuchElementException"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
-<fullyQualifiedTypeName name="java.util.Random"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.trisat.BitVectorNGenerator"/>
 <fullyQualifiedTypeName name="java.util.TreeSet"/>
 <fullyQualifiedTypeName name="java.util.Set"/>
 <fullyQualifiedTypeName name="java.util.Map"/>
 <fullyQualifiedTypeName name="java.util.HashMap"/>
-<fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.trisat.SATFormulaStats"/>
 <fullyQualifiedTypeName name="java.util.function.Function"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.trisat.MutableBitVector"/>
@@ -26,4 +22,18 @@
 <fullyQualifiedTypeName name="java.util.LinkedHashMap"/>
 <fullyQualifiedTypeName name="java.util.Map.Entry"/>
 <fullyQualifiedTypeName name="java.lang.System"/>
+<fullyQualifiedTypeName name="java.util.Random"/>
+<fullyQualifiedTypeName name="org.apache.commons.math3.linear.LUDecomposition"/>
+<fullyQualifiedTypeName name="org.apache.commons.math3.linear.MatrixUtils"/>
+<fullyQualifiedTypeName name="org.apache.commons.math3.linear.RealMatrix"/>
+<fullyQualifiedTypeName name="org.apache.commons.math3.linear.RealVector"/>
+<fullyQualifiedTypeName name="java.util.Vector"/>
+<fullyQualifiedTypeName name="Jama.Matrix"/>
+<fullyQualifiedTypeName name="java.awt.SecondaryLoop"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.numeric.Jednostavno"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.numeric.NumOptAlgorithms"/>
+<fullyQualifiedTypeName name="java.awt.List"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="org.jfree.ui.RefineryUtilities"/>
 </qualifiedTypeNameHistroy>
