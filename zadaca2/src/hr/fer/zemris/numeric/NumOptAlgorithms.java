@@ -1,25 +1,91 @@
 package hr.fer.zemris.numeric;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import Jama.Matrix;
+
 public class NumOptAlgorithms {
-	public static double step = 0.02d; 
-	public static double precision = 0.00001d;
+	public static double gamma = 0.02d;
+	public static double precision = 1E-6;
+
+	static double low = -5;
+	static double high = 5;
 	
-	public static double[] gradientDescent(IFunction function, int maxIterations, double[] initial) {
-	
+	public static List<double[]> gradientDescent(IFunction function, int maxIterations) {
+
+		Random rand = new Random();
+		double[] initial = new double[] {low + (high - low) * rand.nextDouble(), low + (high - low) * rand.nextDouble()};
+		System.out.println("initial: " + initial[0] + " " + initial[1]);
 		int numberOfVariables = function.numOfVariables();
 		double[] current = initial;
-		
-		for(int i = 0; i < maxIterations; i++) {
-			System.out.println(i);
-			System.out.println(current[0] + " " + current[1]);
+		List<double[]> graphData = new ArrayList<>();
+		graphData.add(current);
+
+		for (int i = 0; i < maxIterations; i++) {
+			//System.out.println(i);
+
 			double[] gradient = function.gradient(current);
 			double f_val = function.valueAt(current);
-			double g_val = f_val - (gradient[0] * step + gradient[1] * step);
-			for(int j = 0; j < numberOfVariables; j++) {
-				current[j] -= gradient[j] * step;
+			double step = 0;
+			for (int k = 0; k < numberOfVariables; k++) {
+				step += gradient[k] * gamma;
 			}
+			double g_val = f_val - step;
+			for (int j = 0; j < numberOfVariables; j++) {
+				current[j] -= gradient[j] * gamma;
+				
+			}
+			graphData.add(current);
+			if (Math.abs(g_val - f_val) <= precision)
+				break;
+			
+		}
+		
+//		System.out.println("prvi " + graphData.get(0)[0] + " " + graphData.get(0)[1]);
+//		System.out.println("pedeseti " + graphData.get(49)[0] + " " + graphData.get(49)[1]);
+//		System.out.println(graphData.size());
+		
+		return graphData;
+	}
+
+	public static List<double[]> newton(IHFunction function, int maxIterations) {
+		
+		Random rand = new Random();
+		double[] initial = new double[] {low + (high - low) * rand.nextDouble(), low + (high - low) * rand.nextDouble()};
+		double[] current = initial;
+		int numberOfVariables = function.numOfVariables();
+		List<double[]> graphData = new ArrayList<>();
+		graphData.add(current);
+		
+		for(int i = 0; i < maxIterations; i++) {
+			//System.out.println(i);
+			//System.out.printf("current: %f %f\n", current[0], current[1]);
+			double[][] hessianData = function.hessian(current);
+			Matrix hessian = new Matrix(hessianData);
+			Matrix inverseHessian = hessian.inverse();
+			
+			double[] grad = function.gradient(current);
+			Matrix gradient = new Matrix(grad, grad.length);
+			Matrix lambda = inverseHessian.times(gradient);
+			//System.out.println("lambda: " + lambda.get(0, 0) + " " + lambda.get(1, 0));
+			for(int j = 0; j < numberOfVariables; j++) {
+				current[j] -= lambda.get(j, 0);
+			}
+			graphData.add(current);
+			double f_val = function.valueAt(current);
+			hessianData = function.hessian(current);
+			inverseHessian = hessian.inverse();
+			
+			Matrix firstPart = gradient.transpose().times(lambda);
+			Matrix thirdPart = gradient.transpose().times(hessian).times(gradient);
+			thirdPart = thirdPart.times(0.5);
+			double g_val = f_val + firstPart.get(0, 0) + thirdPart.get(0, 0);
+			
 			if(Math.abs(g_val - f_val) <= precision) break;
 		}
-		return current;
+
+		return graphData;
 	}
+
 }
