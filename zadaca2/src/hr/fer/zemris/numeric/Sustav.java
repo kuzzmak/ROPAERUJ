@@ -12,7 +12,7 @@ public class Sustav {
 	
 	public static Matrix getCoefficients(String path) {
 		
-		double[][] vec = new double[10][11];
+		double[][] matrixData = new double[10][11];
 		List<String[]> coeffs = new ArrayList<>();
 		
 		try(BufferedReader br = new BufferedReader(new FileReader(path))) {
@@ -23,8 +23,10 @@ public class Sustav {
 		    		line = br.readLine();
 		    		continue;
 		    	}
+		    	
 		    	line = line.replace("[", "");
 		    	line = line.replace("]", "");
+		    	
 		    	coeffs.add(line.split(","));
 		    	line = br.readLine();
 		    }
@@ -34,12 +36,10 @@ public class Sustav {
 		
 		for(int i = 0; i < 10; i++) {
 			for(int j = 0; j < 11; j++) {
-				vec[i][j] = Double.parseDouble(coeffs.get(i)[j].trim());
+				matrixData[i][j] = Double.parseDouble(coeffs.get(i)[j].trim());
 			}
 		}
-		
-		Matrix m = new Matrix(vec);
-		return m;
+		return new Matrix(matrixData);
 	}
 	
 	
