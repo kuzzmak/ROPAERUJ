@@ -132,7 +132,7 @@ public class Jednostavno {
 		int maxIterations = 1000;
 		
 		
-		double[] sol = NumOptAlgorithms.gradientDescent(f1a, maxIterations);
+		//double[] sol = NumOptAlgorithms.gradientDescent(f1a, maxIterations);
 		
 		List<double[]> graphData = getGraphData("graphData");
 		for(int i = 0; i < graphData.size(); i++) {
@@ -142,10 +142,10 @@ public class Jednostavno {
 		demo.pack();
 		RefineryUtilities.centerFrameOnScreen(demo);
 		demo.setVisible(true);
-		System.out.print(df.format(sol[0]));
-		System.out.print(" ");
-		System.out.print(df.format(sol[1]));
-		System.out.println();
+//		System.out.print(df.format(sol[0]));
+//		System.out.print(" ");
+//		System.out.print(df.format(sol[1]));
+//		System.out.println();
 		
 	}
 	

@@ -28,12 +28,14 @@
 <fullyQualifiedTypeName name="org.apache.commons.math3.linear.RealMatrix"/>
 <fullyQualifiedTypeName name="org.apache.commons.math3.linear.RealVector"/>
 <fullyQualifiedTypeName name="java.util.Vector"/>
-<fullyQualifiedTypeName name="Jama.Matrix"/>
 <fullyQualifiedTypeName name="java.awt.SecondaryLoop"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.numeric.Jednostavno"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.numeric.NumOptAlgorithms"/>
 <fullyQualifiedTypeName name="java.awt.List"/>
-<fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="org.jfree.ui.RefineryUtilities"/>
+<fullyQualifiedTypeName name="java.io.BufferedWriter"/>
+<fullyQualifiedTypeName name="java.io.FileWriter"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.numeric.Jednostavno"/>
+<fullyQualifiedTypeName name="Jama.Matrix"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
 </qualifiedTypeNameHistroy>
