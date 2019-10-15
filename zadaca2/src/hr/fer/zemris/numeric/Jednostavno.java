@@ -2,13 +2,16 @@ package hr.fer.zemris.numeric;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.jfree.ui.RefineryUtilities;
 
 public class Jednostavno {
+
+	static double low = -5;
+	static double high = 5;
 
 	// parser datoteke za skiciranje grafa trenutnih rješenja
 	public static List<double[]> getGraphData(String fileName){
@@ -30,122 +33,47 @@ public class Jednostavno {
 	
 	public static void main(String[] args) throws IOException {
 		
-		IFunction f1a = new IFunction() {
-
-			@Override
-			public int numOfVariables() {
-				return 2;
-			}
-
-			@Override
-			public double valueAt(double[] v) {
-				return Math.pow(v[0], 2) + Math.pow(v[1] - 1, 2);
-			}
-
-			@Override
-			public double[] gradient(double[] v) {
-				double[] gradient = new double[numOfVariables()];
-				gradient[0] = 2 * v[0];
-				gradient[1] = 2 * (v[1] - 1);
-				return gradient;
-			}
-			
-		};
+//		String funName = args[0];
+//		int maxIterations = Integer.parseInt(args[1]);
+		double[] initialPoint = new double[2];
 		
-		IHFunction f1b = new IHFunction() {
-
-			@Override
-			public int numOfVariables() {
-				return 2;
-			}
-
-			@Override
-			public double valueAt(double[] v) {
-				return Math.pow(v[0], 2) + Math.pow(v[1] - 1, 2);
-			}
-
-			@Override
-			public double[] gradient(double[] v) {
-				double[] gradient = new double[numOfVariables()];
-				gradient[0] = 2 * v[0];
-				gradient[1] = 2 * (v[1] - 1);
-				return gradient;
-			}
-
-			@Override
-			public double[][] hessian(double[] vector) {
-				return new double[][] {{2,0}, {0,2}};
-			}
-		};
+		Random rand = new Random();
+//		if(args.length == 4) {
+//			initialPoint[0] = Double.parseDouble(args[2]);
+//			initialPoint[1] = Double.parseDouble(args[3]);
+//		}else {
+//			initialPoint[0] = rand.nextDouble();
+//			initialPoint[1]	= rand.nextDouble();
+//		}
 		
-		IFunction f2a = new IFunction() {
-
-			@Override
-			public int numOfVariables() {
-				return 2;
-			}
-
-			@Override
-			public double valueAt(double[] v) {
-				return Math.pow(v[0] - 1, 2) + 10 * Math.pow(v[1] - 2, 2);
-			}
-
-			@Override
-			public double[] gradient(double[] v) {
-				double[] gradient = new double[numOfVariables()];
-				gradient[0] = 2 * (v[0] - 1);
-				gradient[1] = 20 * (v[1] - 2);
-				return gradient; 
-			}
-			
-		};
+		IFunction function = new f1a();
 		
-		IHFunction f2b = new IHFunction() {
-
-			@Override
-			public int numOfVariables() {
-				return 2;
-			}
-
-			@Override
-			public double valueAt(double[] v) {
-				return Math.pow(v[0] - 1, 2) + 10 * Math.pow(v[1] - 2, 2);
-			}
-
-			@Override
-			public double[] gradient(double[] v) {
-				double[] gradient = new double[numOfVariables()];
-				gradient[0] = 2 * (v[0] - 1);
-				gradient[1] = 20 * (v[1] - 2);
-				return gradient; 
-			}
-
-			@Override
-			public double[][] hessian(double[] vector) {
-				return new double[][] {{2,0}, {0,20}};
-			}
-		};
-		
-		DecimalFormat df = new DecimalFormat("#");
-		df.setMaximumFractionDigits(10);
-		
+//		if(funName.toLowerCase().equals("f1a")) {
+//			function = new f1a();
+//		}else if(funName.toLowerCase().equals("f1b")) {
+//			function = new f1b();
+//		}else if(funName.toLowerCase().equals("f2a")) {
+//			function = new f2a();
+//		}else {
+//			function = new f2b();
+//		}
+		initialPoint[0] = rand.nextDouble();
+		initialPoint[1] = rand.nextDouble();
 		int maxIterations = 1000;
-		
-		
-		//double[] sol = NumOptAlgorithms.gradientDescent(f1a, maxIterations);
+		double[] solution = NumOptAlgorithms.gradientDescent(function, maxIterations, initialPoint);
 		
 		List<double[]> graphData = getGraphData("graphData");
-		for(int i = 0; i < graphData.size(); i++) {
-			System.out.println(graphData.get(i)[0] + " " + graphData.get(i)[1]);
-		}
-		final Graph demo = new Graph(graphData, "XY Series Demo");
+//		for(int i = 0; i < graphData.size(); i++) {
+//			System.out.println(graphData.get(i)[0] + " " + graphData.get(i)[1]);
+//		}
+		final Graph demo = new Graph(graphData, "Graph");
 		demo.pack();
 		RefineryUtilities.centerFrameOnScreen(demo);
 		demo.setVisible(true);
-//		System.out.print(df.format(sol[0]));
-//		System.out.print(" ");
-//		System.out.print(df.format(sol[1]));
-//		System.out.println();
+		System.out.print(solution[0]);
+		System.out.print(" ");
+		System.out.print(solution[1]);
+		System.out.println();
 		
 	}
 	

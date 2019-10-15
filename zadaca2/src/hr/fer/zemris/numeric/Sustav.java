@@ -143,13 +143,13 @@ public class Sustav {
 			public double[][] hessian(double[] v) {
 
 				double[][] hessian = new double[numOfVariables()][numOfVariables()];
-
+				
 				for (int i = 0; i < numOfVariables(); i++) {
 					for (int j = 0; j < numOfVariables(); j++) {
 						hessian[i][j] = 0;
 					}
 				}
-
+//
 				for (int i = 0; i < numOfVariables(); i++) {
 					for (int j = 0; j < numOfVariables(); j++) {
 						// System.out.printf("coef:2 * %f * %f\n", coeffs.get(i, i), coeffs.get(i, j));
