@@ -188,7 +188,7 @@ public class Sustav {
 
 		// random inicijalizacija pocetnog rjesenja
 		Random rand = new Random();
-		double[] initial = sustav.gradient(new double[] { sustav.numOfVariables() });
+		double[] initial = new double[sustav.numOfVariables()];
 		for (int i = 0; i < initial.length; i++) {
 			initial[i] = rand.nextDouble();
 		}
