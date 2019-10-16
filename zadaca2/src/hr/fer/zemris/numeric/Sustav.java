@@ -20,10 +20,11 @@ public class Sustav {
 	 * @param path lokacija do datoteke
 	 * @return Matrix s koeficijentima
 	 */
-	public static Matrix getCoefficients(String path) {
+	public static Matrix getCoefficients(String path, IHFunction function) {
 
+		int numOfVariables = function.numOfVariables();
 		// matrica 10 * 11 gdje je zadnji stupac rjesenje svake jednadzbe
-		double[][] matrixData = new double[10][11];
+		double[][] matrixData = new double[numOfVariables][numOfVariables + 1];
 		// lista retcanih koeficijenata
 		List<String[]> coeffs = new ArrayList<>();
 
@@ -48,8 +49,8 @@ public class Sustav {
 		}
 
 		// punjenje matrice matrixData iz liste u kojoj su koeficijenti
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 11; j++) {
+		for (int i = 0; i < numOfVariables; i++) {
+			for (int j = 0; j < numOfVariables + 1; j++) {
 				matrixData[i][j] = Double.parseDouble(coeffs.get(i)[j].trim());
 			}
 		}
@@ -196,7 +197,7 @@ public class Sustav {
 		// putanja do datoteke sa zadatkom
 		String path = args[2];
 		// matrica koeficijenata
-		coeffs = getCoefficients(path);
+		coeffs = getCoefficients(path, sustav);
 
 		double[] solution;
 		String algName = args[0];
