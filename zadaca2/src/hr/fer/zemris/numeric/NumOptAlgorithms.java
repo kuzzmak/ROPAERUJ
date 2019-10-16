@@ -3,9 +3,6 @@ package hr.fer.zemris.numeric;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import Jama.Matrix;
 
 public class NumOptAlgorithms {
@@ -68,7 +65,6 @@ public class NumOptAlgorithms {
 //		writer.write(current[0] + "," + current[1] + "\n");
 		
 		for (int i = 0; i < maxIterations; i++) {
-			//System.out.println(i);
 
 			double[] gradient = function.gradient(current);
 			double f_val = function.valueAt(current);
@@ -77,9 +73,6 @@ public class NumOptAlgorithms {
 				step += gradient[k] * gamma;
 			}
 			double g_val = f_val - step;
-//			double bi = bisection(current, function);
-//			System.out.println("lambda " + bi);
-//			System.out.println("iter: " + i);
 			for (int j = 0; j < numberOfVariables; j++) {
 				current[j] -= gradient[j] * gamma;
 				

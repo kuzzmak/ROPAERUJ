@@ -117,6 +117,9 @@ public class Sustav {
 		return total;
 	}
 
+	public static double error(IHFunction function, double[] solution) {
+		return 1. / function.numOfVariables() * Math.sqrt(function.valueAt(solution));
+	}
 
 	public static void main(String[] args) throws IOException {
 
@@ -139,7 +142,7 @@ public class Sustav {
 								.pow((coeffs.get(i, j) * v[j]) - coeffs.get(i, coeffs.getColumnDimension() - 1), 2);
 					}
 				}
-				return 1 / 10 * Math.sqrt(value);
+				return value;
 			}
 
 			@Override
@@ -182,21 +185,31 @@ public class Sustav {
 			}
 		};
 
-		coeffs = getCoefficients("02-zad-sustav.txt");
-
+		// random inicijalizacija pocetnog rjesenja
 		Random rand = new Random();
 		double[] initial = sustav.gradient(new double[] { sustav.numOfVariables() });
 		for (int i = 0; i < initial.length; i++) {
 			initial[i] = rand.nextDouble();
 		}
 
-		int maxIterations = 5000;
+		int maxIterations = Integer.parseInt(args[1]);
+		// putanja do datoteke sa zadatkom
+		String path = args[2];
+		// matrica koeficijenata
+		coeffs = getCoefficients(path);
 
-		double[] sol = NumOptAlgorithms.newton(sustav, maxIterations, initial);
-		System.out.println("Rjesenja u obliku x1, x2,...");
-		for (int i = 0; i < sol.length; i++) {
-			System.out.printf("%f ", sol[i]);
+		double[] solution;
+		String algName = args[0];
+		if(algName.toLowerCase().equals("newton")) {
+			solution = NumOptAlgorithms.newton(sustav, maxIterations, initial); 
+		}else {
+			solution = NumOptAlgorithms.gradientDescent(sustav, maxIterations, initial);
 		}
-		System.out.printf("\nGreška u trenutku prekida algoritma: %f ", sustav.valueAt(sol));
+		
+		System.out.println("Rjesenja u obliku x1, x2,...");
+		for (int i = 0; i < solution.length; i++) {
+			System.out.printf("%f ", solution[i]);
+		}
+		System.out.printf("\nGreška u trenutku prekida algoritma: %f ", error(sustav, solution));
 	}
 }
