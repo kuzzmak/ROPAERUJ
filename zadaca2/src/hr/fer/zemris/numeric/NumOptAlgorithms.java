@@ -118,16 +118,15 @@ public class NumOptAlgorithms {
 				current[j] -= lambda.get(j, 0);
 			}
 			
-//			double f_val = function.valueAt(current);
-//			hessianData = function.hessian(current);
-//			inverseHessian = hessian.inverse();
-//			
-//			Matrix firstPart = gradient.transpose().times(lambda);
-//			Matrix thirdPart = gradient.transpose().times(hessian).times(gradient);
-//			thirdPart = thirdPart.times(0.5);
-//			double g_val = f_val + firstPart.get(0, 0) + thirdPart.get(0, 0);
-//			
-//			if(Math.abs(g_val - f_val) <= precision) break;
+			double f_val = function.valueAt(current);
+			hessianData = function.hessian(current);
+			inverseHessian = hessian.inverse();
+			
+			Matrix firstPart = gradient.transpose().times(lambda);
+			Matrix thirdPart = gradient.transpose().times(hessian).times(gradient);
+			thirdPart = thirdPart.times(0.5);
+			double g_val = f_val + firstPart.get(0, 0) + thirdPart.get(0, 0);
+			if(Math.abs(g_val - f_val) <= precision) break;
 		}
 
 		return current;
