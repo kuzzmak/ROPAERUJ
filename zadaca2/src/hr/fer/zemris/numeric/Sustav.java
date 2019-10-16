@@ -14,9 +14,17 @@ public class Sustav {
 	// matrica koeficijnata sustava
 	public static Matrix coeffs;
 
+	/**
+	 * Funkcija za čitanje koeficijenata matrice iz datoteke
+	 * 
+	 * @param path lokacija do datoteke
+	 * @return Matrix s koeficijentima
+	 */
 	public static Matrix getCoefficients(String path) {
 
+		// matrica 10 * 11 gdje je zadnji stupac rjesenje svake jednadzbe
 		double[][] matrixData = new double[10][11];
+		// lista retcanih koeficijenata
 		List<String[]> coeffs = new ArrayList<>();
 
 		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
@@ -28,6 +36,7 @@ public class Sustav {
 					continue;
 				}
 
+				// micu se zagrade radi jednostavnosti odvajanja medjusobnih koeficijenata
 				line = line.replace("[", "");
 				line = line.replace("]", "");
 
@@ -38,6 +47,7 @@ public class Sustav {
 			e.printStackTrace();
 		}
 
+		// punjenje matrice matrixData iz liste u kojoj su koeficijenti
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 11; j++) {
 				matrixData[i][j] = Double.parseDouble(coeffs.get(i)[j].trim());
@@ -55,6 +65,13 @@ public class Sustav {
 		return result;
 	}
 
+	/**
+	 * Funkcija koja sumira retcane gradijente u jedan vektor koji predstavlja
+	 * gradijent cijele funkcije
+	 * 
+	 * @param rowGradients lista retcanih gradijenata
+	 * @return gradijent koji je suma retcanih gradijenata
+	 */
 	public static double[] sumRowGradients(List<double[]> rowGradients) {
 		double[] gradient = new double[rowGradients.size()];
 
@@ -66,6 +83,7 @@ public class Sustav {
 				gradient[i] += rowGradients.get(j)[i];
 			}
 		}
+		// normalizacija gradijenta
 		double sum = 0;
 		for (int i = 0; i < gradient.length; i++) {
 			sum += Math.pow(gradient[i], 2);
@@ -76,15 +94,14 @@ public class Sustav {
 		return gradient;
 	}
 
-	public static double derivativeByVariable(Matrix coeffs, int row, int column) {
-//		double result = 0;
-//		
-//		for(int i = 0; i < coeffs.getColumnDimension() - 1; i++) {
-//			result += 2 * coeffs.get(row, column);
-//		}
-		System.out.println(coeffs.get(row, column));
-		return 2 * coeffs.get(row, column) * coeffs.get(row, column);
+	public static double sum(int var1, int var2) {
+		double total = 0;
+		for (int i = 0; i < 10; i++) {
+			total += coeffs.get(i, var1) * coeffs.get(i, var2);
+		}		
+		return total;
 	}
+
 
 	public static void main(String[] args) throws IOException {
 
@@ -116,7 +133,6 @@ public class Sustav {
 				for (int i = 0; i < numOfVariables(); i++) {
 					error += functionValue[i];
 				}
-
 				return error;
 			}
 
@@ -143,23 +159,22 @@ public class Sustav {
 			public double[][] hessian(double[] v) {
 
 				double[][] hessian = new double[numOfVariables()][numOfVariables()];
-				
+
 				for (int i = 0; i < numOfVariables(); i++) {
 					for (int j = 0; j < numOfVariables(); j++) {
 						hessian[i][j] = 0;
 					}
 				}
-//
+
 				for (int i = 0; i < numOfVariables(); i++) {
 					for (int j = 0; j < numOfVariables(); j++) {
 						// System.out.printf("coef:2 * %f * %f\n", coeffs.get(i, i), coeffs.get(i, j));
-						hessian[i][j] = 2 * coeffs.get(i, i) * coeffs.get(i, j);
+						hessian[i][j] = 2 * sum(i, j);
 					}
 					// System.out.println();
 				}
 				return hessian;
 			}
-
 		};
 
 		coeffs = getCoefficients("02-zad-sustav.txt");
@@ -170,17 +185,17 @@ public class Sustav {
 			initial[i] = rand.nextDouble();
 		}
 
-		int maxIterations = 100000;
+		int maxIterations = 10000;
 
 		double[] sol = NumOptAlgorithms.newton(sustav, maxIterations, initial);
 		for (int i = 0; i < sol.length; i++) {
 			System.out.println(sol[i]);
 		}
-//		 double[][] hessian = sustav.hessian(new double[] {1,1,1,1,1,1,1,1,1,1});
+//		double[][] hessian = sustav.hessian(sol);
 //
 //		for(int i = 0; i < 10; i++) {
 //			for(int j = 0; j < 10; j++) {
-//				System.out.printf("%f ", hessian[i][j]);
+//				System.out.printf("%-4.2f ", hessian[i][j]);
 //			}
 //			System.out.println();
 //		}
