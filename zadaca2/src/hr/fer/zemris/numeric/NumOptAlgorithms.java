@@ -91,11 +91,6 @@ public class NumOptAlgorithms {
 			}
 			
 		}
-		
-//		System.out.println("prvi " + graphData.get(0)[0] + " " + graphData.get(0)[1]);
-//		System.out.println("pedeseti " + graphData.get(49)[0] + " " + graphData.get(49)[1]);
-//		System.out.println(graphData.size());
-		//writer.close();
 		return current;
 	}
 
@@ -126,6 +121,8 @@ public class NumOptAlgorithms {
 			Matrix thirdPart = gradient.transpose().times(hessian).times(gradient);
 			thirdPart = thirdPart.times(0.5);
 			double g_val = f_val + firstPart.get(0, 0) + thirdPart.get(0, 0);
+//			System.out.println(i);
+//			System.out.println(Math.abs(g_val - f_val));
 			if(Math.abs(g_val - f_val) <= precision) break;
 		}
 

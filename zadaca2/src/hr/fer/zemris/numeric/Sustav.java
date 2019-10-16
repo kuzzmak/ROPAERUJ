@@ -56,6 +56,14 @@ public class Sustav {
 		return new Matrix(matrixData);
 	}
 
+	/**
+	 * Funkcija za pomoc pri racunanju gradijenta
+	 * 
+	 * @param coeffs Matric koeficijenata sustava
+	 * @param v trenutni vektor
+	 * @param row red matrice koeficijenata za koji racunamo gradijent
+	 * @return pomocna vrijednost
+	 */
 	public static double ex(Matrix coeffs, double[] v, int row) {
 		double result = 0;
 		for (int i = 0; i < v.length; i++) {
@@ -94,6 +102,13 @@ public class Sustav {
 		return gradient;
 	}
 
+	/**
+	 * Funkcija za izracun pojedine komponente Hesseove matrice na poziciji (i, j)
+	 * 
+	 * @param var1 redak Hesseove matrice
+	 * @param var2 stupac Hesseove matrice
+	 * @return suma derivacija po odredjenim komponentama
+	 */
 	public static double sum(int var1, int var2) {
 		double total = 0;
 		for (int i = 0; i < 10; i++) {
@@ -115,30 +130,22 @@ public class Sustav {
 			@Override
 			public double valueAt(double[] v) {
 
-				double[] functionValue = new double[numOfVariables()];
-
-				for (int i = 0; i < numOfVariables(); i++) {
-					functionValue[i] = 0;
-				}
-
+				double value = 0;
 				for (int i = 0; i < numOfVariables(); i++) {
 					for (int j = 0; j < numOfVariables(); j++) {
-						functionValue[i] += Math
+						// kao vrijednost funkcije uzima se greska izmedju prave vrijednost i vrijednosti
+						// funkcije s trenutnim najboljim rjesenjem pa na kvadrat i suma svega toga
+						value += Math
 								.pow((coeffs.get(i, j) * v[j]) - coeffs.get(i, coeffs.getColumnDimension() - 1), 2);
 					}
 				}
-
-				double error = 0;
-
-				for (int i = 0; i < numOfVariables(); i++) {
-					error += functionValue[i];
-				}
-				return error;
+				return 1 / 10 * Math.sqrt(value);
 			}
 
 			@Override
 			public double[] gradient(double[] v) {
-
+				
+				// lista gradijenata pojedinog retka sustava
 				List<double[]> rowGradients = new ArrayList<>();
 
 				for (int i = 0; i < numOfVariables(); i++) {
@@ -168,10 +175,8 @@ public class Sustav {
 
 				for (int i = 0; i < numOfVariables(); i++) {
 					for (int j = 0; j < numOfVariables(); j++) {
-						// System.out.printf("coef:2 * %f * %f\n", coeffs.get(i, i), coeffs.get(i, j));
 						hessian[i][j] = 2 * sum(i, j);
 					}
-					// System.out.println();
 				}
 				return hessian;
 			}
@@ -185,19 +190,13 @@ public class Sustav {
 			initial[i] = rand.nextDouble();
 		}
 
-		int maxIterations = 10000;
+		int maxIterations = 5000;
 
 		double[] sol = NumOptAlgorithms.newton(sustav, maxIterations, initial);
+		System.out.println("Rjesenja u obliku x1, x2,...");
 		for (int i = 0; i < sol.length; i++) {
-			System.out.println(sol[i]);
+			System.out.printf("%f ", sol[i]);
 		}
-//		double[][] hessian = sustav.hessian(sol);
-//
-//		for(int i = 0; i < 10; i++) {
-//			for(int j = 0; j < 10; j++) {
-//				System.out.printf("%-4.2f ", hessian[i][j]);
-//			}
-//			System.out.println();
-//		}
+		System.out.printf("\nGreška u trenutku prekida algoritma: %f ", sustav.valueAt(sol));
 	}
 }
