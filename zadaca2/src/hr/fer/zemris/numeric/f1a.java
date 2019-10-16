@@ -19,6 +19,11 @@ public class f1a implements IFunction{
 		gradient[1] = 2 * (v[1] - 1);
 		return gradient;
 	}
+
+	@Override
+	public String toString() {
+		return "1a";
+	}
 	
 	
 }

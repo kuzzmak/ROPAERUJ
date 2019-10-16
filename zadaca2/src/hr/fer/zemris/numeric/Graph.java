@@ -1,6 +1,5 @@
 package hr.fer.zemris.numeric;
 
-import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
 
 public class Graph extends ApplicationFrame {
 
@@ -47,7 +45,7 @@ public class Graph extends ApplicationFrame {
 		final ChartPanel chartPanel = new ChartPanel(chart);
 		chartPanel.setPreferredSize(new java.awt.Dimension(500, 500));
 		
-		File file = new File("chart.png");
+		File file = new File(title);
 		ChartUtils.saveChartAsPNG(file, chart, 500, 500);
 		setContentPane(chartPanel);
 

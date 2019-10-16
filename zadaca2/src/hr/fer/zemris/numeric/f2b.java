@@ -25,4 +25,9 @@ public class f2b implements IHFunction{
 		return new double[][] {{2,0}, {0,20}};
 	}
 
+	@Override
+	public String toString() {
+		return "2b";
+	}
+
 }

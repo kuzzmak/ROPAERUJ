@@ -20,4 +20,9 @@ public class f2a implements IFunction{
 		return gradient; 
 	}
 
+	@Override
+	public String toString() {
+		return "2a";
+	}
+
 }

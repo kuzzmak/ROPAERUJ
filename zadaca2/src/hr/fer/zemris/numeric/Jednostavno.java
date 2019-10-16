@@ -33,43 +33,40 @@ public class Jednostavno {
 	
 	public static void main(String[] args) throws IOException {
 		
-//		String funName = args[0];
-//		int maxIterations = Integer.parseInt(args[1]);
+		String funName = args[0];
+		int maxIterations = Integer.parseInt(args[1]);
 		double[] initialPoint = new double[2];
 		
 		Random rand = new Random();
-//		if(args.length == 4) {
-//			initialPoint[0] = Double.parseDouble(args[2]);
-//			initialPoint[1] = Double.parseDouble(args[3]);
-//		}else {
-//			initialPoint[0] = rand.nextDouble();
-//			initialPoint[1]	= rand.nextDouble();
-//		}
+		if(args.length == 4) {
+			initialPoint[0] = Double.parseDouble(args[2]);
+			initialPoint[1] = Double.parseDouble(args[3]);
+		}else {
+			initialPoint[0] = rand.nextDouble();
+			initialPoint[1]	= rand.nextDouble();
+		}
 		
-		IFunction function = new f1a();
+		IFunction function = new f2b();
 		
-//		if(funName.toLowerCase().equals("f1a")) {
-//			function = new f1a();
-//		}else if(funName.toLowerCase().equals("f1b")) {
-//			function = new f1b();
-//		}else if(funName.toLowerCase().equals("f2a")) {
-//			function = new f2a();
-//		}else {
-//			function = new f2b();
-//		}
-		initialPoint[0] = rand.nextDouble();
-		initialPoint[1] = rand.nextDouble();
-		int maxIterations = 1000;
+		if(funName.toLowerCase().equals("f1a")) {
+			function = new f1a();
+		}else if(funName.toLowerCase().equals("f1b")) {
+			function = new f1b();
+		}else if(funName.toLowerCase().equals("f2a")) {
+			function = new f2a();
+		}else {
+			function = new f2b();
+		}
+		
 		double[] solution = NumOptAlgorithms.gradientDescent(function, maxIterations, initialPoint);
 		
-		List<double[]> graphData = getGraphData("graphData");
-//		for(int i = 0; i < graphData.size(); i++) {
-//			System.out.println(graphData.get(i)[0] + " " + graphData.get(i)[1]);
-//		}
-		final Graph demo = new Graph(graphData, "Graph");
-		demo.pack();
-		RefineryUtilities.centerFrameOnScreen(demo);
-		demo.setVisible(true);
+		// za potrebe vizualizacije trajektorije rjesenja
+//		List<double[]> graphData = getGraphData("graphData");
+//		final Graph demo = new Graph(graphData, function.toString() + ".png");
+//		demo.pack();
+//		RefineryUtilities.centerFrameOnScreen(demo);
+//		demo.setVisible(true);
+		
 		System.out.print(solution[0]);
 		System.out.print(" ");
 		System.out.print(solution[1]);

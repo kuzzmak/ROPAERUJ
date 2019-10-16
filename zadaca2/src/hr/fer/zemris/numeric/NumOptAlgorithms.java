@@ -56,7 +56,7 @@ public class NumOptAlgorithms {
 	}
 	
 	
-	public static double[] gradientDescent(IFunction function, int maxIterations, double[] initial) throws IOException {
+	public static double[] gradientDescent(IFunction function, int maxIterations, double[] initial){
 		
 		int numberOfVariables = function.numOfVariables();
 		double[] current = initial;
@@ -65,19 +65,27 @@ public class NumOptAlgorithms {
 //		writer.write(current[0] + "," + current[1] + "\n");
 		
 		for (int i = 0; i < maxIterations; i++) {
-
+			// ispis trenutne iteracije i rjesenja
+			System.out.printf("iteration: %d current solution: ", i);
+			for(int k = 0; k < current.length; k++) {
+				System.out.printf("%f ", current[k]);
+			}
+			System.out.println();
+			
 			double[] gradient = function.gradient(current);
 			double f_val = function.valueAt(current);
 			double step = 0;
 			for (int k = 0; k < numberOfVariables; k++) {
 				step += gradient[k] * gamma;
 			}
-			double g_val = f_val - step;
 			for (int j = 0; j < numberOfVariables; j++) {
 				current[j] -= gradient[j] * gamma;
 				
 			}
 			//writer.write(current[0] + "," + current[1] + "\n");
+			
+			// za provjeru je li potrebno prekinuti algoritam
+			double g_val = f_val - step;
 			if (Math.abs(g_val - f_val) <= precision) {
 //				writer.close();
 				break;
@@ -87,12 +95,20 @@ public class NumOptAlgorithms {
 		return current;
 	}
 
-	public static double[] newton(IHFunction function, int maxIterations, double[] initial) {
+	public static double[] newton(IHFunction function, int maxIterations, double[] initial){
 		
 		double[] current = initial;
 		int numberOfVariables = function.numOfVariables();
+//		BufferedWriter writer = new BufferedWriter(new FileWriter("graphData"));
+//		writer.write(current[0] + "," + current[1] + "\n");
 		
 		for(int i = 0; i < maxIterations; i++) {
+			// ispis trenutne iteracije i rjesenja
+			System.out.printf("iteration: %d current solution: ", i);
+			for(int k = 0; k < current.length; k++) {
+				System.out.printf("%f ", current[k]);
+			}
+			System.out.println();
 			
 			double[][] hessianData = function.hessian(current);
 			Matrix hessian = new Matrix(hessianData);
@@ -105,7 +121,9 @@ public class NumOptAlgorithms {
 			for(int j = 0; j < numberOfVariables; j++) {
 				current[j] -= lambda.get(j, 0);
 			}
+//			writer.write(current[0] + "," + current[1] + "\n");
 			
+			// za provjeru je li potrebno prekinuti algoritam
 			double f_val = function.valueAt(current);
 			hessianData = function.hessian(current);
 			inverseHessian = hessian.inverse();
@@ -116,10 +134,11 @@ public class NumOptAlgorithms {
 			double g_val = f_val + firstPart.get(0, 0) + thirdPart.get(0, 0);
 //			System.out.println(i);
 //			System.out.println(Math.abs(g_val - f_val));
-			if(Math.abs(g_val - f_val) <= precision) break;
+			if(Math.abs(g_val - f_val) <= precision) {
+//				writer.close();
+				break;
+			}
 		}
-
 		return current;
 	}
-
 }
