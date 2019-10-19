@@ -1,10 +1,11 @@
 package hr.fer.zemris.optjava.dz3;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class BitVectorSolution extends SingleObjectiveSolution{
 
-	byte[] bits;
+	private byte[] bits;
 	
 	public BitVectorSolution(int n) {
 		bits = new byte[n];
@@ -25,4 +26,19 @@ public class BitVectorSolution extends SingleObjectiveSolution{
 	void randomize(Random rand) {
 		// TODO
 	}
+	
+	public byte[] getBits() {
+		return bits;
+	}
+
+	public void setBits(byte[] bits) {
+		this.bits = bits;
+	}
+
+	@Override
+	public String toString() {
+		return "BitVectorSolution [bits=" + Arrays.toString(bits) + "]";
+	}
+	
+	
 }
