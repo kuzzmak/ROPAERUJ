@@ -6,18 +6,18 @@ public abstract class BitVectorDecoder implements IDecoder<SingleObjectiveSoluti
 
 	private double[] mins;
 	private double[] maxs;
-	private int[] bits;
+	private int[] nBits;
 	private int n;
 	private int totalBits = 0;
 	
-	public BitVectorDecoder(double[] mins, double[] maxs, int[] bits, int n) {
+	public BitVectorDecoder(double[] mins, double[] maxs, int[] nBits, int n) {
 		this.mins = mins;
 		this.maxs = maxs;
-		this.bits = bits;
+		this.nBits = nBits;
 		this.n = n;
 		
-		for(int i = 0; i < bits.length; i++) {
-			totalBits += bits[i];
+		for(int i = 0; i < nBits.length; i++) {
+			totalBits += nBits[i];
 		}
 	}
 	
@@ -25,10 +25,10 @@ public abstract class BitVectorDecoder implements IDecoder<SingleObjectiveSoluti
 		this.n = n;
 		this.mins = new double[n];
 		this.maxs = new double[n];
-		this.bits = new int[n];
+		this.nBits = new int[n];
 		Arrays.fill(this.mins, min);
 		Arrays.fill(this.maxs, max);
-		Arrays.fill(this.bits, nBits);
+		Arrays.fill(this.nBits, nBits);
 	}
 
 	public int getTotalBits() {
@@ -39,4 +39,19 @@ public abstract class BitVectorDecoder implements IDecoder<SingleObjectiveSoluti
 		return n;
 	}
 	
+	public int[] getnBits() {
+		return nBits;
+	}
+	
+	public int getN() {
+		return n;
+	}
+
+	public double[] getMins() {
+		return mins;
+	}
+
+	public double[] getMaxs() {
+		return maxs;
+	}
 }
