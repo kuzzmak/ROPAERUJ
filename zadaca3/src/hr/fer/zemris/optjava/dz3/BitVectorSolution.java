@@ -11,6 +11,10 @@ public class BitVectorSolution extends SingleObjectiveSolution{
 		bits = new byte[n];
 	}
 	
+	public BitVectorSolution(byte[] bits) {
+		this.bits = bits;
+	}
+	
 	BitVectorSolution newLikeThis() {
 		return new BitVectorSolution(this.bits.length);
 	}
