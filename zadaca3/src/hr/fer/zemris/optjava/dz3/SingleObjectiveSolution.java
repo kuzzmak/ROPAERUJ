@@ -1,6 +1,6 @@
 package hr.fer.zemris.optjava.dz3;
 
-public class SingleObjectiveSolution implements Comparable<SingleObjectiveSolution>{
+public abstract class SingleObjectiveSolution implements Comparable<SingleObjectiveSolution>{
 	
 	private double fitness;
 	private double value;
@@ -9,8 +9,19 @@ public class SingleObjectiveSolution implements Comparable<SingleObjectiveSoluti
 		// TODO Auto-generated constructor stub
 	}
 
+	public abstract SingleObjectiveSolution newLikeThis();
+	
+	public void setValue(double value, boolean minimize) {
+		this.value = value;
+		this.fitness = minimize ? -value : value;
+	}
+	
 	@Override
 	public int compareTo(SingleObjectiveSolution obj){
 		return Double.compare(fitness, obj.fitness);
+	}
+	
+	public double getFitness() {
+		return fitness;
 	}
 }

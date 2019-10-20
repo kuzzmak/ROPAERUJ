@@ -15,7 +15,7 @@ public class BitVectorSolution extends SingleObjectiveSolution{
 		this.bits = bits;
 	}
 	
-	BitVectorSolution newLikeThis() {
+	public BitVectorSolution newLikeThis() {
 		return new BitVectorSolution(this.bits.length);
 	}
 	
@@ -27,8 +27,11 @@ public class BitVectorSolution extends SingleObjectiveSolution{
 		return vec;
 	}
 	
-	void randomize(Random rand) {
-		// TODO
+	public void randomize(Random random) {
+		int n = bits.length;
+		for (int i = 0; i < n; i++) {
+			bits[i] = (byte) (random.nextBoolean() ? 1 : 0);
+		}
 	}
 	
 	public byte[] getBits() {
