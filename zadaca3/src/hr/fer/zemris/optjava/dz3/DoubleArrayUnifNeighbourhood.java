@@ -20,9 +20,7 @@ public class DoubleArrayUnifNeighbourhood implements INeighbourhood<DoubleArrayS
 		DoubleArraySolution nextNeighbour = new DoubleArraySolution(solution.length);
 		
 		for(int i = 0; i < solution.length; i++) {
-			double upper = solution[i] + deltas[i];
-			double lower = solution[i] - deltas[i];
-			solution[i] = rand.nextDouble() * (upper - lower) + lower;
+			solution[i] += rand.nextDouble() * deltas[i];
 		}
 		
 		nextNeighbour.setValues(solution);
@@ -34,9 +32,7 @@ public class DoubleArrayUnifNeighbourhood implements INeighbourhood<DoubleArrayS
 //		double[] deltas = new double[] {0.2,0.2,0.2};
 //		Random rand = new Random();
 //		for(int i = 0; i < solution.length; i++) {
-//			double upper = solution[i] + deltas[i];
-//			double lower = solution[i] - deltas[i];
-//			solution[i] = rand.nextDouble() * (upper - lower) + lower;
+//			solution[i] += rand.nextGaussian() * deltas[i];
 //		}
 //		System.out.println(Arrays.toString(solution));
 	}
