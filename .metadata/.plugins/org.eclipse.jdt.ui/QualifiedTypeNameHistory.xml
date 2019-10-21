@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="java.io.BufferedReader"/>
-<fullyQualifiedTypeName name="java.io.FileReader"/>
 <fullyQualifiedTypeName name="java.util.Iterator"/>
 <fullyQualifiedTypeName name="zadaca1.clause"/>
 <fullyQualifiedTypeName name="java.util.Collection"/>
@@ -32,17 +30,25 @@
 <fullyQualifiedTypeName name="java.io.BufferedWriter"/>
 <fullyQualifiedTypeName name="java.io.FileWriter"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.numeric.Jednostavno"/>
-<fullyQualifiedTypeName name="java.util.List"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="org.jfree.chart.ChartUtils"/>
 <fullyQualifiedTypeName name="java.awt.Rectangle"/>
 <fullyQualifiedTypeName name="java.io.File"/>
-<fullyQualifiedTypeName name="Jama.Matrix"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.numeric.NumOptAlgorithms"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.DoubleArraySolution"/>
-<fullyQualifiedTypeName name="java.util.Random"/>
-<fullyQualifiedTypeName name="java.util.Arrays"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.SingleObjectiveSolution"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.NaturalBinaryDecoder"/>
 <fullyQualifiedTypeName name="java.lang.Math"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.IOptAlgorithm"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.GreedyAlgorithm"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.DoubleArrayUnifNeighbourhood"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.DoubleArraySolution"/>
+<fullyQualifiedTypeName name="java.io.BufferedReader"/>
+<fullyQualifiedTypeName name="java.io.FileReader"/>
+<fullyQualifiedTypeName name="java.io.IOException"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="Jama.Matrix"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.PassThroughDecoder"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.NaturalBinaryDecoder"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.INeighbourhood"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.SingleObjectiveSolution"/>
+<fullyQualifiedTypeName name="java.util.Random"/>
 </qualifiedTypeNameHistroy>
