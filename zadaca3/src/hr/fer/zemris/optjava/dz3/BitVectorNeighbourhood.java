@@ -6,7 +6,7 @@ public class BitVectorNeighbourhood implements INeighbourhood<SingleObjectiveSol
 
 	@Override
 	public BitVectorSolution randomNeighbour(SingleObjectiveSolution obj) {
-		BitVectorSolution solution = (BitVectorSolution)obj.newLikeThis();
+		BitVectorSolution solution = (BitVectorSolution)obj.duplicate();
 		Random rand = new Random();
 		
 		double p = 0.3d;

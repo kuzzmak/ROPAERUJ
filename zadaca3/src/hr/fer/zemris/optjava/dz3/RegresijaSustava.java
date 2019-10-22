@@ -13,7 +13,7 @@ public class RegresijaSustava {
 		double min = -3;
 		double max = 7;
 		// broj bitova po varijabli za bitvector rjesenje
-		int[] nBits = new int[] { 30, 30, 30, 30, 30, 30 };
+		int[] nBits = new int[n];
 		double[] mins = new double[n];
 		double[] maxs = new double[n];
 		Arrays.fill(mins, min);
@@ -25,7 +25,7 @@ public class RegresijaSustava {
 		double alpha = 0.99d;
 		double tInitial = 1000;
 		int innerLimit = 2000;
-		int outerLimit = 5000;
+		int outerLimit = 2500;
 
 		// argmenti komandne linije
 		String path = args[0];
@@ -55,21 +55,22 @@ public class RegresijaSustava {
 			decoder = new PassThroughDecoder();
 			neighbourhood = new DoubleArrayNormNeighbourhood(deltas);
 		} else {
+			int numOfBits = n * Integer.parseInt(temp[1]);
+			Arrays.fill(nBits, Integer.parseInt(temp[1]));
 			decoder = new NaturalBinaryDecoder(mins, maxs, nBits, n);
 			neighbourhood = new BitVectorNeighbourhood();
-			int numOfBits = 0;
-			for (int i = 0; i < nBits.length; i++) {
-				numOfBits += nBits[i];
-			}
 			startWith = new BitVectorSolution(numOfBits);
+			((BitVectorSolution)startWith).randomize(rand);
 		}
 
 		SimulatedAnnealing<SingleObjectiveSolution> alg = new SimulatedAnnealing<SingleObjectiveSolution>(decoder,
 				neighbourhood, schedule, startWith, function, minimize, rand);
 
 		solution = alg.run();
-
-		System.out.println(solution);
+		
+		String sol = temp[0].equals("decimal") ? solution.toString() : Arrays.toString(decoder.decode(solution));
+		
+		System.out.println(sol);
 	}
 
 }

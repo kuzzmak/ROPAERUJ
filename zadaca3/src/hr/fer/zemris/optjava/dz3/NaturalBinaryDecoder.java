@@ -40,18 +40,4 @@ public class NaturalBinaryDecoder extends BitVectorDecoder{
 	public void decode(double[] v, SingleObjectiveSolution obj) {
 		v = decode(obj);
 	}
-	
-	public static void main(String[] args) {
-		BitVectorSolution sos;
-		sos = new BitVectorSolution(2*3);
-		sos.setBits(new byte[] {1,1,0,0,1,1});
-		System.out.println(sos);
-		NaturalBinaryDecoder dec = new NaturalBinaryDecoder(-2, 2, 3, 2);
-		double[] decoded = dec.decode(sos);
-		for(int i = 0; i < decoded.length; i++) {
-			System.out.println(decoded[i]);
-		}
-//		System.out.println(BinaryToGray(-15));
-	}
-
 }

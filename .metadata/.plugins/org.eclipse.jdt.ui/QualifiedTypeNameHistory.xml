@@ -44,7 +44,6 @@
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="Jama.Matrix"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.PassThroughDecoder"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.NaturalBinaryDecoder"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.INeighbourhood"/>
@@ -52,4 +51,5 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.IOptAlgorithm"/>
 <fullyQualifiedTypeName name="java.util.Random"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.GeometricTempSchedule"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.PassThroughDecoder"/>
 </qualifiedTypeNameHistroy>
