@@ -31,7 +31,8 @@ public class SimulatedAnnealing<T extends SingleObjectiveSolution> implements IO
 	@Override
 	public SingleObjectiveSolution run() {
 		
-		T solution = (T)startWith.newLikeThis();
+		T solution = (T)startWith.duplicate();
+		
 		solution.setValue(function.valueAt(decoder.decode(startWith)), minimize);
 		
 		for(int i = 0; i < schedule.getOuterLoopCounter(); i++) {
@@ -45,7 +46,8 @@ public class SimulatedAnnealing<T extends SingleObjectiveSolution> implements IO
 				if(diff >= 0) {
 					solution = neighbour;
 				}else {
-					double p = Math.pow(Math.E, diff / currentTemp);
+//					double p = Math.pow(Math.E, diff / currentTemp);
+					double p = 0.4 * Math.pow(0.9, i);
 					//System.out.println(p);
 					if(p > rand.nextFloat()) {
 						solution = neighbour;

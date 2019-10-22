@@ -11,10 +11,14 @@ public abstract class SingleObjectiveSolution implements Comparable<SingleObject
 
 	public abstract SingleObjectiveSolution newLikeThis();
 	
+	public abstract SingleObjectiveSolution duplicate();
+	
 	public void setValue(double value, boolean minimize) {
 		this.value = value;
 		this.fitness = minimize ? -value : value;
 	}
+	
+	
 	
 	@Override
 	public int compareTo(SingleObjectiveSolution obj){

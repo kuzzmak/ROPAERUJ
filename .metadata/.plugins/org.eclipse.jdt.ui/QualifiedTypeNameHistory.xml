@@ -35,7 +35,6 @@
 <fullyQualifiedTypeName name="java.io.File"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.numeric.NumOptAlgorithms"/>
 <fullyQualifiedTypeName name="java.lang.Math"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.IOptAlgorithm"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.GreedyAlgorithm"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.DoubleArrayUnifNeighbourhood"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.DoubleArraySolution"/>
@@ -50,5 +49,7 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.NaturalBinaryDecoder"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.INeighbourhood"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.SingleObjectiveSolution"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.IOptAlgorithm"/>
 <fullyQualifiedTypeName name="java.util.Random"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.GeometricTempSchedule"/>
 </qualifiedTypeNameHistroy>

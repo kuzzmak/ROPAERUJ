@@ -1,5 +1,6 @@
 package hr.fer.zemris.optjava.dz3;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class DoubleArraySolution extends SingleObjectiveSolution{
@@ -39,6 +40,12 @@ public class DoubleArraySolution extends SingleObjectiveSolution{
 	public void setValues(double[] values) {
 		this.values = values;
 	}
+
+	@Override
+	public String toString() {
+		return "DoubleArraySolution [values=" + Arrays.toString(values) + "]";
+	}
+	
 	
 	
 }

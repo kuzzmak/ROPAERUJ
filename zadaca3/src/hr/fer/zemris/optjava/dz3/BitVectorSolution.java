@@ -19,7 +19,7 @@ public class BitVectorSolution extends SingleObjectiveSolution{
 		return new BitVectorSolution(this.bits.length);
 	}
 	
-	BitVectorSolution duplicate() {
+	public BitVectorSolution duplicate() {
 		BitVectorSolution vec = new BitVectorSolution(this.bits.length);
 		for(int i = 0; i < this.bits.length; i++) {
 			vec.bits[i] = this.bits[i];
