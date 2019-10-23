@@ -22,10 +22,10 @@ public class RegresijaSustava {
 		double delta = 1;
 		Arrays.fill(deltas, delta);
 	
-		double alpha = 0.99d;
+		double alpha = 0.995d;
 		double tInitial = 1000;
 		int innerLimit = 2000;
-		int outerLimit = 2500;
+		int outerLimit = 5000;
 
 		// argmenti komandne linije
 		String path = args[0];
@@ -46,15 +46,16 @@ public class RegresijaSustava {
 		// ----------------------------------------------------
 
 		String[] temp = solutionType.split(":");
+		
 		schedule = new GeometricTempSchedule(alpha, tInitial, innerLimit, outerLimit);
 
 		if (temp[0].equals("decimal")) {
-
 			startWith = new DoubleArraySolution(n);
 			((DoubleArraySolution) startWith).randomize(rand, mins, maxs);
 			decoder = new PassThroughDecoder();
 			neighbourhood = new DoubleArrayNormNeighbourhood(deltas);
 		} else {
+			// ukupan broj bitova koje ima rjesenje
 			int numOfBits = n * Integer.parseInt(temp[1]);
 			Arrays.fill(nBits, Integer.parseInt(temp[1]));
 			decoder = new NaturalBinaryDecoder(mins, maxs, nBits, n);
@@ -71,6 +72,7 @@ public class RegresijaSustava {
 		String sol = temp[0].equals("decimal") ? solution.toString() : Arrays.toString(decoder.decode(solution));
 		
 		System.out.println(sol);
+		System.out.printf("Pogreska: %f\n", function.valueAt(decoder.decode(solution)));
 	}
 
 }

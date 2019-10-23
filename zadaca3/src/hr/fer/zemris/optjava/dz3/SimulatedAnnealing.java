@@ -46,22 +46,17 @@ public class SimulatedAnnealing<T extends SingleObjectiveSolution> implements IO
 				if(diff >= 0) {
 					solution = neighbour;
 				}else {
-//					double p = Math.pow(Math.E, diff / currentTemp);
-					double p = 0.4 * Math.pow(0.9, i);
-					//System.out.println(p);
+					double p = Math.pow(Math.E, diff / currentTemp);
+//					double p = 0.4 * Math.pow(0.9, i);
 					if(p > rand.nextFloat()) {
 						solution = neighbour;
 					}
 					
 				}
-//				if(i % 1000 == 0) {
-//					System.out.printf("out: %d, in: %d, temp: %f, value: %f\n", i, j, currentTemp, function.valueAt(decoder.decode(solution)));
-//				}
-//				System.out.println(solution.getFitness());
 			}
-			if(i % 100 == 0) {
-				System.out.printf("out: %d, value: %f, temp: %f\n", i, function.valueAt(decoder.decode(solution)), currentTemp);
-			}
+//			if(i % 100 == 0) {
+//				System.out.printf("out: %d, value: %f, temp: %f\n", i, function.valueAt(decoder.decode(solution)), currentTemp);
+//			}
 		}
 		return solution;
 	}

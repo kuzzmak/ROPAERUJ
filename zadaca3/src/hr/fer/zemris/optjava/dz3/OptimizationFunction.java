@@ -79,7 +79,7 @@ public class OptimizationFunction implements IFunction{
 		for(int i = 0; i < matrixData.getRowDimension(); i++) {
 			functionValue += Math.pow(matrixData.get(i, matrixData.getColumnDimension() - 1) - value[i], 2);
 		}
-		return functionValue / matrixData.getRowDimension();
+		return functionValue;
 	}
 
 }
