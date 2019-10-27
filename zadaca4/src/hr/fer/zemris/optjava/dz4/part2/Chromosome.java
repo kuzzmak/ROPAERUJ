@@ -8,6 +8,7 @@ public class Chromosome {
 	private List<Bin> binList;
 	private int binCapacity;
 	
+	
 	public Chromosome(List<Stick> sticks, int binCapacity) {
 		
 		this.binList = new ArrayList<>();
@@ -17,6 +18,12 @@ public class Chromosome {
 		
 	}
 	
+	
+	public void setBinList(List<Bin> binList) {
+		this.binList = binList;
+	}
+
+
 	/**
 	 * Funkcija za inicijalno dodavanja stapova u kromosom
 	 * 
@@ -40,6 +47,17 @@ public class Chromosome {
 				bin.add(s);
 				binList.add(bin);
 			}
+		}
+	}
+	
+	/**
+	 * Funkcija za dodavanje binova u kromosom
+	 * 
+	 * @param binList list binova za dodati
+	 */
+	public void addBins(List<Bin> binList) {
+		for(Bin b: binList) {
+			this.binList.add(b);
 		}
 	}
 
@@ -77,6 +95,23 @@ public class Chromosome {
 		return sb.toString();
 	}
 	
+	/**
+	 * Funkcija za dohvat stapova iz kromosoma
+	 * 
+	 * @return stapovi kromosoma
+	 */
+	public List<Stick> getSticks(){
+		List<Stick> stickList = new ArrayList<>();
+		for(Bin b: binList) {
+			for(Stick s: b.getSticksInBin()) {
+				stickList.add(s);
+			}
+		}
+		return stickList;
+	}
 	
+	public Chromosome copy() {
+		return new Chromosome(this.getSticks(), this.binCapacity);
+	}
 	
 }
