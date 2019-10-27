@@ -10,11 +10,11 @@ public class GeneticAlgorithm {
 
 	public static Random rand = new Random();
 	// varijable za random inicijalizaciju pocetnih rjesenja
-	public static int min = -4;
-	public static int max = 8;
+	public static int min = -10;
+	public static int max = 10;
 	public static boolean minimize = true;
 	// parametar za BLA-x
-	public static double alpha = 0.05;
+	public static double alpha = 0.02;
 	// broj varijabli
 	public static int N = 6;
 	// velicina populaicije
@@ -25,13 +25,15 @@ public class GeneticAlgorithm {
 	public static int numOfGenerations = 50000;
 	
 	// parametar za mutacij rjesenja
-	public static double sigma = 0.03;
+	public static double sigma = 0.05;
 	// 
 	public static String pathToFunction = "02-zad-prijenosna.txt";
 	// funkcija koja se optimizira
 	public static IFunction function = new OptimizationFunction(pathToFunction);
 	// dekoder rjese
 	public static IDecoder<SingleObjectiveSolution> decoder = new PassThroughDecoder();
+	
+	public static int numberOfTournaments = 10;
 	
 	// takav komparator da su rjesenja s boljim fitnesom uvijek na pocetku mape
 	public static Comparator<SingleObjectiveSolution> comp = new Comparator<SingleObjectiveSolution>() {
@@ -78,6 +80,7 @@ public class GeneticAlgorithm {
 		int iteration = 0;
 		TreeMap<SingleObjectiveSolution, Double> population = Util.makePopulation();
 		ISelection<SingleObjectiveSolution> roulette = new RouletteWheelSelection();
+		ISelection<SingleObjectiveSolution> tournament = new TournamentSelection();
 		
 		while (function.valueAt(decoder.decode(population.firstKey())) > minErr && iteration < numOfGenerations) {
 			
@@ -90,16 +93,11 @@ public class GeneticAlgorithm {
 			offspring.put(next.getKey(), next.getValue());
 			next = iter.next();
 			offspring.put(next.getKey(), next.getValue());
-
-			if(iteration == 50000) {
-				Util.populationPrint(population);
-				break;
-			}
 			
 			while(offspring.size() < population.size() + 2) {
 
-				SingleObjectiveSolution parent1 = roulette.select(population, rand);
-				SingleObjectiveSolution parent2 = roulette.select(population, rand);
+				SingleObjectiveSolution parent1 = tournament.select(population, rand);
+				SingleObjectiveSolution parent2 = tournament.select(population, rand);
 				while(parent1 == parent2) {
 					parent2 = roulette.select(population, rand);
 				}

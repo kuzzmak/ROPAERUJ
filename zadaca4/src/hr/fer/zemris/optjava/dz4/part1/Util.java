@@ -41,6 +41,11 @@ public class Util {
 		}
 	}
 
+	/**
+	 * Funkcija za mutaciju pojedinog rjesenja
+	 * 
+	 * @param child rjesenje koje se mutira
+	 */
 	public static void mutate(SingleObjectiveSolution child) {
 
 		for (int i = 0; i < GeneticAlgorithm.N; i++) {
@@ -49,6 +54,11 @@ public class Util {
 		child.setValue(GeneticAlgorithm.function.valueAt(GeneticAlgorithm.decoder.decode(child)), GeneticAlgorithm.minimize);
 	}
 	
+	/**
+	 * Funkcija za ispis cjelokupne trenutne populacije
+	 * 
+	 * @param population mapa populacije za ispis
+	 */
 	public static void populationPrint(TreeMap<SingleObjectiveSolution, Double> population) {
 		for(Map.Entry<SingleObjectiveSolution, Double> entry: population.entrySet()) {
 			System.out.println(entry.getKey() + "  " + entry.getValue());
