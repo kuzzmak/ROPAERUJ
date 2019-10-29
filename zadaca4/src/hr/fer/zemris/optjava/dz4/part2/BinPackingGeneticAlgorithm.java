@@ -92,7 +92,7 @@ public class BinPackingGeneticAlgorithm implements IOptAlgorithm {
 			counter++;
 		}
 		
-		System.out.println("Value at: " + function.valueAt(solution));
+		System.out.println("Broj potrebnih spremnika: " + solution.size());
 		return solution;
 	}
 

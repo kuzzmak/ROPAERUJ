@@ -19,10 +19,7 @@ public class Stick implements Comparable<Stick> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(String.valueOf(length));
-		sb.append("(").append(String.valueOf(stickIndex)).append(")");
-		return sb.toString();
+		return String.valueOf(length);
 	}
 
 	@Override
