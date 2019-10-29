@@ -46,4 +46,13 @@ public class Bin {
 		return sticksInBin;
 	}
 	
+	public void removeStick(Stick s) {
+		this.sticksInBin.remove(s);
+		this.occupiedSpace -= s.getLength();
+	}
+
+	public void setSticksInBin(List<Stick> sticksInBin) {
+		this.sticksInBin = sticksInBin;
+	}
+	
 }

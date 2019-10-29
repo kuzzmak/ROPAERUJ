@@ -16,7 +16,7 @@ public class TournamentSelection implements ISelection{
 	@Override
 	public Chromosome select(List<Chromosome> cList, Random rand, int numberOfSelections, boolean best) {
 		
-		IFunction function = new OptimizationFunction(BoxFilling.getK());
+		IFunction function = new OptimizationFunction(BoxFilling.k);
 		
 		// inicijalizacija najboljeg i najgoreg rjesenja
 		Chromosome fittest = cList.get(0);

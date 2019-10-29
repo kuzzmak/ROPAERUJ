@@ -1,6 +1,7 @@
 package hr.fer.zemris.optjava.dz4.part2;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class Chromosome {
@@ -57,6 +58,9 @@ public class Chromosome {
 	 */
 	public void addBins(List<Bin> binList) {
 		for(Bin b: binList) {
+			if(b.getSticksInBin().size() == 0) {
+				continue;
+			}
 			this.binList.add(b);
 		}
 	}
@@ -110,8 +114,61 @@ public class Chromosome {
 		return stickList;
 	}
 	
+	/**
+	 * Funkcija za ubacivanje binova u kromosom na odredjeni index
+	 * Ne provjerava postoje li vec ti binovi u kromosomu
+	 * 
+	 * @param index mjesto na koje se ubacju binovi
+	 * @param binList lista binova koju treba ubaciti
+	 */
+	public void insertBinsAt(int index, List<Bin> binList) {
+		
+		List<Bin> tempList = new ArrayList<>();
+		
+		// kopiranje prvod dijela kromosoma od 0 do indexa
+		for(int i = 0; i < index; i++) {
+			tempList.add(this.binList.get(i));
+		}
+		
+		// ubacivanje novih binova
+		for(int i = 0; i < binList.size(); i++) {
+			tempList.add(binList.get(i));
+		}
+		
+		// kopiranje ostatke kromosoma
+		for(int i = index; i < this.size(); i++) {
+			tempList.add(this.binList.get(i));
+		}
+		
+		this.setBinList(tempList);
+	}
+	
+	
+	/**
+	 * Funkcija za stvaranje kopije kromosoma
+	 *  
+	 * @return kopija kromosoma
+	 */
 	public Chromosome copy() {
 		return new Chromosome(this.getSticks(), this.binCapacity);
 	}
+	
+	public void removeSticks(HashSet<Stick> sticks) {
+		
+		// kopija binova kromosoma
+		List<Bin> binList = new ArrayList<>(this.getBinList());
+		// lista za iteraciju
+		List<Bin> binListIter = new ArrayList<>(this.getBinList());
+		
+		for(int i = 0; i < binListIter.size(); i++) {
+			for(Stick s: sticks) {
+				if(binListIter.get(i).getSticksInBin().contains(s)) {
+					binList.get(i).removeStick(s);
+				}
+			}
+		}
+		this.setBinList(binList);
+	}
+	
 	
 }
