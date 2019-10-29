@@ -16,7 +16,7 @@ public class TournamentSelection implements ISelection<SingleObjectiveSolution> 
 		
 		
 		List<SingleObjectiveSolution> list = new ArrayList<>(offspring.keySet());
-		SingleObjectiveSolution best = list.get(0);
+		SingleObjectiveSolution best = list.get(rand.nextInt(offspring.size()));
 		
 		List<SingleObjectiveSolution> tempPopulation = new ArrayList<>();
 		

@@ -13,6 +13,7 @@ public class RouletteWheelSelection implements ISelection<SingleObjectiveSolutio
 
 	@Override
 	public SingleObjectiveSolution select(TreeMap<SingleObjectiveSolution, Double> offspring, Random rand) {
+		
 		double minFitness = Double.MAX_VALUE;
 
 		Iterator<Map.Entry<SingleObjectiveSolution, Double>> iter = offspring.entrySet().iterator();
@@ -23,16 +24,14 @@ public class RouletteWheelSelection implements ISelection<SingleObjectiveSolutio
 		}
 		
 		iter = offspring.entrySet().iterator();
-		TreeMap<SingleObjectiveSolution, Double> tempOffspring = new TreeMap<>(GeneticAlgorithm.comp.reversed());
+		TreeMap<SingleObjectiveSolution, Double> tempOffspring = new TreeMap<>(Util.comp.reversed());
 		
 		for(Map.Entry<SingleObjectiveSolution, Double> entry: offspring.entrySet()) {
-			tempOffspring.put(entry.getKey(), (entry.getValue() - minFitness));
+			tempOffspring.put(entry.getKey(), (entry.getValue() - minFitness) / Math.abs(entry.getValue()));
 		}
 		// normalizacija vjerojatnosti na interval 0-1
 		Util.normalize(tempOffspring);
 		
-//		System.out.println("offspring");
-//		populationPrint(tempOffspring);
 		SingleObjectiveSolution selected = null;
 		
 		double randFit = rand.nextDouble();
@@ -42,7 +41,7 @@ public class RouletteWheelSelection implements ISelection<SingleObjectiveSolutio
 			total += entry.getValue();
 			if(total > randFit) {
 				selected = entry.getKey();
-				selected.setValue(GeneticAlgorithm.function.valueAt(GeneticAlgorithm.decoder.decode(entry.getKey())), GeneticAlgorithm.minimize);
+				selected.setValue(GenAlg.function.valueAt(GenAlg.decoder.decode(entry.getKey())), Util.minimize);
 				break;
 			}
 		}
