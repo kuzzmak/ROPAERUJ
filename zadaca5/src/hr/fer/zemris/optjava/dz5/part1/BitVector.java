@@ -44,7 +44,7 @@ public class BitVector implements Comparable<BitVector>{
 
 	@Override
 	public String toString() {
-		return "BitVector [bits=" + Arrays.toString(bits) + "]";
+		return Arrays.toString(bits);
 	}
 	
 	public int size() {

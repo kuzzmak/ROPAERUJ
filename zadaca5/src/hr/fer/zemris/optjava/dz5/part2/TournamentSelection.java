@@ -6,10 +6,7 @@ import java.util.Random;
 
 public class TournamentSelection implements ISelection {
 	
-	private int numberOfTournaments;
-	
-	public TournamentSelection(int numberOfTournaments) {
-		this.numberOfTournaments = numberOfTournaments;
+	public TournamentSelection() {
 	}
 
 	@Override
@@ -18,7 +15,7 @@ public class TournamentSelection implements ISelection {
 		Chromosome best = population.get(0);
 		List<Chromosome> selected = new ArrayList<>();
 		
-		for(int i = 0; i < numberOfTournaments; i++) {
+		for(int i = 0; i < CONSTANTS.numberOfParticipants; i++) {
 			
 			Chromosome c = population.get(rand.nextInt(population.size()));
 			if(!selected.contains(c)) selected.add(c);

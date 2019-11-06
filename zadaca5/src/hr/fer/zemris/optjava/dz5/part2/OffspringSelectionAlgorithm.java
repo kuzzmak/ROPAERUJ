@@ -8,31 +8,24 @@ import java.util.Random;
 
 public class OffspringSelectionAlgorithm{
 
-	private int chromosomeSize;
-	private int maxIterations;
-	private double maxSelPress;
 	private double actSelPress = 1;
 	private double succRatio = 0.5;
 	private double compFactor = 0;
+	
+	private int chromosomeSize;
 	private ICrossover crossover;
 	private IMutation mutation;
-	
-	// broj k u k-turnirsokj selekciji
-	public static int numberOfParticipants = 4;
-	private static Random rand = new Random();
 	public static IFunction function;
+	private static Random rand = new Random();
 
+	
 	public OffspringSelectionAlgorithm(IFunction function,
 			int chromosomeSize,
-			int maxIterations,
-			double maxSelPress,
 			ICrossover crossover,
 			IMutation mutation) {
 		
 		this.function = function;
 		this.chromosomeSize = chromosomeSize;
-		this.maxIterations = maxIterations;
-		this.maxSelPress = maxSelPress;
 		this.crossover = crossover;
 		this.mutation = mutation;
 	}
@@ -40,13 +33,13 @@ public class OffspringSelectionAlgorithm{
 
 	public List<Chromosome> run(List<Chromosome> population) {
 
-		ISelection tournament = new TournamentSelection(numberOfParticipants);
+		ISelection tournament = new TournamentSelection();
 
 		double fact = 0.99d;
 
 		int numOfIter = 0;
 
-		while ((numOfIter < maxIterations) && (actSelPress < maxSelPress)) {
+		while ((numOfIter < CONSTANTS.maxIterations) && (actSelPress < CONSTANTS.maxSelPress)) {
 			List<Chromosome> nextPop = new ArrayList<>();
 			List<Chromosome> badChildrenPool = new ArrayList<>();
 
@@ -54,7 +47,7 @@ public class OffspringSelectionAlgorithm{
 			int nextPopCount = 0;
 
 			while ((nextPop.size() < population.size() * succRatio)
-					&& (nextPop.size() + badChildrenPool.size() < population.size() * maxSelPress)) {
+					&& (nextPop.size() + badChildrenPool.size() < population.size() * CONSTANTS.maxSelPress)) {
 
 				// izbor roditelja
 				Chromosome parent1 = tournament.select(population, rand);

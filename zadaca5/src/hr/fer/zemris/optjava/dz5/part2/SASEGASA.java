@@ -9,7 +9,7 @@ public class SASEGASA implements IOptAlgorithm {
 	private String path;
 	private int populationSize;
 	private int numOfSubpopulations;
-	private static IFunction function;
+	public static IFunction function;
 	
 	public SASEGASA(String path, int populationSize, int numOfSubpopulations) {
 		super();
@@ -37,8 +37,6 @@ public class SASEGASA implements IOptAlgorithm {
 	@Override
 	public Chromosome run() {
 		
-		int maxIterations = 1000;
-		double maxSelPress = 20;
 		float mutationRate = 0.05f;
 		ICrossover crossover = new OX2Crossover(function.getN());
 		IMutation mutation = new MutationSwap(mutationRate);
@@ -48,8 +46,6 @@ public class SASEGASA implements IOptAlgorithm {
 		OffspringSelectionAlgorithm alg = new OffspringSelectionAlgorithm(
 				function, 
 				function.getN(), 
-				maxIterations, 
-				maxSelPress, 
 				crossover, 
 				mutation);
 		
@@ -59,6 +55,7 @@ public class SASEGASA implements IOptAlgorithm {
 			
 			int index = 0;
 			List<Chromosome> newPopulation = new ArrayList<>();
+			
 			for(int i = 0; i < numOfSubpopulations; i++) {
 				newPopulation.addAll(alg.run(population.subList(index, index + subPopSize)));
 				index += subPopSize;
@@ -76,15 +73,5 @@ public class SASEGASA implements IOptAlgorithm {
 	}
 	
 	
-	public static void main(String[] args) {
-		
-		String path = "nug25";
-		int populationSize = 100;
-		int numOfSubpopulations = 10;
-		IOptAlgorithm alg = new SASEGASA(path, populationSize, numOfSubpopulations);
-				
-		Chromosome solution = alg.run();
-		System.out.println(solution);
 	
-	}
 }

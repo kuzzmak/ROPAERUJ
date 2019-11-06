@@ -1,16 +1,13 @@
 package hr.fer.zemris.optjava.dz5.part2;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 public class MutationOnEnd implements IMutation {
 	
-	private float mutationRate;
 	
-	public MutationOnEnd(float mutationRate) {
-		this.mutationRate = mutationRate;
+	public MutationOnEnd() {
 	}
 
 	// mutacija se obavlja tako da se izabrani brojevi unutar kromosoma stavljaju na kraj
@@ -20,7 +17,7 @@ public class MutationOnEnd implements IMutation {
 		int[] permutation = c.getPermutation();
 		List<Integer> chosen = new ArrayList<>();
 		for(int i = 0; i < permutation.length; i++) {
-			if(rand.nextFloat() < this.mutationRate) {
+			if(rand.nextFloat() < CONSTANTS.mutationRate) {
 				chosen.add(c.getPermutation()[i]);
 			}
 		}
@@ -38,5 +35,4 @@ public class MutationOnEnd implements IMutation {
 		}
 		return new Chromosome(permutation);
 	}
-
 }

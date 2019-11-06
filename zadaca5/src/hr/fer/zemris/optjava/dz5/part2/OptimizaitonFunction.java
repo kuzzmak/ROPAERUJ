@@ -3,7 +3,6 @@ package hr.fer.zemris.optjava.dz5.part2;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class OptimizaitonFunction implements IFunction {
 
@@ -32,10 +31,7 @@ public class OptimizaitonFunction implements IFunction {
 	
 	public void load(String problemName) {
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("data\\").append(problemName).append(".dat");
-
-		try (BufferedReader br = new BufferedReader(new FileReader(sb.toString()))) {
+		try (BufferedReader br = new BufferedReader(new FileReader(problemName))) {
 			String line = br.readLine().trim();
 			this.n = Integer.parseInt(line);
 			distances = new int[n][n];
