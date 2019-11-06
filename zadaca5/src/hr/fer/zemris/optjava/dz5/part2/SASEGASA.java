@@ -45,36 +45,28 @@ public class SASEGASA implements IOptAlgorithm {
 		
 		List<Chromosome> population = initializePopulation(populationSize);
 		
+		OffspringSelectionAlgorithm alg = new OffspringSelectionAlgorithm(
+				function, 
+				function.getN(), 
+				maxIterations, 
+				maxSelPress, 
+				crossover, 
+				mutation);
+		
 		while(numOfSubpopulations > 0) {
 			
 			int subPopSize = populationSize / numOfSubpopulations;
-			List<List<Chromosome>> subPopulations = new ArrayList<>();
 			
 			int index = 0;
+			List<Chromosome> newPopulation = new ArrayList<>();
 			for(int i = 0; i < numOfSubpopulations; i++) {
-				List<Chromosome> subPop = population.subList(index, index + subPopSize);
-				subPopulations.add(subPop);
+				newPopulation.addAll(alg.run(population.subList(index, index + subPopSize)));
 				index += subPopSize;
 			}
 			if(index != populationSize) {
-				subPopulations.get(subPopulations.size() - 1).addAll(population.subList(index, populationSize));
+				newPopulation.addAll(population.subList(index, populationSize));
 			}
 			
-			List<Chromosome> newPopulation = new ArrayList<>();
-			for(List<Chromosome> subPopulation: subPopulations) {
-				
-				OffspringSelectionAlgorithm alg = new OffspringSelectionAlgorithm(
-						function, 
-						function.getN(), 
-						new ArrayList<Chromosome>(subPopulation), 
-						maxIterations, 
-						maxSelPress, 
-						crossover, 
-						mutation);
-				
-				newPopulation.addAll(alg.run());
-			}
-			System.out.println("numOfPop--");
 			population = newPopulation;
 			numOfSubpopulations--;
 		}

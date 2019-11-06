@@ -9,7 +9,6 @@ import java.util.Random;
 public class OffspringSelectionAlgorithm{
 
 	private int chromosomeSize;
-	private List<Chromosome> population;
 	private int maxIterations;
 	private double maxSelPress;
 	private double actSelPress = 1;
@@ -25,7 +24,6 @@ public class OffspringSelectionAlgorithm{
 
 	public OffspringSelectionAlgorithm(IFunction function,
 			int chromosomeSize,
-			List<Chromosome> population,
 			int maxIterations,
 			double maxSelPress,
 			ICrossover crossover,
@@ -33,7 +31,6 @@ public class OffspringSelectionAlgorithm{
 		
 		this.function = function;
 		this.chromosomeSize = chromosomeSize;
-		this.population = population;
 		this.maxIterations = maxIterations;
 		this.maxSelPress = maxSelPress;
 		this.crossover = crossover;
@@ -41,12 +38,10 @@ public class OffspringSelectionAlgorithm{
 	}
 	
 
-	public List<Chromosome> run() {
+	public List<Chromosome> run(List<Chromosome> population) {
 
 		ISelection tournament = new TournamentSelection(numberOfParticipants);
 
-		List<Chromosome> thisPopulation = new ArrayList<>(population);
-		
 		double fact = 0.99d;
 
 		int numOfIter = 0;
@@ -58,12 +53,12 @@ public class OffspringSelectionAlgorithm{
 			int poolChildrenCount = 0;
 			int nextPopCount = 0;
 
-			while ((nextPop.size() < thisPopulation.size() * succRatio)
-					&& (nextPop.size() + badChildrenPool.size() < thisPopulation.size() * maxSelPress)) {
+			while ((nextPop.size() < population.size() * succRatio)
+					&& (nextPop.size() + badChildrenPool.size() < population.size() * maxSelPress)) {
 
 				// izbor roditelja
-				Chromosome parent1 = tournament.select(thisPopulation, rand);
-				Chromosome parent2 = tournament.select(thisPopulation, rand);
+				Chromosome parent1 = tournament.select(population, rand);
+				Chromosome parent2 = tournament.select(population, rand);
 				// djeca dobivena krizanjem
 				List<Chromosome> children = crossover.cross(parent1, parent2, rand);
 				
@@ -89,13 +84,13 @@ public class OffspringSelectionAlgorithm{
 
 			}
 
-			actSelPress = (nextPopCount + poolChildrenCount) / thisPopulation.size();
+			actSelPress = (nextPopCount + poolChildrenCount) / population.size();
 			succRatio = (double) nextPopCount / (nextPopCount + poolChildrenCount);
 
 			// ako nije niti jedno dijete lose dijete, da popunimo ostatak nove populacije
 			// samo generiramo nove random vektore
 			if (badChildrenPool.size() == 0) {
-				while (nextPop.size() < thisPopulation.size()) {
+				while (nextPop.size() < population.size()) {
 					Chromosome c = new Chromosome(chromosomeSize);
 					c.shuffle();
 					c.setFitness(function.valueAt(c));
@@ -104,7 +99,7 @@ public class OffspringSelectionAlgorithm{
 			} else {
 				// ako je broj djece u badChildrenPoolu nedovoljan da se popuni
 				// ostatak praznine u novoj populaciji
-				if (badChildrenPool.size() <= thisPopulation.size() - nextPop.size()) {
+				if (badChildrenPool.size() <= population.size() - nextPop.size()) {
 					// prvo dodamo sve iz badChildrenPoola
 					
 					for(Chromosome c: badChildrenPool) {
@@ -112,7 +107,7 @@ public class OffspringSelectionAlgorithm{
 					}
 					
 					// zatim popunimo ostatak praznog mjesta do pune populacije random vektorima
-					while (nextPop.size() < thisPopulation.size()) {
+					while (nextPop.size() < population.size()) {
 						Chromosome c = new Chromosome(chromosomeSize);
 						c.shuffle();
 						c.setFitness(function.valueAt(c));
@@ -126,17 +121,17 @@ public class OffspringSelectionAlgorithm{
 				Collections.sort(badChildrenPool);
 				
 				int i = 0;
-				while (nextPop.size() < thisPopulation.size()) {
+				while (nextPop.size() < population.size()) {
 					nextPop.add(badChildrenPool.get(i));
 					i++;
 				}
 			}
 
 			compFactor = 1 - Math.pow(fact, numOfIter);
-			thisPopulation = nextPop;
+			population = nextPop;
 			numOfIter++;
 		}
 
-		return new ArrayList<>(thisPopulation);
+		return population;
 	}
 }
