@@ -1,9 +1,12 @@
 package hr.fer.zemris.optjava.dz6;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 public class Main {
 
@@ -13,11 +16,11 @@ public class Main {
 	public static double[][] probabilities;
 	public static int numberOfCities;
 
-	public static double ro = 0.9;
+	public static double ro = 0.5;
 	public static int firstAnts = 3;
 
-	public static double beta = 2;
-	public static double alpha = 3;
+	public static double beta = 2.5;
+	public static double alpha = 1;
 
 	public static int numOfIterations = 500;
 
@@ -25,6 +28,9 @@ public class Main {
 	static List<Ant> population;
 	
 	public static Ant best;
+	
+	// broj nablizih susjeda koji se razmatraju kao sljedeci grad
+	public static int k = 3;
 
 	public static void main(String[] args) {
 
@@ -40,18 +46,25 @@ public class Main {
 		probabilities = new double[conf.getNumOfCities()][conf.getNumOfCities()];
 		numberOfCities = conf.getNumOfCities();
 		best = new Ant(numberOfCities);
+		System.out.println(best.pathDistence);
+		
+		// lista gradova
+		List<City> cities = conf.getCitiesList();
+		
+		// mapa gdje su kljucevi indeksi gradova, a vrijednosti su liste s
+		// indeksima k najblizih gradova
+		Map<Integer, List<Integer>> kNearest = kNearestCities();
 
 		for (int iter = 0; iter < numOfIterations; iter++) {
 			population = new ArrayList<>();
 			
 			for (int k = 0; k < populationSize; k++) {
 
-				// lista gradova
-				List<City> cities = conf.getCitiesList();
 				Collections.shuffle(cities);
 				// konstruirana ruta
 				List<City> route = new ArrayList<>();
 				route.add(cities.get(0));
+				System.out.println("first city: " + route.get(0));
 				// neposjeceni gradovi
 				List<City> remaining = new ArrayList<>(cities);
 
@@ -83,7 +96,7 @@ public class Main {
 					double prob = rand.nextDouble();
 					// varijabla u koju se sumiraju vjerojatnosi sve dok se ne preskoci prob
 					double probSum = 0;
-					// indeks izabranog grada
+					// indeks izabranog grada u preostalim gradovima
 					int selected = 0;
 					for (int j = 0; j < nextCityProbabilities.length; j++) {
 						probSum += nextCityProbabilities[j];
@@ -93,16 +106,23 @@ public class Main {
 						}
 					}
 					route.add(remaining.get(selected));
-
 				}
 				// novi mrav sa svojom rutom
 				Ant a = new Ant(route);
 				a.evaluate();
+//				System.out.println(a);
 //				System.out.println(a.pathDistence);
 				population.add(a);
 			}
 			
 			Collections.sort(population);
+			
+//			for(int i = 0; i < population.size(); i++) {
+//				
+//				System.out.println(population.get(i).pathDistence);
+//				
+//			}
+			
 //			System.out.println("best in pop: " + population.get(0).pathDistence);
 //			for(int i = 0; i < pheromone.length; i++) {
 //				for(int j = 0; j < pheromone.length; j++) {
@@ -122,14 +142,14 @@ public class Main {
 			System.out.println("iter: " + iter + " " + "best: " + best.pathDistence);
 
 		}
-		System.out.println(best);
-		System.out.println(best.pathDistence);
-		for(int i = 0; i < heuristics.length; i++) {
-			for(int j = 0; j < heuristics.length; j++) {
-				System.out.printf("%f ", heuristics[i][j]);
-			}
-			System.out.println();
-		}
+//		System.out.println(best);
+//		System.out.println(best.pathDistence);
+//		for(int i = 0; i < heuristics.length; i++) {
+//			for(int j = 0; j < heuristics.length; j++) {
+//				System.out.printf("%f ", heuristics[i][j]);
+//			}
+//			System.out.println();
+//		}
 	}
 
 	/**
@@ -144,10 +164,10 @@ public class Main {
 	}
 
 	/**
-	 * Funkcija za azuriranje feromona s bridova
+	 * Funkcija za azuriranje feromona na bridovima
 	 */
 	public static void updatePheromone() {
-		// uzima se samo prvih nekoliko mrava
+		// uzima se samo prvih firstAnts mrava
 		for (int i = 0; i < firstAnts; i++) {
 
 			Ant a = population.get(i);
@@ -158,5 +178,34 @@ public class Main {
 				pheromone[from][to] += 1 / a.pathDistence;
 			}
 		}
+	}
+	
+	public static Map<Integer, List<Integer>> kNearestCities() {
+		
+		Map<Integer, List<Integer>> knearest = new TreeMap<>();
+		
+		for(int i = 0; i < numberOfCities; i++) {
+			
+			List<Integer> nearestIndexes = new ArrayList<>();
+			// sve udaljenosti od trenutnog grada pa do ostalih
+			double[] distancesFromCity = distances[i].clone();
+			System.out.println(Arrays.toString(distancesFromCity));
+			Arrays.sort(distancesFromCity);
+			
+			for(int j = 0; j < k; j++) {
+				
+				double value = distancesFromCity[j + 1];
+				
+				for(int l = 0; l < distancesFromCity.length; l++) {
+					if(value == distances[i][l]) {
+						nearestIndexes.add(l);
+						break;
+					}
+				}
+				
+			}
+			knearest.put(i, nearestIndexes);
+		}
+		return knearest;
 	}
 }
