@@ -24,20 +24,17 @@ public class Main {
 
 	public static int numOfIterations = 500;
 
-	public static int populationSize = 20;
+	public static int populationSize = 40;
 	static List<Ant> population;
 	
 	public static Ant best;
 	
-	// broj nablizih susjeda koji se razmatraju kao sljedeci grad
-	public static int k = 3;
-
 	public static void main(String[] args) {
 
 		Random rand = new Random();
 
-//		String path = "C:\\Users\\kuzmi\\Desktop\\att48.tsp\\";
-		String path = "C:\\Users\\kuzmi\\Desktop\\bays29.tsp";
+		String path = "C:\\Users\\kuzmi\\Desktop\\att48.tsp\\";
+//		String path = "C:\\Users\\kuzmi\\Desktop\\bays29.tsp";
 		TSPConfiguration conf = new TSPConfiguration(path);
 
 		distances = conf.getDistances();
@@ -46,53 +43,64 @@ public class Main {
 		probabilities = new double[conf.getNumOfCities()][conf.getNumOfCities()];
 		numberOfCities = conf.getNumOfCities();
 		best = new Ant(numberOfCities);
-		System.out.println(best.pathDistence);
 		
 		// lista gradova
-		List<City> cities = conf.getCitiesList();
+		List<City> citiesUnshuffled = conf.getCitiesList();
 		
 		// mapa gdje su kljucevi indeksi gradova, a vrijednosti su liste s
 		// indeksima k najblizih gradova
 		Map<Integer, List<Integer>> kNearest = kNearestCities();
+//		List<Integer> lb = kNearest.get(18);
+//		for(Integer b: lb) {
+//			System.out.println(cities.get(b));
+//		}
 
 		for (int iter = 0; iter < numOfIterations; iter++) {
 			population = new ArrayList<>();
 			
 			for (int k = 0; k < populationSize; k++) {
 
-				Collections.shuffle(cities);
+				List<City> citiesShuffled = new ArrayList<>(citiesUnshuffled);
+				Collections.shuffle(citiesShuffled);
+				
 				// konstruirana ruta
 				List<City> route = new ArrayList<>();
-				route.add(cities.get(0));
-				System.out.println("first city: " + route.get(0));
+				route.add(citiesShuffled.get(0));
+				
 				// neposjeceni gradovi
-				List<City> remaining = new ArrayList<>(cities);
+				List<City> remaining = new ArrayList<>(citiesShuffled);
 
 				// ---------------------------------------------------------------
 				// pocetak za svakog pojedinog mrava
 				// ---------------------------------------------------------------
-				for (int i = 1; i < conf.getNumOfCities(); i++) {
+				for (int i = 0; i < conf.getNumOfCities(); i++) {
 
 					// micemo sve posjecene gradove
 					remaining.removeAll(route);
-					// polje s vjerojatnostima posjeta sljedeceg grada
-					double[] nextCityProbabilities = new double[conf.getNumOfCities() - i];
-					// varijabla za normalizaciju vjerojatnosti
+					List<Integer> nearestCities = kNearest.get(route.get(i).getIndex());
+					
+					double[] nextCityProbabilities = new double[CONSTANTS.k];
+					
 					double sum = 0;
-
-					for (int j = 0; j < remaining.size(); j++) {
-						// izracun vjerojatnosti odlaska u pojedini grad
-						nextCityProbabilities[j] = Math
-								.pow(pheromone[cities.get(i - 1).getIndex()][remaining.get(j).getIndex()], alpha)
-								* heuristics[cities.get(i - 1).getIndex()][remaining.get(j).getIndex()];
-
-						sum += nextCityProbabilities[j];
+					for(int index = 0; index < CONSTANTS.k; index++) {
+						
+						if(!route.contains(citiesUnshuffled.get(nearestCities.get(index)))) {
+							System.out.println("dap");
+							nextCityProbabilities[index] = Math
+									.pow(pheromone[citiesUnshuffled.get(i).getIndex()][citiesUnshuffled.get(nearestCities.get(index)).getIndex()], alpha)
+									* heuristics[citiesUnshuffled.get(i).getIndex()][citiesUnshuffled.get(nearestCities.get(index)).getIndex()];
+							sum += nextCityProbabilities[index];
+						}else {
+							System.out.println("sadrzi");
+							
+						}
+						
 					}
-					// normalizacija vjeorojatnosti
+					
 					for (int j = 0; j < nextCityProbabilities.length; j++) {
 						nextCityProbabilities[j] /= sum;
 					}
-					// nasumicna vjerojatnost
+					
 					double prob = rand.nextDouble();
 					// varijabla u koju se sumiraju vjerojatnosi sve dok se ne preskoci prob
 					double probSum = 0;
@@ -105,13 +113,48 @@ public class Main {
 							break;
 						}
 					}
-					route.add(remaining.get(selected));
+					route.add(citiesUnshuffled.get(nearestCities.get(selected)));
+					
+					
+					
+					
+//					// polje s vjerojatnostima posjeta sljedeceg grada
+//					double[] nextCityProbabilities = new double[conf.getNumOfCities() - i];
+//					// varijabla za normalizaciju vjerojatnosti
+//					double sum = 0;
+//
+//					for (int j = 0; j < remaining.size(); j++) {
+//						// izracun vjerojatnosti odlaska u pojedini grad
+//						nextCityProbabilities[j] = Math
+//								.pow(pheromone[cities.get(i - 1).getIndex()][remaining.get(j).getIndex()], alpha)
+//								* heuristics[cities.get(i - 1).getIndex()][remaining.get(j).getIndex()];
+//
+//						sum += nextCityProbabilities[j];
+//					}
+//					// normalizacija vjeorojatnosti
+//					for (int j = 0; j < nextCityProbabilities.length; j++) {
+//						nextCityProbabilities[j] /= sum;
+//					}
+//					// nasumicna vjerojatnost
+//					double prob = rand.nextDouble();
+//					// varijabla u koju se sumiraju vjerojatnosi sve dok se ne preskoci prob
+//					double probSum = 0;
+//					// indeks izabranog grada u preostalim gradovima
+//					int selected = 0;
+//					for (int j = 0; j < nextCityProbabilities.length; j++) {
+//						probSum += nextCityProbabilities[j];
+//						if (probSum > prob) {
+//							selected = j;
+//							break;
+//						}
+//					}
+					//route.add(remaining.get(selected));
 				}
 				// novi mrav sa svojom rutom
 				Ant a = new Ant(route);
 				a.evaluate();
 //				System.out.println(a);
-//				System.out.println(a.pathDistence);
+				System.out.println(a.pathDistence);
 				population.add(a);
 			}
 			
@@ -189,10 +232,9 @@ public class Main {
 			List<Integer> nearestIndexes = new ArrayList<>();
 			// sve udaljenosti od trenutnog grada pa do ostalih
 			double[] distancesFromCity = distances[i].clone();
-			System.out.println(Arrays.toString(distancesFromCity));
 			Arrays.sort(distancesFromCity);
 			
-			for(int j = 0; j < k; j++) {
+			for(int j = 0; j < CONSTANTS.k; j++) {
 				
 				double value = distancesFromCity[j + 1];
 				
@@ -202,7 +244,6 @@ public class Main {
 						break;
 					}
 				}
-				
 			}
 			knearest.put(i, nearestIndexes);
 		}
