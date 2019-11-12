@@ -1,8 +1,2 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<typeInfoHistroy>
-<typeInfo handle="=zadaca5/src&lt;hr.fer.zemris.optjava.dz5.part2{IFunction.java[IFunction" modifiers="513" timestamp="1572910480360"/>
-<typeInfo handle="=zadaca5/src&lt;hr.fer.zemris.optjava.dz5.part2{IOptAlgorithm.java[IOptAlgorithm" modifiers="513" timestamp="1572863384947"/>
-<typeInfo handle="=zadaca5/src&lt;hr.fer.zemris.optjava.dz5.part2{IMutation.java[IMutation" modifiers="513" timestamp="1572863436602"/>
-<typeInfo handle="=zadaca5/src&lt;hr.fer.zemris.optjava.dz5.part2{ICrossover.java[ICrossover" modifiers="513" timestamp="1572865082782"/>
-<typeInfo handle="=zadaca5/src&lt;hr.fer.zemris.optjava.dz5.part2{ISelection.java[ISelection" modifiers="513" timestamp="1572948270424"/>
-</typeInfoHistroy>
+<typeInfoHistroy/>

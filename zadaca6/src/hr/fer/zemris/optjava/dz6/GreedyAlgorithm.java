@@ -1,24 +1,44 @@
 package hr.fer.zemris.optjava.dz6;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GreedyAlgorithm {
 	
-	private List<City> cities;
+	private static List<City> cities;
 
 	public GreedyAlgorithm(List<City> cities) {
 		this.cities = cities;
 	}
 	
 	public static double run() {
+
+		List<City> cityList = new ArrayList<>(cities);
+		List<City> route = new ArrayList<>();
 		
-		double totalCost = 0;
+		for(int i = 0; i < cityList.size(); i++) {
+			double[] distancesFromCity = MAIN2.distances[cityList.get(i).getIndex()].clone();
+			
+			Arrays.sort(distancesFromCity);
+
+			for(int j = 0; j < distancesFromCity.length; j++) {
+				
+				if(i == j) continue;
+				
+				double value = distancesFromCity[j];
+				
+				for(int k = 0; k < distancesFromCity.length; k++) {
+					if(value == MAIN2.distances[i][k]) {
+						if(!route.contains(cities.get(k))) {
+							route.add(cities.get(k));
+						}
+					}
+				}
+			}
+		}
 		
-		
-		
-		
-		
-		return totalCost;
+		Ant a = new Ant(route);
+		return a.pathDistence;
 	}
-	
 }

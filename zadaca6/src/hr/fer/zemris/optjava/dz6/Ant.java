@@ -9,7 +9,6 @@ public class Ant implements Comparable<Ant>{
 
 	private int[] indexes;
 	public double pathDistence = 0;
-//	private List<City> cities;
 	
 	public Ant(int numOfCities) {
 		
@@ -30,7 +29,6 @@ public class Ant implements Comparable<Ant>{
 	}
 
 	public Ant(List<City> cities) {
-//		this.cities = new ArrayList<>(cities);
 		this.indexes = new int[cities.size()]; 
 		for(int i = 0; i < cities.size(); i++) {
 			this.indexes[i] = cities.get(i).getIndex();
@@ -42,12 +40,15 @@ public class Ant implements Comparable<Ant>{
 		return indexes;
 	}
 	
-	
+	/**
+	 * Funkcija koje vrednuje pojedino rjesenje
+	 */
 	public void evaluate() {
 		
 		for(int i = 0; i < indexes.length - 1; i++) {
 			this.pathDistence += MAIN2.distances[indexes[i]][indexes[i + 1]];
 		}
+		this.pathDistence += MAIN2.distances[indexes.length - 1][0];
 	}
 	
 	@Override

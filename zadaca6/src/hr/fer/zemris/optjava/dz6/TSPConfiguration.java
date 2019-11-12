@@ -23,8 +23,6 @@ public class TSPConfiguration {
 	// lista gradova nakon ucitavanja iz datoteke
 	private List<City> citiesList;
 	
-	private static double beta = 2;
-
 	public TSPConfiguration(String path) {
 		this.path = path;
 		this.citiesList = new ArrayList<>();
@@ -69,10 +67,10 @@ public class TSPConfiguration {
 			City c = citiesList.get(i);
 
 			for (int j = 0; j < this.numOfCities; j++) {
-				this.pheremone[i][j] = 1. / 3000;
+				this.pheremone[i][j] = MAIN2.tauMax;
 				this.distances[i][j] = City.euclideanDistanceTo(c, citiesList.get(j));
 				if(this.distances[i][j] != 0) {
-					this.heuristics[i][j] = Math.pow(1. / this.distances[i][j], beta); 
+					this.heuristics[i][j] = Math.pow(1. / this.distances[i][j], CONSTANTS.beta); 
 				}else {
 					this.heuristics[i][j] = 0;
 				}
@@ -103,25 +101,4 @@ public class TSPConfiguration {
 	public double[][] getPheremone() {
 		return pheremone;
 	}
-
-//	public static void main(String[] args) {
-//
-//		String path = "C:\\Users\\kuzmi\\Desktop\\att48.tsp\\";
-//		TSPConfiguration conf = new TSPConfiguration(path);
-//		conf.load();
-//		List<City> cities = conf.getCitiesList();
-//		for(City c: cities) {
-//			System.out.println(c);
-//		}
-//
-////		double[][] distances = conf.getDistances();
-////		for (int i = 0; i < conf.numOfCities; i++) {
-////			for (int j = 0; j < conf.numOfCities; j++) {
-////				System.out.printf("%5.2f ", distances[i][j]);
-////			}
-////			System.out.println();
-////		}
-//
-//	}
-
 }

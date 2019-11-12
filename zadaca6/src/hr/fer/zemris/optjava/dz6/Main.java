@@ -152,6 +152,7 @@ public class Main {
 				}
 				// novi mrav sa svojom rutom
 				Ant a = new Ant(route);
+				
 				a.evaluate();
 //				System.out.println(a);
 				System.out.println(a.pathDistence);
