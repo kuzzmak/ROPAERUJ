@@ -16,8 +16,8 @@ public class MAIN2 {
 	public static double[][] probabilities;
 	public static int numberOfCities;
 
-	public static double ro = 0.5;
-	public static int firstAnts = 2;
+	public static double ro = 0.02;
+	public static int firstAnts = 5;
 
 	public static double beta = 2.5;
 	public static double alpha = 1;
@@ -28,6 +28,15 @@ public class MAIN2 {
 	static List<Ant> population;
 	
 	public static Ant best;
+	
+	// vjerojatnost rekreiranja optimalnog puta
+	public static double p = 0.8;
+	public static double mi = (numberOfCities - 1) / (numberOfCities * (-1 + Math.pow(p, -1. / numberOfCities)));
+	public static double a = mi * numberOfCities;
+	
+	public static double cStar = 
+	public static double tauMax = 1 / (ro * cStar);
+	public static double tauMin = tauMax / a;
 	
 	public static void main(String[] args) {
 
@@ -83,7 +92,6 @@ public class MAIN2 {
 						double[] nextCityProbabilities = new double[nearestCities.size()];
 						double sum = 0;
 						for(int index = 0; index < nearestCities.size(); index++) {
-//							System.out.println("index " + citiesUnshuffled.get(i - 1).getIndex());
 							nextCityProbabilities[index] = Math
 									.pow(pheromone[route.get(i - 1).getIndex()][nearestCities.get(index).getIndex()], alpha)
 									* heuristics[route.get(i - 1).getIndex()][nearestCities.get(index).getIndex()];
