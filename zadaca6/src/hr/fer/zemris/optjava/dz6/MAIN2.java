@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.stream.IntStream;
 
 public class MAIN2 {
 
@@ -18,9 +19,7 @@ public class MAIN2 {
 	public static List<City> cities;
 
 	static List<Ant> population;
-	
-	public static Ant best;
-	
+
 	// vjerojatnost rekreiranja optimalnog puta
 	public static double p = 0.8;
 	public static double mi;
@@ -31,8 +30,9 @@ public class MAIN2 {
 	public static double tauMax;
 	// minimalna razina feromona
 	public static double tauMin;
-	
-	
+
+	public static Ant best;
+
 	public static void main(String[] args) {
 
 		Random rand = new Random();
@@ -47,32 +47,35 @@ public class MAIN2 {
 		cities = conf.getCitiesList();
 		probabilities = new double[conf.getNumOfCities()][conf.getNumOfCities()];
 		numberOfCities = conf.getNumOfCities();
-		best = new Ant(numberOfCities);
-		
-		mi = (numberOfCities - 1) / (numberOfCities * (-1 + Math.pow(p, -1. / numberOfCities)));
+
+		mi = (numberOfCities - 1) / (numberOfCities * (-1 + Math.pow(CONSTANTS.p, -1. / numberOfCities)));
 		a = mi * numberOfCities;
 		GreedyAlgorithm alg = new GreedyAlgorithm(cities);
 		cStar = alg.run();
 		tauMax = 1 / (CONSTANTS.ro * cStar);
 		tauMin = tauMax / a;
-		
-		
+
+		best = new Ant(numberOfCities);
+
 		// mapa gdje su kljucevi indeksi gradova, a vrijednosti su liste s
 		// indeksima k najblizih gradova
-		Map<Integer, List<City>> kNearest = kNearestCities(cities);
+		Map<Integer, List<City>> kNearest = kNearestCities();
 
+		int worstIter = 0;
+		
 		for (int iter = 0; iter < CONSTANTS.numOfIterations; iter++) {
+
 			population = new ArrayList<>();
-			
+
 			for (int k = 0; k < CONSTANTS.populationSize; k++) {
 
 				List<City> citiesShuffled = new ArrayList<>(cities);
 				Collections.shuffle(citiesShuffled);
-				
+
 				// konstruirana ruta
 				List<City> route = new ArrayList<>();
 				route.add(citiesShuffled.get(0));
-				
+
 				// neposjeceni gradovi
 				List<City> remaining = new ArrayList<>(citiesShuffled);
 
@@ -84,25 +87,25 @@ public class MAIN2 {
 					// micemo sve posjecene gradove
 					remaining.removeAll(route);
 					List<City> nearestCities = kNearest.get(route.get(i - 1).getIndex());
-					
+
 					nearestCities.removeAll(route);
-					
-					
-					if(nearestCities.size() != 0) {
+
+					if (nearestCities.size() != 0) {
 						double[] nextCityProbabilities = new double[nearestCities.size()];
 						double sum = 0;
-						for(int index = 0; index < nearestCities.size(); index++) {
-							nextCityProbabilities[index] = Math
-									.pow(pheromone[route.get(i - 1).getIndex()][nearestCities.get(index).getIndex()], CONSTANTS.alpha)
+						for (int index = 0; index < nearestCities.size(); index++) {
+							nextCityProbabilities[index] = Math.pow(
+									pheromone[route.get(i - 1).getIndex()][nearestCities.get(index).getIndex()],
+									CONSTANTS.alpha)
 									* heuristics[route.get(i - 1).getIndex()][nearestCities.get(index).getIndex()];
 							sum += nextCityProbabilities[index];
-							
+
 						}
-						
+
 						for (int j = 0; j < nextCityProbabilities.length; j++) {
 							nextCityProbabilities[j] /= sum;
 						}
-						
+
 						double prob = rand.nextDouble();
 						// varijabla u koju se sumiraju vjerojatnosi sve dok se ne preskoci prob
 						double probSum = 0;
@@ -115,25 +118,26 @@ public class MAIN2 {
 								break;
 							}
 						}
-						
+
 						route.add(nearestCities.get(selected));
-						
-					}else {
-						
+
+					} else {
+
 						double[] nextCityProbabilities = new double[remaining.size()];
 						double sum = 0;
-						for(int index = 0; index < remaining.size(); index++) {
-							
-							nextCityProbabilities[index] = Math
-									.pow(pheromone[route.get(i - 1).getIndex()][remaining.get(index).getIndex()], CONSTANTS.alpha)
+						for (int index = 0; index < remaining.size(); index++) {
+
+							nextCityProbabilities[index] = Math.pow(
+									pheromone[route.get(i - 1).getIndex()][remaining.get(index).getIndex()],
+									CONSTANTS.alpha)
 									* heuristics[route.get(i - 1).getIndex()][remaining.get(index).getIndex()];
 							sum += nextCityProbabilities[index];
-							
+
 						}
 						for (int j = 0; j < nextCityProbabilities.length; j++) {
 							nextCityProbabilities[j] /= sum;
 						}
-						
+
 						double prob = rand.nextDouble();
 						// varijabla u koju se sumiraju vjerojatnosi sve dok se ne preskoci prob
 						double probSum = 0;
@@ -147,27 +151,41 @@ public class MAIN2 {
 							}
 						}
 						route.add(remaining.get(selected));
-						
+
 					}
 				}
 				// novi mrav sa svojom rutom
 				Ant ant = new Ant(route);
-				ant.evaluate();
-				if(ant.pathDistence < best.pathDistence) best = ant;
-//				System.out.println(a);
-//				System.out.println(a.pathDistence);
+				if (ant.pathDistence < best.pathDistence) {
+					best = ant;
+				}else {
+					worstIter++;
+				}
+				if(worstIter > 500) {
+					resetPheromone();
+				}
 				population.add(ant);
 			}
-			
-//			Collections.sort(population);
-			
+
 			evaporatePheromone();
-			updatePheromone();
-			
-//			if(population.get(0).pathDistence < best.pathDistence) best = population.get(0);
+			updatePheromone(false);
+
 			System.out.println("iter: " + iter + " " + "best: " + best.pathDistence);
 
 		}
+		
+		int[] temp = best.getIndexes();
+		int index = 0;
+		for(int i = 0; i < temp.length; i++) {
+			if(temp[i] == 0) index = i;
+		}
+		int[] temp2 = Arrays.copyOfRange(temp, 0, index);
+		int[] temp3 = Arrays.copyOfRange(temp, index, temp.length - 1);
+		
+		int[] optimalPath = IntStream.concat(Arrays.stream(temp3), Arrays.stream(temp2)).toArray();
+		
+		
+		System.out.println(Arrays.toString(optimalPath));
 	}
 
 	/**
@@ -176,7 +194,11 @@ public class MAIN2 {
 	public static void evaporatePheromone() {
 		for (int i = 0; i < numberOfCities; i++) {
 			for (int j = 0; j < numberOfCities; j++) {
-				pheromone[i][j] *= (1 - CONSTANTS.ro);
+				if (pheromone[i][j] * (1 - CONSTANTS.ro) > tauMin) {
+					pheromone[i][j] *= (1 - CONSTANTS.ro);
+				} else {
+					pheromone[i][j] = tauMin;
+				}
 			}
 		}
 	}
@@ -184,38 +206,65 @@ public class MAIN2 {
 	/**
 	 * Funkcija za azuriranje feromona na bridovima
 	 */
-	public static void updatePheromone() {
-		// uzima se samo prvih firstAnts mrava
-		for (int i = 0; i < CONSTANTS.firstAnts; i++) {
+	public static void updatePheromone(boolean onlyBest) {
 
-			Ant a = population.get(i);
+		// ako feromon ostavlja samo najbolji
+		if (onlyBest) {
+			for (int j = 0; j < best.getIndexes().length - 1; j++) {
+				int from = best.getIndexes()[j];
+				int to = best.getIndexes()[j + 1];
+				if (pheromone[from][to] + 1. / best.pathDistence < tauMax) {
+					pheromone[from][to] += 1. / best.pathDistence;
+				} else {
+					pheromone[from][to] = tauMax;
+				}
+			}
+		} else {
+			// uzima se samo prvih firstAnts mrava
+			for (int i = 0; i < CONSTANTS.firstAnts; i++) {
 
-			for (int j = 0; j < a.getIndexes().length - 1; j++) {
-				int from = a.getIndexes()[j];
-				int to = a.getIndexes()[j + 1];
-				pheromone[from][to] += 1 / a.pathDistence;
+				Ant a = population.get(i);
+
+				for (int j = 0; j < a.getIndexes().length - 1; j++) {
+					int from = a.getIndexes()[j];
+					int to = a.getIndexes()[j + 1];
+					if (pheromone[from][to] + 1 / a.pathDistence < tauMax) {
+						pheromone[from][to] += 1 / a.pathDistence;
+					}else {
+						pheromone[from][to] = tauMax;
+					}
+				}
 			}
 		}
 	}
-	
-	public static Map<Integer, List<City>> kNearestCities(List<City> citiesUnshuffled) {
-		
+
+	/**
+	 * Funkcija za pronalazak k najblizih gradova koji se vec ne nalaze u posjecenim
+	 * gradovima
+	 * 
+	 * @param citiesUnshuffled
+	 * @return mapa
+	 */
+	public static Map<Integer, List<City>> kNearestCities() {
+
+		// mapa u kojoj su kljucevi indeksi gradova, a vrijednosti
+		// su liste s indeksima najblizih gradova
 		Map<Integer, List<City>> knearest = new TreeMap<>();
-		
-		for(int i = 0; i < numberOfCities; i++) {
-			
+
+		for (int i = 0; i < numberOfCities; i++) {
+
 			List<City> nearestCities = new ArrayList<>();
 			// sve udaljenosti od trenutnog grada pa do ostalih
 			double[] distancesFromCity = distances[i].clone();
 			Arrays.sort(distancesFromCity);
-			
-			for(int j = 0; j < CONSTANTS.k; j++) {
-				
+
+			for (int j = 0; j < CONSTANTS.k; j++) {
+
 				double value = distancesFromCity[j + 1];
-				
-				for(int l = 0; l < distancesFromCity.length; l++) {
-					if(value == distances[i][l]) {
-						nearestCities.add(citiesUnshuffled.get(l));
+				// pronalazak indeksa grada
+				for (int l = 0; l < distancesFromCity.length; l++) {
+					if (value == distances[i][l]) {
+						nearestCities.add(cities.get(l));
 						break;
 					}
 				}
@@ -223,5 +272,14 @@ public class MAIN2 {
 			knearest.put(i, nearestCities);
 		}
 		return knearest;
+	}
+	
+	public static void resetPheromone() {
+		double[][] phromone = new double[numberOfCities][numberOfCities];
+		for(int i = 0; i < pheromone.length; i++) {
+			for(int j = 0; j < pheromone.length; j++) {
+				pheromone[i][j] = tauMax;
+			}
+		}
 	}
 }
