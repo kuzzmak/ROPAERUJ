@@ -67,7 +67,7 @@ public class TSPConfiguration {
 			City c = citiesList.get(i);
 
 			for (int j = 0; j < this.numOfCities; j++) {
-				this.pheremone[i][j] = MAIN2.tauMax;
+				this.pheremone[i][j] = MMAS.tauMax;
 				this.distances[i][j] = City.euclideanDistanceTo(c, citiesList.get(j));
 				if(this.distances[i][j] != 0) {
 					this.heuristics[i][j] = Math.pow(1. / this.distances[i][j], CONSTANTS.beta); 

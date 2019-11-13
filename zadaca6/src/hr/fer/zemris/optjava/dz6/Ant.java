@@ -46,9 +46,9 @@ public class Ant implements Comparable<Ant>{
 	public void evaluate() {
 		
 		for(int i = 0; i < indexes.length - 1; i++) {
-			this.pathDistence += MAIN2.distances[indexes[i]][indexes[i + 1]];
+			this.pathDistence += MMAS.distances[indexes[i]][indexes[i + 1]];
 		}
-		this.pathDistence += MAIN2.distances[indexes.length - 1][0];
+		this.pathDistence += MMAS.distances[indexes.length - 1][0];
 	}
 	
 	@Override

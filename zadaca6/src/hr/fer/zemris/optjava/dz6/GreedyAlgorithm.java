@@ -18,7 +18,7 @@ public class GreedyAlgorithm {
 		List<City> route = new ArrayList<>();
 		
 		for(int i = 0; i < cityList.size(); i++) {
-			double[] distancesFromCity = MAIN2.distances[cityList.get(i).getIndex()].clone();
+			double[] distancesFromCity = MMAS.distances[cityList.get(i).getIndex()].clone();
 			
 			Arrays.sort(distancesFromCity);
 
@@ -29,7 +29,7 @@ public class GreedyAlgorithm {
 				double value = distancesFromCity[j];
 				
 				for(int k = 0; k < distancesFromCity.length; k++) {
-					if(value == MAIN2.distances[i][k]) {
+					if(value == MMAS.distances[i][k]) {
 						if(!route.contains(cities.get(k))) {
 							route.add(cities.get(k));
 						}

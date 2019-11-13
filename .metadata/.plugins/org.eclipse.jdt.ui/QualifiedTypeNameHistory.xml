@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="Jama.Matrix"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.NaturalBinaryDecoder"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.INeighbourhood"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.SingleObjectiveSolution"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.IOptAlgorithm"/>
@@ -58,6 +56,8 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz5.part2.OptimizaitonFunction"/>
 <fullyQualifiedTypeName name="java.util.Iterator"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz5.part2.CONSTANTS"/>
-<fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz6.GreedyAlgorithm"/>
+<fullyQualifiedTypeName name="java.util.stream.Stream"/>
 </qualifiedTypeNameHistroy>
