@@ -22,7 +22,8 @@ public class OutputLayer implements NeuralNetLayer {
 
 	@Override
 	public IActivationFunction getActivationFunction() {
-		return new Linear();
+		return new Sigmoid();
+		//return new Linear();
 	}
 
 	@Override
