@@ -2,11 +2,11 @@ package hr.fer.zemris.optjava.dz7.NN;
 
 import java.util.Arrays;
 
-public class SigmoidalLayer implements NeuralNetLayer {
+public class InputLayer implements NeuralNetLayer {
 	
 	Neuron[] neurons;
 	
-	public SigmoidalLayer(Neuron[] neurons) {
+	public InputLayer(Neuron[] neurons) {
 		this.neurons = neurons;
 	}
 
@@ -22,12 +22,14 @@ public class SigmoidalLayer implements NeuralNetLayer {
 
 	@Override
 	public IActivationFunction getActivationFunction() {
-		return new Sigmoid();
+		return new Linear();
 	}
 
 	@Override
 	public String toString() {
-		return "SigmoidalLayer [neurons=" + Arrays.toString(neurons) + "]";
+		return "InputLayer [neurons=" + Arrays.toString(neurons) + "]";
 	}
+	
+	
 
 }

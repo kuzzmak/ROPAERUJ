@@ -2,12 +2,28 @@ package hr.fer.zemris.optjava.dz7.NN;
 
 public class Neuron {
 	
-	private int location;
-	private int in;
-	private int out;
+	private int id;
+	private double output = 0;
 	
-	public Neuron() {
-		
+	public Neuron(int id) {
+		this.id = id;
+	}
+	
+	public double getOutput() {
+		return output;
+	}
+
+	public void setOutput(double output) {
+		this.output = output;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	@Override
+	public String toString() {
+		return "Neuron [id=" + id + "]";
 	}
 	
 }
