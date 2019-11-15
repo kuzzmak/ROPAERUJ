@@ -40,7 +40,9 @@ public class Dataset {
 				String[] xOnly = xANDy[0].split(",");
 				String[] yOnly = xANDy[1].split(",");
 				
+				// ulaz
 				double[] x = new double[xOnly.length];
+				// izlaz
 				double[] y = new double[yOnly.length];
 				
 				for(int i = 0; i < xOnly.length; i++) {
