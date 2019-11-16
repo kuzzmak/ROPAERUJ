@@ -13,10 +13,10 @@ public class Main {
 		
 		int[] architecture = new int[] {4,3,3};
 		NeuralNet nn = new NeuralNet(architecture, data);
-		double[] weights = new double[NeuralNet.getNumOfWeights()];
+		double[] weights = new double[nn.getNumOfWeights()];
 		Arrays.fill(weights, -0.2);
 		nn.setWeights(weights);
-		System.out.println(NeuralNet.calculateError());
+		System.out.println(nn.calculateError());
 	
 		
 		

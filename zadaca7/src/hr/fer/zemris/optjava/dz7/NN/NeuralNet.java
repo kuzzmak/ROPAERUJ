@@ -11,18 +11,18 @@ import hr.fer.zemris.optjava.dz7.ANNTrainer.Sample;
 public class NeuralNet {
 
 	private static double[] weights;
-	private static double[] nets;
+	private double[] nets;
 	// indeks pojedinog kromosoma
-	private static int neuronId = 0;
-	private static Dataset data;
+	private int neuronId = 0;
+	private Dataset data;
 
-	private static List<NeuralNetLayer> layers = new ArrayList<>();
+	private List<NeuralNetLayer> layers = new ArrayList<>();
 
 	private Random rand;
 
 	public NeuralNet(int[] architecture, Dataset data) {
 
-		NeuralNet.data = data;
+		this.data = data;
 		this.rand = new Random();
 
 		int numOfWeights = 0;
@@ -33,87 +33,87 @@ public class NeuralNet {
 				// dodavanje ulaznog sloja
 				Neuron[] neurons = new Neuron[architecture[0]];
 				for (int j = 0; j < architecture[0]; j++) {
-					neurons[j] = new Neuron(neuronId);
-					neuronId++;
+					neurons[j] = new Neuron(this.neuronId);
+					this.neuronId++;
 				}
 
-				NeuralNet.layers.add(new InputLayer(neurons));
+				this.layers.add(new InputLayer(neurons));
 
 			} else if (i == architecture.length - 1) {
 				// dodavanje izlaznog sloja
 				Neuron[] neurons = new Neuron[architecture[architecture.length - 1]];
 				for (int j = 0; j < architecture[architecture.length - 1]; j++) {
-					neurons[j] = new Neuron(neuronId);
-					neuronId++;
+					neurons[j] = new Neuron(this.neuronId);
+					this.neuronId++;
 				}
 
-				NeuralNet.layers.add(new OutputLayer(neurons));
+				this.layers.add(new OutputLayer(neurons));
 
 			} else {
 				// dodavanje skrivenih slojeva
 				Neuron[] neurons = new Neuron[architecture[i]];
 				for (int k = 0; k < architecture[i]; k++) {
-					neurons[k] = new Neuron(neuronId);
-					neuronId++;
+					neurons[k] = new Neuron(this.neuronId);
+					this.neuronId++;
 				}
 
-				NeuralNet.layers.add(new SigmoidalLayer(neurons));
+				this.layers.add(new SigmoidalLayer(neurons));
 			}
 		}
 
 		// izracun ukupnog broja tezina
-		for (int i = 0; i < layers.size() - 1; i++) {
-			numOfWeights += (layers.get(i).getNumOfNeurons() + 1) * layers.get(i + 1).getNumOfNeurons();
+		for (int i = 0; i < this.layers.size() - 1; i++) {
+			numOfWeights += (this.layers.get(i).getNumOfNeurons() + 1) * this.layers.get(i + 1).getNumOfNeurons();
 		}
 
 		NeuralNet.weights = new double[numOfWeights];
 		for (int i = 0; i < weights.length; i++) {
-			weights[i] = rand.nextDouble();
+			weights[i] = this.rand.nextDouble();
 		}
 
 	}
 
-	public static double[] calculateNet(double[] x) {
+	public double[] calculateNet(double[] x) {
 		
 		// izlazi iz pojedinih neurona
-		nets = new double[neuronId];
+		this.nets = new double[this.neuronId];
 
-		Neuron[] inputNeurons = layers.get(0).getNeurons();
-		IActivationFunction inputFunction = layers.get(0).getActivationFunction();
+		Neuron[] inputNeurons = this.layers.get(0).getNeurons();
+		IActivationFunction inputFunction = this.layers.get(0).getActivationFunction();
 
 		for (int i = 0; i < inputNeurons.length; i++) {
-			nets[inputNeurons[i].getId()] = inputFunction.valueAt(x[i]);
+			this.nets[inputNeurons[i].getId()] = inputFunction.valueAt(x[i]);
 		}
 		
 		// pomocna varijabla za dohvacanje pojedinih tezina
 		int numOfWeight = 0;
 		
 		// za svaki sloj izmedju ulaznog i izlaznog
-		for (int i = 1; i < layers.size(); i++) {
+		for (int i = 1; i < this.layers.size(); i++) {
 			
 			// neuroni speceificni za svaki sloj mreze, od prvog pa nadalje
-			Neuron[] layerNeurons = layers.get(i).getNeurons();
+			Neuron[] layerNeurons = this.layers.get(i).getNeurons();
 			// aktivacijska funkcija pojedinog sloja
-			IActivationFunction layerFunction = layers.get(i).getActivationFunction();
+			IActivationFunction layerFunction = this.layers.get(i).getActivationFunction();
 			
 			// za svaki neuron u sloju
 			for(int k = 0; k < layerNeurons.length; k++) {
 				
 				Neuron n = layerNeurons[k];
 				// neuroni iz prijasnjeg sloja mreze
-				Neuron[] neuronsFromLayerBefore = layers.get(i - 1).getNeurons();
+				Neuron[] neuronsFromLayerBefore = this.layers.get(i - 1).getNeurons();
 				// vrijednost kmulativne sume prije propustanja kroz aktivacijsku funkciju
 				double value = 0;
 				// mnozenje tezina s neuronima iz prethodnog sloja
 				for(int j = 0; j < neuronsFromLayerBefore.length; j++) {
 				
-					value += nets[neuronsFromLayerBefore[j].getId()] * weights[numOfWeight];
+					value += this.nets[neuronsFromLayerBefore[j].getId()] * weights[numOfWeight];
 					numOfWeight++;
 				}
 				// dodavanje biasa
 				value += weights[numOfWeight];
 				// propustanje kroz aktivacijsku funkciju
-				nets[n.getId()] = layerFunction.valueAt(value);
+				this.nets[n.getId()] = layerFunction.valueAt(value);
 				numOfWeight++;
 			}
 
@@ -122,14 +122,14 @@ public class NeuralNet {
 		// broj neurona u zadnjem sloju
 		int numOfOutputs = layers.get(layers.size() - 1).getNumOfNeurons();
 		// vracanje zadnjih numOfOuptpus net vrijednosti
-		return Arrays.copyOfRange(nets, nets.length - numOfOutputs, nets.length);
+		return Arrays.copyOfRange(this.nets, this.nets.length - numOfOutputs, this.nets.length);
 	}
 
-	public static double calculateError() {
+	public double calculateError() {
 		
 		double error = 0;
 		
-		for(Sample s: data.getData()) {
+		for(Sample s: this.data.getData()) {
 			
 			double[] predicted = calculateNet(s.getX());
 			double[] output = s.getY();
@@ -140,7 +140,7 @@ public class NeuralNet {
 			
 		}
 		
-		return 1. / data.size() * error;
+		return 1. / this.data.size() * error;
 	}
 	
 
@@ -154,7 +154,7 @@ public class NeuralNet {
 	}
 	
 
-	public static int getNumOfWeights() {
+	public int getNumOfWeights() {
 		return weights.length;
 	}
 	
@@ -165,7 +165,7 @@ public class NeuralNet {
 		StringBuilder sb = new StringBuilder("");
 		sb.append("NeuralNet\n");
 		for (int i = 0; i < layers.size(); i++) {
-			sb.append(layers.get(i).toString()).append("\n");
+			sb.append(this.layers.get(i).toString()).append("\n");
 		}
 		return sb.toString();
 
