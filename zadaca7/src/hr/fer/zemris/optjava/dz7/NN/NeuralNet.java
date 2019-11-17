@@ -143,6 +143,17 @@ public class NeuralNet {
 		return 1. / this.data.size() * error;
 	}
 	
+	
+	public double[] predict(double[] x) {
+		
+		double[] net = this.calculateNet(x);
+		double[] prediction = new double[net.length];
+		for(int i = 0; i < net.length; i++) {
+			prediction[i] = net[i] >= 0.5 ? 1 : 0;
+		}
+		return prediction;
+	}
+	
 
 	public double[] getWeights() {
 		return weights;

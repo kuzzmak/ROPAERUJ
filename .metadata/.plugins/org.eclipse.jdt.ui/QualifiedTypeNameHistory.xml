@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.GeometricTempSchedule"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz3.PassThroughDecoder"/>
-<fullyQualifiedTypeName name="java.util.HashMap"/>
-<fullyQualifiedTypeName name="java.util.LinkedList"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part1.DoubleArraySolution"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part1.GeneticAlgorithm"/>
 <fullyQualifiedTypeName name="java.util.function.Function"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part2.OptimizationFunction"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part2.TournamentSelection"/>
@@ -56,8 +50,14 @@
 <fullyQualifiedTypeName name="java.util.stream.Stream"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz6.TSPConfiguration"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz6.GreedyAlgorithm"/>
-<fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="java.lang.Math"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.IActivationFunction"/>
 <fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.Neuron"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.InputLayer"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.SigmoidalLayer"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.NeuralNetLayer"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.IActivationFunction"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.Sigmoid"/>
+<fullyQualifiedTypeName name="java.lang.Double"/>
 </qualifiedTypeNameHistroy>

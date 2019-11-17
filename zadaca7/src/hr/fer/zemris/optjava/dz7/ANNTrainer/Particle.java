@@ -8,14 +8,12 @@ public class Particle {
 	private double[] currentLocation;
 	private double[] currentSpeed;
 	private double bestValue;
-	private double value;
 	
 	public Particle(int dimension) {
 		this.personalBest = new double[dimension];
 		this.currentLocation = new double[dimension];
 		this.currentSpeed = new double[dimension];
 		this.bestValue = Double.MAX_VALUE;
-		this.value = Double.MAX_VALUE;
 	}
 
 	public double[] getPersonalBest() {
@@ -48,14 +46,6 @@ public class Particle {
 
 	public void setBestValue(double bestValue) {
 		this.bestValue = bestValue;
-	}
-
-	public double getValue() {
-		return value;
-	}
-
-	public void setValue(double value) {
-		this.value = value;
 	}
 
 	@Override

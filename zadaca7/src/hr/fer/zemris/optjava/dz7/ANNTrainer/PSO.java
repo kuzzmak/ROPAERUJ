@@ -12,20 +12,22 @@ public class PSO {
 	
 	private NeuralNet net;
 	
-	
-	private double vmin = -5;
-	private double vmax = 5;
+	private double vmin = -0.5;
+	private double vmax = 0.5;
 	private double xmin = -5;
 	private double xmax = 5;
-	private double c1 = 2;
-	private double c2 = 2;
-	private int maxIterations = 10000;
-	private double wmin = 0.4;
+	private double c1 = 2.05;
+	private double c2 = 2.05;
+	private int maxIterations = 2000;
+	private double wmin = 0.3;
 	private double wmax = 0.9;
+	//private double fi = c1 + c2;
+	//private double K = 2. / (Math.abs(2 - fi - Math.sqrt(fi * fi - 4 * fi)));
+	private double minError = 0.02;
 	
 	private Random rand;
 	
-	Particle globalBest;
+	private Particle globalBest;
 	
 	public PSO(int populationSize, int particleSize, NeuralNet net) {
 		
@@ -37,11 +39,14 @@ public class PSO {
 		globalBest = this.findBest(population);
 	}
 	
-	public void run() {
+	public double[] run() {
 		
-		//while(true) {
+		int iteration = 0;
+		double error = Double.MAX_VALUE;
+		
+		while(iteration < maxIterations && error > minError) {
 			
-			for(int i = 0; i < population.length; i++) {
+			for(int i = 0; i < populationSize; i++) {
 				// dohvat trenutne lokacije
 				double[] currentLocation = population[i].getCurrentLocation();
 				// slanje tezina u mrezu
@@ -61,32 +66,37 @@ public class PSO {
 				globalBest = bestInPopulation;
 			}
 			
+			double inertiaFac = inertiaFactor(iteration);
 			
-		//}
+			for(int i = 0; i < populationSize; i++) {
+				
+				Particle p = population[i];
+				double[] currentSpeed = p.getCurrentSpeed().clone();
+				double[] currentLocation = p.getCurrentLocation().clone();
+				double rnd = rand.nextDouble();
+				
+				for(int j = 0; j < particleSize; j++) {
+					
+					currentSpeed[j] = inertiaFac * currentSpeed[j] + 
+							c1 * rnd * (p.getPersonalBest()[j] - currentLocation[j]) + 
+							c2 * rnd * (globalBest.getPersonalBest()[j] - currentLocation[j]);
+					// slucaj prevelike ili premale brzine
+					if(currentSpeed[j] > vmax) currentSpeed[j] = vmax;
+					if(currentSpeed[j] < vmin) currentSpeed[j] = vmin;
+					currentLocation[j] += currentSpeed[j];
+					
+				}
+
+				population[i].setCurrentLocation(currentLocation);
+				population[i].setCurrentSpeed(currentSpeed);
+				
+			}
+			iteration++;
+			error = globalBest.getBestValue();
+//			System.out.println("iteration: " + iteration + ", value: " + globalBest.getBestValue() + ", inertia: " + inertiaFac);
+		}
 		
-		
-		
-		
-	}
-	
-	
-	
-	
-	public static void main(String[] args) {
-		
-		String path = "data\\07-iris-formatirano.data";
-		Dataset data = new Dataset(path);
-		
-		int[] architecture = new int[] {4,3,3};
-		NeuralNet nn = new NeuralNet(architecture, data);
-		
-		PSO pso = new PSO(10, nn.getNumOfWeights(), nn);
-		pso.run();
-		Particle[] population = pso.population;
-//		for(int i = 0; i < population.length; i++) {
-//			System.out.println(population[i].getBestValue());
-//		}
-		
+		return globalBest.getPersonalBest();
 	}
 	
 	
@@ -138,15 +148,19 @@ public class PSO {
 	}
 	
 	/**
-	 * Funkcija za izracn faktora inercije u odredjenoj iteraciji
+	 * Funkcija za izracun faktora inercije u odredjenoj iteraciji
 	 * 
 	 * @param iteration broj iteracije
 	 * @return vrijednost faktora inercije
 	 */
-	public double inertiaFactor(int iteration) {
+	public double inertiaFactor(double iteration) {
 		if(iteration <= maxIterations) {
-			return (double)(iteration / maxIterations) * (wmin - wmax) + wmax;
+			return iteration / maxIterations * (wmin - wmax) + wmax;
 		}
 		return wmin;
 	}
+	
+//	public Particle pickNeighbour(int numOfNeighbours) {
+//		
+//	}
 }
