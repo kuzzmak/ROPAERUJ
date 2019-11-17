@@ -13,7 +13,7 @@ public class Main {
 		
 		int[] architecture = new int[] {4,5,3};
 		NeuralNet nn = new NeuralNet(architecture, data);
-		int populationSize = 20;
+		int populationSize = 40;
 		PSO alg = new PSO(populationSize, nn.getNumOfWeights(), nn);
 		
 		
