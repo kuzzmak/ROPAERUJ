@@ -1,6 +1,7 @@
 package hr.fer.zemris.optjava.dz7.CLONALG;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -35,6 +36,7 @@ public class CLONALG {
 		CLONALG.net = net;
 		this.numberOfAntigenes = numberOfAntigenes;
 		this.d = d;
+		this.antigeneSize = CLONALG.net.getNumOfWeights();
 		this.beta = beta;
 		CLONALG.rand = new Random();
 		this.population = initializePopulation(this.numberOfAntigenes);
@@ -45,33 +47,29 @@ public class CLONALG {
 		int iteration = 0;
 		while (iteration < this.maxIterations) {
 
-			System.out.println("prije evaluate");
+//			System.out.println("prije evaluate");
 			evaluatePopulation(this.population);
-			System.out.println("poslije evaluate");
+//			System.out.println("poslije evaluate");
 
 			// --------------
 			// izabrati n antigena iz populacije koji se dalje kloniraju
 			// -------------
 
-			System.out.println("prije clones");
+//			System.out.println("prije clones");
 			List<Antigene> clones = makeClones();
-			System.out.println("clones size: " + clones.size());
-			System.out.println("poslije clones");
+//			System.out.println("clones size: " + clones.size());
+//			System.out.println("poslije clones");
 			mutate(clones);
-			System.out.println("poslije mutate");
+//			System.out.println("poslije mutate");
 			evaluatePopulation(clones);
-			System.out.println("poslije evaluate");
+//			System.out.println("poslije evaluate");
 			insertNewAntigenes(clones);
 			this.population = clones;
-			System.out.println("population size: " + population.size());
+//			System.out.println("population size: " + population.size());
 			System.out.println(iteration);
 			iteration++;
 
 		}
-		for(int i = 0; i < population.size(); i++) {
-			System.out.println(population.get(i).getFunctionValue());
-		}
-
 	}
 
 	/**
@@ -104,11 +102,14 @@ public class CLONALG {
 	public static void evaluatePopulation(List<Antigene> population) {
 		double totalAff = 0;
 		for (int i = 0; i < population.size(); i++) {
-
 			net.setWeights(population.get(i).getValue());
-			population.get(i).setFunctionValue(net.calculateError());
-			population.get(i).setAffinity(1. / population.get(i).getFunctionValue());
-			double affinity = population.get(i).getAffinity();
+			// vrijednost greske u danom polozaju
+			double functionValue = net.calculateError();
+			population.get(i).setFunctionValue(functionValue);
+			// vrijednost afiniteta
+			double affinity = 1. / functionValue;
+			population.get(i).setAffinity(affinity);
+			
 			totalAff += affinity;
 			if (affinity > maxAffinity)
 				maxAffinity = affinity;
@@ -124,7 +125,12 @@ public class CLONALG {
 		for (int i = 1; i < population.size() + 1; i++) {
 			int numOfClones = (int) Math.floor(beta * population.size() / i);
 			for (int j = 0; j < numOfClones; j++) {
-				clones.add(population.get(i - 1).copy());
+				Antigene ng = population.get(i - 1).copy();
+				net.setWeights(ng.getValue());
+				double functionValue = net.calculateError();
+				ng.setFunctionValue(functionValue);
+				ng.setAffinity(1. / functionValue);
+				clones.add(ng);
 			}
 		}
 		return clones;
@@ -155,7 +161,12 @@ public class CLONALG {
 	
 	public void insertNewAntigenes(List<Antigene> clones) {
 		for(int i = 0; i < d; i++) {
+			clones.remove(clones.size() - 1);
 			clones.add(new Antigene(antigeneSize));
+//			net.setWeights(ag.getValue());
+//			double functionValue = net.calculateError();
+//			ag.setFunctionValue(functionValue);
+//			ag.setAffinity(1. / functionValue);
 		}
 	}
 
@@ -167,7 +178,7 @@ public class CLONALG {
 		int[] architecture = new int[] { 4, 5, 3 };
 		NeuralNet nn = new NeuralNet(architecture, data);
 
-		int populationSize = 10;
+		int populationSize = 2;
 		CLONALG cl = new CLONALG(nn, populationSize, 2, 2);
 		cl.run();
 //		List<Antigene> population = initializePopulation(populationSize);
@@ -185,6 +196,7 @@ public class CLONALG {
 //		}
 
 //		Antigene ag1 = new Antigene(3);
+//		System.out.println(Arrays.toString(ag1.getValue()));
 //		System.out.println((int)Math.floor(0.02 * 100 / 1));
 //		Antigene ag2 = ag1.copy();
 //		System.out.println(ag1);
