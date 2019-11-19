@@ -50,14 +50,14 @@
 <fullyQualifiedTypeName name="java.util.stream.Stream"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz6.TSPConfiguration"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz6.GreedyAlgorithm"/>
-<fullyQualifiedTypeName name="java.lang.Math"/>
-<fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.Neuron"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.InputLayer"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.SigmoidalLayer"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.NeuralNetLayer"/>
-<fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.IActivationFunction"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.Sigmoid"/>
 <fullyQualifiedTypeName name="java.lang.Double"/>
+<fullyQualifiedTypeName name="java.lang.Math"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
 </qualifiedTypeNameHistroy>

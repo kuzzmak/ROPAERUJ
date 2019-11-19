@@ -1,4 +1,4 @@
-package hr.fer.zemris.optjava.dz7.ANNTrainer;
+package hr.fer.zemris.optjava.dz7.PSO;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

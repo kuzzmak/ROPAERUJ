@@ -1,8 +1,6 @@
-package hr.fer.zemris.optjava.dz7.ANNTrainer;
+package hr.fer.zemris.optjava.dz7.PSO;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 import hr.fer.zemris.optjava.dz7.NN.NeuralNet;

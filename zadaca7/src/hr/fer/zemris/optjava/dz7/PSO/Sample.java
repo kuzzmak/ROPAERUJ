@@ -1,4 +1,4 @@
-package hr.fer.zemris.optjava.dz7.ANNTrainer;
+package hr.fer.zemris.optjava.dz7.PSO;
 
 import java.util.Arrays;
 
