@@ -20,7 +20,7 @@ public class CLONALG {
 	// za odredjivanje velicine populacije klonova
 	double beta;
 	// najveci broj dozvoljenih iteracija
-	private int maxIterations = 2000;
+	private int maxIterations = 20;
 
 	private int c = 5;
 	private double ro = 5;
@@ -45,14 +45,31 @@ public class CLONALG {
 		int iteration = 0;
 		while (iteration < this.maxIterations) {
 
+			System.out.println("prije evaluate");
 			evaluatePopulation(this.population);
+			System.out.println("poslije evaluate");
 
 			// --------------
 			// izabrati n antigena iz populacije koji se dalje kloniraju
 			// -------------
 
+			System.out.println("prije clones");
 			List<Antigene> clones = makeClones();
+			System.out.println("clones size: " + clones.size());
+			System.out.println("poslije clones");
+			mutate(clones);
+			System.out.println("poslije mutate");
+			evaluatePopulation(clones);
+			System.out.println("poslije evaluate");
+			insertNewAntigenes(clones);
+			this.population = clones;
+			System.out.println("population size: " + population.size());
+			System.out.println(iteration);
+			iteration++;
 
+		}
+		for(int i = 0; i < population.size(); i++) {
+			System.out.println(population.get(i).getFunctionValue());
 		}
 
 	}
@@ -101,39 +118,48 @@ public class CLONALG {
 		}
 	}
 
+	
 	public List<Antigene> makeClones() {
 		List<Antigene> clones = new ArrayList<>();
-		for (int i = 0; i < population.size(); i++) {
+		for (int i = 1; i < population.size() + 1; i++) {
 			int numOfClones = (int) Math.floor(beta * population.size() / i);
 			for (int j = 0; j < numOfClones; j++) {
-				clones.add(population.get(i));
+				clones.add(population.get(i - 1).copy());
 			}
 		}
 		return clones;
 	}
 
-	public void mutate(Antigene ag) {
+	
+	public void mutate(List<Antigene> clones) {
 
-		for (int i = 0; i < population.size(); i++) {
+		for (int i = 0; i < clones.size(); i++) {
 			// vjerojatnost da se antigen mutira
-			double mutationPossibility = 1. / ro * Math.exp(-population.get(i).getAffinity());
+			double mutationPossibility = 1. / ro * Math.exp(-clones.get(i).getAffinity());
 			
-			if (rand.nextDouble() > mutationPossibility) {
+			if (rand.nextDouble() < mutationPossibility) {
 				// broj mutacija na antigenu
-				int numOfMutations = (int) Math.abs(population.get(i).getAffinity() - maxAffinity) * c * antigeneSize;
+				int numOfMutations = (int) Math.abs(clones.get(i).getAffinity() - maxAffinity) * c * antigeneSize;
 				
-				double[] value = population.get(i).getValue().clone();
+				double[] value = clones.get(i).getValue().clone();
 				for(int j = 0; j < numOfMutations; j++) {
 					int index = rand.nextInt(value.length);
 					value[index] += rand.nextGaussian();
 					
 				}
-				population.get(i).setValue(value);
+				clones.get(i).setValue(value);
 			}
 		}
-
+	}
+	
+	
+	public void insertNewAntigenes(List<Antigene> clones) {
+		for(int i = 0; i < d; i++) {
+			clones.add(new Antigene(antigeneSize));
+		}
 	}
 
+	
 	public static void main(String[] args) {
 		String path = "data\\07-iris-formatirano.data";
 		Dataset data = new Dataset(path);
@@ -142,20 +168,21 @@ public class CLONALG {
 		NeuralNet nn = new NeuralNet(architecture, data);
 
 		int populationSize = 10;
-		CLONALG cl = new CLONALG(nn, populationSize, 2, 0.2);
-		List<Antigene> population = initializePopulation(populationSize);
-		for (int i = 0; i < population.size(); i++) {
-			System.out.println(population.get(i));
-		}
-		System.out.println();
-		evaluatePopulation(population);
-		for (int i = 0; i < population.size(); i++) {
-			System.out.println(population.get(i).getFunctionValue());
-		}
-		System.out.println();
-		for (int i = 0; i < population.size(); i++) {
-			System.out.println(population.get(i).getAffinity());
-		}
+		CLONALG cl = new CLONALG(nn, populationSize, 2, 2);
+		cl.run();
+//		List<Antigene> population = initializePopulation(populationSize);
+//		for (int i = 0; i < population.size(); i++) {
+//			System.out.println(population.get(i));
+//		}
+//		System.out.println();
+//		evaluatePopulation(population);
+//		for (int i = 0; i < population.size(); i++) {
+//			System.out.println(population.get(i).getFunctionValue());
+//		}
+//		System.out.println();
+//		for (int i = 0; i < population.size(); i++) {
+//			System.out.println(population.get(i).getAffinity());
+//		}
 
 //		Antigene ag1 = new Antigene(3);
 //		System.out.println((int)Math.floor(0.02 * 100 / 1));
