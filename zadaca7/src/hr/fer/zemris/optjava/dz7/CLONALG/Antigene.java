@@ -29,7 +29,10 @@ public class Antigene implements Comparable<Antigene>{
 	
 	
 	public Antigene copy() {
-		return new Antigene(this.value);
+		Antigene ag = new Antigene(this.value);
+		ag.setAffinity(this.affinity);
+		ag.setFunctionValue(this.functionValue);
+		return ag;
 	}
 	
 	public double getFunctionValue() {
