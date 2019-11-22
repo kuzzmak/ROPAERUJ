@@ -2,6 +2,7 @@ package hr.fer.zemris.optjava.dz7.CLONALG;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -13,7 +14,7 @@ public class CLONALG {
 	// funkcija koja se optimira
 	private static NeuralNet net;
 	// velicina populacije
-	int numberOfAntigenes;
+	static int numberOfAntigenes;
 	// broj novih antitijela koji se ubacuje u populaciju
 	int d;
 	// velicina antigena
@@ -21,28 +22,31 @@ public class CLONALG {
 	// za odredjivanje velicine populacije klonova
 	double beta;
 	// najveci broj dozvoljenih iteracija
-	private int maxIterations = 20;
+	private int maxIterations = 200;
 
 	private int c = 5;
-	private double ro = 5;
+	private double ro = 0.5;
 
 	private List<Antigene> population;
 	// sluzi za pracenje maksimalnog afiniteta odredjene populacije
 	private static double maxAffinity = 0;
+	private static double minAffinity = Double.MAX_VALUE;
+	
+	
 
 	private static Random rand;
 
 	public CLONALG(NeuralNet net, int numberOfAntigenes, int d, double beta) {
 		CLONALG.net = net;
-		this.numberOfAntigenes = numberOfAntigenes;
+		CLONALG.numberOfAntigenes = numberOfAntigenes;
 		this.d = d;
 		this.antigeneSize = CLONALG.net.getNumOfWeights();
 		this.beta = beta;
 		CLONALG.rand = new Random();
-		this.population = initializePopulation(this.numberOfAntigenes);
+		this.population = initializePopulation();
 	}
 
-	public void run() {
+	public Antigene run() {
 
 		int iteration = 0;
 		while (iteration < this.maxIterations) {
@@ -55,21 +59,26 @@ public class CLONALG {
 			// izabrati n antigena iz populacije koji se dalje kloniraju
 			// -------------
 
-//			System.out.println("prije clones");
 			List<Antigene> clones = makeClones();
-//			System.out.println("clones size: " + clones.size());
-//			System.out.println("poslije clones");
+//			System.out.println("prije mutacije");
+//			for(int i = 0; i < clones.size(); i++) {
+//				System.out.println(clones.get(i));
+//			}
 			mutate(clones);
-//			System.out.println("poslije mutate");
+//			System.out.println("poslije mutacije");
+//			for(int i = 0; i < clones.size(); i++) {
+//				System.out.println(clones.get(i));
+//			}
 			evaluatePopulation(clones);
-//			System.out.println("poslije evaluate");
-			insertNewAntigenes(clones);
+			pickAntigenes(clones);
+			if(iteration % 50 == 0) insertNewAntigenes(clones);
 			this.population = clones;
 //			System.out.println("population size: " + population.size());
-			System.out.println(iteration);
+			System.out.println("iter: " + iteration + ", minerr: " + population.get(0).getFunctionValue());
 			iteration++;
 
 		}
+		return population.get(0);
 	}
 
 	/**
@@ -77,7 +86,7 @@ public class CLONALG {
 	 * 
 	 * @return lista antigena
 	 */
-	private static List<Antigene> initializePopulation(int numberOfAntigenes) {
+	private static List<Antigene> initializePopulation() {
 
 		List<Antigene> population = new ArrayList<>();
 		int sizeOfAntigene = net.getNumOfWeights();
@@ -86,7 +95,7 @@ public class CLONALG {
 
 			double[] value = new double[sizeOfAntigene];
 			for (int i = 0; i < sizeOfAntigene; i++) {
-				value[i] = rand.nextDouble();
+				value[i] = rand.nextGaussian();
 			}
 			population.add(new Antigene(value));
 		}
@@ -100,6 +109,7 @@ public class CLONALG {
 	 * @param population populacija koja se vrednuje
 	 */
 	public static void evaluatePopulation(List<Antigene> population) {
+		minAffinity = Double.MAX_VALUE;
 		double totalAff = 0;
 		for (int i = 0; i < population.size(); i++) {
 			net.setWeights(population.get(i).getValue());
@@ -111,11 +121,12 @@ public class CLONALG {
 			population.get(i).setAffinity(affinity);
 			
 			totalAff += affinity;
-			if (affinity > maxAffinity)
-				maxAffinity = affinity;
 		}
 		for (int i = 0; i < population.size(); i++) {
-			population.get(i).setAffinity(population.get(i).getAffinity() / totalAff);
+			double affinity = population.get(i).getAffinity() / totalAff;
+			if(affinity > maxAffinity) maxAffinity = affinity;
+			if(affinity < minAffinity) minAffinity = affinity;
+			population.get(i).setAffinity(affinity);
 		}
 	}
 
@@ -139,13 +150,19 @@ public class CLONALG {
 	
 	public void mutate(List<Antigene> clones) {
 
+		double tau = - (numberOfAntigenes - 1) / Math.log(1 - ro);
 		for (int i = 0; i < clones.size(); i++) {
-			// vjerojatnost da se antigen mutira
-			double mutationPossibility = 1. / ro * Math.exp(-clones.get(i).getAffinity());
 			
-			if (rand.nextDouble() < mutationPossibility) {
+			
+			double numOfMutations = 1 + numberOfAntigenes * (1 - Math.exp(-i / tau));
+			
+			// vjerojatnost da se antigen mutira
+//			double mutationPossibility = 1. / ro * Math.exp(-clones.get(i).getAffinity());
+//			System.out.println(Math.exp(-clones.get(i).getAffinity()));
+//			double per = rand.nextDouble();
+//			if (per < mutationPossibility) {
 				// broj mutacija na antigenu
-				int numOfMutations = (int) Math.abs(clones.get(i).getAffinity() - maxAffinity) * c * antigeneSize;
+//				int numOfMutations = (int) Math.abs(clones.get(i).getAffinity() - minAffinity) * c * antigeneSize;
 				
 				double[] value = clones.get(i).getValue().clone();
 				for(int j = 0; j < numOfMutations; j++) {
@@ -154,8 +171,17 @@ public class CLONALG {
 					
 				}
 				clones.get(i).setValue(value);
-			}
+//			}
 		}
+	}
+	
+	
+	public void pickAntigenes(List<Antigene> clones){
+		Collections.sort(clones);
+		while(clones.size() != numberOfAntigenes) {
+			clones.remove(clones.size() - 1);
+		}
+		
 	}
 	
 	
@@ -163,10 +189,6 @@ public class CLONALG {
 		for(int i = 0; i < d; i++) {
 			clones.remove(clones.size() - 1);
 			clones.add(new Antigene(antigeneSize));
-//			net.setWeights(ag.getValue());
-//			double functionValue = net.calculateError();
-//			ag.setFunctionValue(functionValue);
-//			ag.setAffinity(1. / functionValue);
 		}
 	}
 
@@ -175,12 +197,23 @@ public class CLONALG {
 		String path = "data\\07-iris-formatirano.data";
 		Dataset data = new Dataset(path);
 
-		int[] architecture = new int[] { 4, 5, 3 };
+		int[] architecture = new int[] { 4, 5, 3, 3 };
 		NeuralNet nn = new NeuralNet(architecture, data);
 
-		int populationSize = 2;
-		CLONALG cl = new CLONALG(nn, populationSize, 2, 2);
-		cl.run();
+		int populationSize = 30;
+		int d = 5;
+		double beta = 5;
+		CLONALG cl = new CLONALG(nn, populationSize, d, beta);
+		nn.setWeights(cl.run().getValue());
+		
+		double[] prediction = nn.predict(new double[] {5.1,3.5,1.4,0.2});
+		System.out.println("prediction1: " + Arrays.toString(prediction));
+		prediction = nn.predict(new double[] {4.9,3.0,1.4,0.2});
+		System.out.println("prediction2: " + Arrays.toString(prediction));
+		prediction = nn.predict(new double[] {6.3,3.3,6.0,2.5});
+		System.out.println("prediction3: " + Arrays.toString(prediction));
+		
+		
 //		List<Antigene> population = initializePopulation(populationSize);
 //		for (int i = 0; i < population.size(); i++) {
 //			System.out.println(population.get(i));

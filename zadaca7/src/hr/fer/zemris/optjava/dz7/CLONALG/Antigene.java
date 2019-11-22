@@ -3,7 +3,7 @@ package hr.fer.zemris.optjava.dz7.CLONALG;
 import java.util.Arrays;
 import java.util.Random;
 
-public class Antigene {
+public class Antigene implements Comparable<Antigene>{
 
 	private int sizeOfAntigene;
 	private double functionValue;
@@ -70,6 +70,16 @@ public class Antigene {
 	@Override
 	public String toString() {
 		return "Antigene [value=" + Arrays.toString(value) + "]";
+	}
+
+
+	@Override
+	public int compareTo(Antigene ag) {
+		
+		if(ag.getFunctionValue() < this.getFunctionValue()) return 1;
+		if(ag.getFunctionValue() > this.getFunctionValue()) return -1;
+		return 0;
+		
 	}
 	
 	

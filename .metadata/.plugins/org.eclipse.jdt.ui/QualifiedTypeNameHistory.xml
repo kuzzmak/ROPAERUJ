@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="java.util.function.Function"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part2.OptimizationFunction"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part2.TournamentSelection"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part2.BoxFilling"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part2.IOptAlgorithm"/>
@@ -56,8 +54,10 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.NeuralNetLayer"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.IActivationFunction"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.Sigmoid"/>
-<fullyQualifiedTypeName name="java.lang.Double"/>
 <fullyQualifiedTypeName name="java.lang.Math"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.NeuralNet"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.CLONALG.Antigene"/>
 <fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="java.lang.Double"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
 </qualifiedTypeNameHistroy>
