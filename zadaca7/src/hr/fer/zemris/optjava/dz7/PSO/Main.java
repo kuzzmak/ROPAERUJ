@@ -2,6 +2,7 @@ package hr.fer.zemris.optjava.dz7.PSO;
 
 import java.util.Arrays;
 
+import hr.fer.zemris.optjava.dz7.DATA.Dataset;
 import hr.fer.zemris.optjava.dz7.NN.NeuralNet;
 
 public class Main {

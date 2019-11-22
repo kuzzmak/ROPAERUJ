@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import hr.fer.zemris.optjava.dz7.DATA.Dataset;
 import hr.fer.zemris.optjava.dz7.NN.NeuralNet;
-import hr.fer.zemris.optjava.dz7.PSO.Dataset;
 
 public class CLONALG {
 
