@@ -10,12 +10,15 @@ import hr.fer.zemris.optjava.dz7.DATA.Sample;
 
 public class NeuralNet {
 
+	// tezine neurona
 	private static double[] weights;
+	// izlazi iz pojedinih neurona mreze
 	private double[] nets;
 	// indeks pojedinog kromosoma
 	private int neuronId = 0;
+	// podatci za ucenje mreze
 	private Dataset data;
-
+	// lista svih slojeva mreze
 	private List<NeuralNetLayer> layers = new ArrayList<>();
 
 	private Random rand;
@@ -73,6 +76,13 @@ public class NeuralNet {
 
 	}
 
+	
+	/**
+	 * Funkcija za izracun pravog izlaza iz mreze
+	 * 
+	 * @param x	vektor za koji se racuna izlaz
+	 * @return izlaz mreze
+	 */
 	public double[] calculateNet(double[] x) {
 		
 		// izlazi iz pojedinih neurona
@@ -124,26 +134,40 @@ public class NeuralNet {
 		// vracanje zadnjih numOfOuptpus net vrijednosti
 		return Arrays.copyOfRange(this.nets, this.nets.length - numOfOutputs, this.nets.length);
 	}
+	
 
+	/**
+	 * Funkcija za izracun srednje kvadratne greske
+	 * 
+	 * @return iznos greske
+	 */
 	public double calculateError() {
 		
 		double error = 0;
 		
 		for(Sample s: this.data.getData()) {
 			
+			// izlaz mreze za pojedini uzorak
 			double[] predicted = calculateNet(s.getX());
+			// ispravan izlaz
 			double[] output = s.getY();
-			error += Math.pow(predicted[0] - output[0], 2) +
-					Math.pow(predicted[1] - output[1], 2) + 
-					Math.pow(predicted[2] - output[2], 2);
-			
-			
+			for(int i = 0; i < output.length; i++) {
+				error += Math.pow(predicted[i] - output[i], 2);
+			}
 		}
 		
 		return 1. / this.data.size() * error;
 	}
 	
 	
+	/**
+	 * Funkcija za izracun izlaza iz mreze
+	 * Primjer: izlaz mreze je (0.2,0.03,0.78), a ova funkcija 
+	 * to prebacuje u pogodniji zapis koji karakterizira pojedini razred -> (0,0,1)
+	 * 
+	 * @param x ulazni vektor
+	 * @return binarni uzorak
+	 */
 	public double[] predict(double[] x) {
 		
 		double[] net = this.calculateNet(x);
@@ -154,6 +178,21 @@ public class NeuralNet {
 		return prediction;
 	}
 	
+	/**
+	 * Funkcija za izracun postotka pogresno klasificiranih uzoraka
+	 * 
+	 * @return postotak pogreske
+	 */
+	public double classificationError() {
+		double wronglyClassified = 0;
+		
+		for(int i = 0; i < data.size(); i++) {
+			double[] prediction = this.predict(NeuralNet.weights);
+			if(!Arrays.equals(prediction, data.getData().get(i).getY())) wronglyClassified++;
+		}
+		
+		return wronglyClassified / data.size();
+	}
 
 	public double[] getWeights() {
 		return weights;

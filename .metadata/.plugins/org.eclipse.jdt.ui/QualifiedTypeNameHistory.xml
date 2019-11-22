@@ -40,7 +40,6 @@
 <fullyQualifiedTypeName name="java.util.Random"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz5.part2.SASEGASA"/>
-<fullyQualifiedTypeName name="java.util.Collections"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz5.part2.OffspringSelectionAlgorithm"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz5.part2.OptimizaitonFunction"/>
 <fullyQualifiedTypeName name="java.util.Iterator"/>
@@ -58,6 +57,7 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.NeuralNet"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.CLONALG.Antigene"/>
 <fullyQualifiedTypeName name="java.util.List"/>
-<fullyQualifiedTypeName name="java.lang.Double"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="java.util.Collections"/>
+<fullyQualifiedTypeName name="java.lang.Double"/>
 </qualifiedTypeNameHistroy>

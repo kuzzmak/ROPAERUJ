@@ -41,7 +41,7 @@ public class CLONALG {
 		this.population = initializePopulation();
 	}
 
-	public Antigene run() {
+	public double[] run() {
 
 		int iteration = 0;
 		while (iteration < this.maxIterations) {
@@ -62,7 +62,7 @@ public class CLONALG {
 			iteration++;
 
 		}
-		return population.get(0);
+		return population.get(0).getValue();
 	}
 
 	/**

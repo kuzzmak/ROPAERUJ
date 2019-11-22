@@ -78,13 +78,13 @@ public class PSO {
 				
 				for(int j = 0; j < particleSize; j++) {
 					
-//					currentSpeed[j] = inertiaFac * currentSpeed[j] + 
-//							c1 * rnd * (p.getPersonalBest()[j] - currentLocation[j]) + 
-//							c2 * rnd * (globalBest.getPersonalBest()[j] - currentLocation[j]);
-					
 					currentSpeed[j] = inertiaFac * currentSpeed[j] + 
 							c1 * rnd * (p.getPersonalBest()[j] - currentLocation[j]) + 
-							c2 * rnd * (pickNeighbour(p, 4).getPersonalBest()[j] - currentLocation[j]);
+							c2 * rnd * (globalBest.getPersonalBest()[j] - currentLocation[j]);
+					
+//					currentSpeed[j] = inertiaFac * currentSpeed[j] + 
+//							c1 * rnd * (p.getPersonalBest()[j] - currentLocation[j]) + 
+//							c2 * rnd * (pickNeighbour(p, 4).getPersonalBest()[j] - currentLocation[j]);
 					
 					// slucaj prevelike ili premale brzine
 					if(currentSpeed[j] > vmax) currentSpeed[j] = vmax;
