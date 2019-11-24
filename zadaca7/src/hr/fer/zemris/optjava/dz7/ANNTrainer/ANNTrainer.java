@@ -3,59 +3,53 @@ package hr.fer.zemris.optjava.dz7.ANNTrainer;
 import hr.fer.zemris.optjava.dz7.CLONALG.CLONALG;
 import hr.fer.zemris.optjava.dz7.DATA.Dataset;
 import hr.fer.zemris.optjava.dz7.NN.NeuralNet;
+import hr.fer.zemris.optjava.dz7.PSO.PSO;
 
 public class ANNTrainer {
 
 	public static void main(String[] args) {
-		
-		//String path = "data\\07-iris-formatirano.data";
+		// put do datoteke
 		String path = args[0];
+		// algoritam optimizacije
 		String algName = args[1];
+		// velicina populacije
 		int populationSize = Integer.parseInt(args[2]);
-		double merr = Double.parseDouble(args[3]);
-		int maxIter = Integer.parseInt(args[4]);
+		// minimalna prihvatljiva greska
+		double minError = Double.parseDouble(args[3]);
+		// najveci dozvoljeni broj iteracija
+		int maxIterations = Integer.parseInt(args[4]);
 		
 		Dataset data = new Dataset(path);
+		// izgled slojeva mreze
 		int[] architecture = new int[] {4,5,3};
 		NeuralNet nn = new NeuralNet(architecture, data);
 		
 		if(algName.startsWith("pso")) {
-			
+			// a ili b inacica PSO algoritma
+			// a -> globalno susjedstvo
+			// b -> lokalno susjedstvo
 			char version = algName.charAt(4);
 			
 			if(version == 'a') {
-				
+				PSO alg = new PSO(populationSize, nn, maxIterations, minError, version);
+				nn.setWeights(alg.run());
+				System.out.println("classification error: " + nn.classificationError());
 			}else {
-				
+				int numOfNeighbours = Integer.parseInt(algName.split("-")[2]);
+				PSO alg = new PSO(populationSize, nn, maxIterations, minError, version, numOfNeighbours);
+				nn.setWeights(alg.run());
+				System.out.println("classification error: " + nn.classificationError());
 			}
 			
 		}else {
-			int d = 5;
+			// broj novo ubacenih antigena
+			int d = (int) (populationSize * 0.05);
+			// konstanta za ogranicavanje kolicine klonova
 			double beta = 5;
-			CLONALG alg = new CLONALG(nn, populationSize, d, beta);	
+			CLONALG alg = new CLONALG(nn, populationSize, d, beta, maxIterations, minError);	
 			nn.setWeights(alg.run());
 			System.out.println("classification error: " + nn.classificationError());
 		}
-		
-		//int populationSize = 40;
-		//PSO alg = new PSO(populationSize, nn.getNumOfWeights(), nn);
-		//nn.setWeights(alg.run());
-		
-//		System.out.println("classification error: " + nn.classificationError());
-	
-//		double[] prediction = nn.predict(new double[] {5.1,3.5,1.4,0.2});
-//		System.out.println("prediction1: " + Arrays.toString(prediction));
-//		prediction = nn.predict(new double[] {4.9,3.0,1.4,0.2});
-//		System.out.println("prediction2: " + Arrays.toString(prediction));
-//		prediction = nn.predict(new double[] {6.3,3.3,6.0,2.5});
-//		System.out.println("prediction3: " + Arrays.toString(prediction));
-//		prediction = nn.predict(new double[] {6.9,3.1,4.9,1.5}); //010
-//		System.out.println("prediction3: " + Arrays.toString(prediction));
-//		prediction = nn.predict(new double[] {6.1,2.8,4.0,1.3}); //010
-//		System.out.println("prediction3: " + Arrays.toString(prediction));
-//		prediction = nn.predict(new double[] {7.7,3,6.1,2.3}); //001
-//		System.out.println("prediction3: " + Arrays.toString(prediction));
-	
 	}
 	
 }

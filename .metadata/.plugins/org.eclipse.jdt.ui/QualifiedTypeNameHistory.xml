@@ -53,11 +53,11 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.NeuralNetLayer"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.IActivationFunction"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.Sigmoid"/>
-<fullyQualifiedTypeName name="java.lang.Math"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.NeuralNet"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.CLONALG.Antigene"/>
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
-<fullyQualifiedTypeName name="java.util.Collections"/>
 <fullyQualifiedTypeName name="java.lang.Double"/>
+<fullyQualifiedTypeName name="java.lang.Math"/>
+<fullyQualifiedTypeName name="java.util.Collections"/>
 </qualifiedTypeNameHistroy>

@@ -1,12 +1,10 @@
 package hr.fer.zemris.optjava.dz7.CLONALG;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import hr.fer.zemris.optjava.dz7.DATA.Dataset;
 import hr.fer.zemris.optjava.dz7.NN.NeuralNet;
 
 public class CLONALG {
@@ -22,21 +20,25 @@ public class CLONALG {
 	// za odredjivanje velicine populacije klonova
 	double beta;
 	// najveci broj dozvoljenih iteracija
-	private int maxIterations = 200;
+	private int maxIterations;
 	// konstanta za reguliranje vjerojatnosti mutacije
 	private double ro = 0.5;
-
+	// minimalna prihvatljiva greska
+	private double minError;
+	
 	private List<Antigene> population;
 	// sluzi za pracenje maksimalnog afiniteta odredjene populacije
 
 	private static Random rand;
 
-	public CLONALG(NeuralNet net, int numberOfAntigenes, int d, double beta) {
+	public CLONALG(NeuralNet net, int numberOfAntigenes, int d, double beta, int maxIterations, double minError) {
 		CLONALG.net = net;
 		CLONALG.numberOfAntigenes = numberOfAntigenes;
 		this.d = d;
 		this.antigeneSize = CLONALG.net.getNumOfWeights();
 		this.beta = beta;
+		this.maxIterations = maxIterations;
+		this.minError = minError;
 		CLONALG.rand = new Random();
 		this.population = initializePopulation();
 	}
@@ -44,20 +46,19 @@ public class CLONALG {
 	public double[] run() {
 
 		int iteration = 0;
-		while (iteration < this.maxIterations) {
+		// najbolja greska trenutne populacije
+		double error = Double.MAX_VALUE;
+		
+		while (iteration < this.maxIterations && error > minError) {
 
 			evaluatePopulation(this.population);
-
-			// --------------
-			// izabrati n antigena iz populacije koji se dalje kloniraju
-			// -------------
-
 			List<Antigene> clones = makeClones();
 			mutate(clones);
 			evaluatePopulation(clones);
 			pickAntigenes(clones);
 			if (iteration % 50 == 0) insertNewAntigenes(clones);
 			this.population = clones;
+			error = population.get(0).getFunctionValue();
 			System.out.println("iter: " + iteration + ", minerr: " + population.get(0).getFunctionValue());
 			iteration++;
 
@@ -185,48 +186,5 @@ public class CLONALG {
 			clones.remove(clones.size() - 1);
 			clones.add(new Antigene(antigeneSize));
 		}
-	}
-
-	public static void main(String[] args) {
-		String path = "data\\07-iris-formatirano.data";
-		Dataset data = new Dataset(path);
-
-		int[] architecture = new int[] { 4, 5, 3, 3 };
-		NeuralNet nn = new NeuralNet(architecture, data);
-
-		int populationSize = 30;
-		int d = 5;
-		double beta = 5;
-		CLONALG cl = new CLONALG(nn, populationSize, d, beta);
-		nn.setWeights(cl.run().getValue());
-
-		double[] prediction = nn.predict(new double[] { 5.1, 3.5, 1.4, 0.2 });
-		System.out.println("prediction1: " + Arrays.toString(prediction));
-		prediction = nn.predict(new double[] { 4.9, 3.0, 1.4, 0.2 });
-		System.out.println("prediction2: " + Arrays.toString(prediction));
-		prediction = nn.predict(new double[] { 6.3, 3.3, 6.0, 2.5 });
-		System.out.println("prediction3: " + Arrays.toString(prediction));
-
-//		List<Antigene> population = initializePopulation(populationSize);
-//		for (int i = 0; i < population.size(); i++) {
-//			System.out.println(population.get(i));
-//		}
-//		System.out.println();
-//		evaluatePopulation(population);
-//		for (int i = 0; i < population.size(); i++) {
-//			System.out.println(population.get(i).getFunctionValue());
-//		}
-//		System.out.println();
-//		for (int i = 0; i < population.size(); i++) {
-//			System.out.println(population.get(i).getAffinity());
-//		}
-
-//		Antigene ag1 = new Antigene(3);
-//		System.out.println(Arrays.toString(ag1.getValue()));
-//		System.out.println((int)Math.floor(0.02 * 100 / 1));
-//		Antigene ag2 = ag1.copy();
-//		System.out.println(ag1);
-//		System.out.println(ag2);
-
 	}
 }

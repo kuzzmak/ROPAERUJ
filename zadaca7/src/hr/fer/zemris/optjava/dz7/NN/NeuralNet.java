@@ -187,7 +187,7 @@ public class NeuralNet {
 		double wronglyClassified = 0;
 		
 		for(int i = 0; i < data.size(); i++) {
-			double[] prediction = this.predict(NeuralNet.weights);
+			double[] prediction = this.predict(data.getData().get(i).getX());
 			if(!Arrays.equals(prediction, data.getData().get(i).getY())) wronglyClassified++;
 		}
 		
