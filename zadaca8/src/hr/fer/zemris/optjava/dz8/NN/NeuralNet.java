@@ -60,7 +60,7 @@ public class NeuralNet {
 					this.neuronId++;
 				}
 
-				this.layers.add(new SigmoidalLayer(neurons));
+				this.layers.add(new TangentHyperbolicLayer(neurons));
 			}
 		}
 

@@ -22,8 +22,7 @@ public class OutputLayer implements NeuralNetLayer {
 
 	@Override
 	public IActivationFunction getActivationFunction() {
-		return new Sigmoid();
-		//return new Linear();
+		return new TangentHyperbolic();
 	}
 
 	@Override

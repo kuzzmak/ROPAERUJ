@@ -9,19 +9,26 @@ import hr.fer.zemris.optjava.dz8.NN.NeuralNet;
 public class DiffEvol {
 
 	double F = 0.5;
+	// velicina populacije
+	private static int populationSize;
+	// maksimalan broj iteracija
 	private static int maxIterations;
+	// minimalna greska nakon koje staje algoritam
 	private static double minError;
-	
+	// lista jedinki, trenutna populacija
 	private List<double[]> population;
-	private double[] populationErrors;
-	
+	// polje gresaka trenutne populacije
+	private static double[] populationErrors;
+	// neuronska mreza koja se uci
 	private static NeuralNet net;
 	
-	public DiffEvol(int maxIterations, double minError, NeuralNet net) {
+	public DiffEvol(int populationSize, int maxIterations, double minError, NeuralNet net) {
+		
+		DiffEvol.populationSize = populationSize;
 		DiffEvol.maxIterations = maxIterations;
 		DiffEvol.minError = minError;
 		DiffEvol.net = net;
-		
+		DiffEvol.populationErrors = new double[populationSize];
 	}
 	
 	public double[] run() {
@@ -71,9 +78,22 @@ public class DiffEvol {
 		return population;
 	}
 	
-	
-	public static evaluatePopulation() {
+	/**
+	 * Funkcija za evaluaciju populacije
+	 * 
+	 * @param population lista jedinki koja se evaluira
+	 */
+	public static void evaluatePopulation(List<double[]> population) {
 		
+		for(int i = 0; i < populationSize; i++) {
+			// postavaljnje tezina mreze
+			net.setWeights(population.get(i));
+			// greska jedinke
+			double error = net.calculateError();
+			// zapis u polje gresaka
+			populationErrors[i] = error;
+			
+		}
 	}
 	
 }
