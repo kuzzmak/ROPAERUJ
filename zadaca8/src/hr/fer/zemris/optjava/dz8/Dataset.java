@@ -75,7 +75,7 @@ public class Dataset {
 		for(int i = 0; i < numOfSamples; i++) {
 			
 			double[] x = new double[window];
-			double y = rawData.get(i + window);
+			double[] y = new double[] {rawData.get(i + window)};
 
 			for(int j = 0; j < window; j++) {
 			
@@ -94,5 +94,9 @@ public class Dataset {
 	
 	public static void print() {
 		data.forEach(System.out::println);
+	}
+	
+	public static int size() {
+		return data.size();
 	}
 }
