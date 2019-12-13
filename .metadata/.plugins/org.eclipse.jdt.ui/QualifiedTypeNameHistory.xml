@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part2.BoxFilling"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part2.IOptAlgorithm"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part2.BinPackingGeneticAlgorithm"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part1.PassThroughDecoder"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part1.OptimizationFunction"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part1.SingleObjectiveSolution"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part1.GenAlg"/>
@@ -35,7 +31,6 @@
 <fullyQualifiedTypeName name="java.util.Set"/>
 <fullyQualifiedTypeName name="java.util.HashSet"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz5.part1.OffspringSelectionAlgorithm"/>
-<fullyQualifiedTypeName name="java.util.Random"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz5.part2.SASEGASA"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz5.part2.OffspringSelectionAlgorithm"/>
@@ -55,9 +50,14 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.CLONALG.Antigene"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="java.lang.Double"/>
-<fullyQualifiedTypeName name="java.lang.Math"/>
 <fullyQualifiedTypeName name="java.util.Collections"/>
 <fullyQualifiedTypeName name="java.lang.System"/>
-<fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.Dataset"/>
+<fullyQualifiedTypeName name="java.util.Random"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.Util"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.NN.NeuralNet"/>
+<fullyQualifiedTypeName name="java.lang.Math"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.NN.TangentHyperbolic"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.DiffEvol"/>
 </qualifiedTypeNameHistroy>
