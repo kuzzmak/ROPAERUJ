@@ -10,8 +10,6 @@ public class DiffEvol {
 
 	// faktor skaliranja razlike vektor kod konstrukcije mutiranog vektora
 	private static final double F = 0.5;
-	// vjerojatnost mutacije
-	private static final double Cr = 0.05;
 	// velicina populacije
 	private static int populationSize;
 	// maksimalan broj iteracija
@@ -24,16 +22,23 @@ public class DiffEvol {
 	private static double[] populationErrors;
 	// neuronska mreza koja se uci
 	private static NeuralNet net;
+	// nacin krizanja
+	private static ICrossover crossover;
 	
 	private static Random rand;
 	
-	public DiffEvol(int populationSize, int maxIterations, double minError, NeuralNet net) {
+	static double[] best;
+	static double bestError = Double.MAX_VALUE;
+	
+	public DiffEvol(int populationSize, int maxIterations, double minError, NeuralNet net, ICrossover crossover, double minVal, double maxVal) {
 		
 		DiffEvol.populationSize = populationSize;
 		DiffEvol.maxIterations = maxIterations;
 		DiffEvol.minError = minError;
 		DiffEvol.net = net;
 		DiffEvol.populationErrors = new double[populationSize];
+		this.population = makeInitialPopulation(populationSize, net.getNumOfWeights(), minVal, maxVal);
+		DiffEvol.crossover = crossover;
 		DiffEvol.rand = new Random();
 	}
 	
@@ -41,12 +46,14 @@ public class DiffEvol {
 		
 		int iteration = 0;
 		
-		// najbolja greska trenutne populacije
-		double error = Double.MAX_VALUE;
+//		// najbolja greska trenutne populacije
+//		double error = Double.MAX_VALUE;
 		
 		List<double[]> newPopulation = new ArrayList<>();
 		
-		while(iteration < maxIterations && error > minError) {
+		while(iteration < maxIterations && bestError > minError) {
+			
+			evaluatePopulation(population);
 			
 			for(int i = 0; i < populationSize; i++) {
 				
@@ -78,31 +85,33 @@ public class DiffEvol {
 				
 				double[] mutantVector = new double[targetVector.length];
 				
-				int jRand = rand.nextInt(targetVector.length);
-				
 				for(int j = 0; j < targetVector.length; j++) {
 					
 					mutantVector[j] = r0[j] + F * (r1[j] - r2[j]);
 				}
 				
-				for(int j = 0; j < targetVector.length; j++) {
-					
-					
-					
-					
-					
+				double[] trialVector = crossover.cross(mutantVector, targetVector);
+				
+				net.setWeights(targetVector);
+				
+				double errorTargetVector = net.calculateError();
+				
+				net.setWeights(trialVector);
+				
+				double errorTrialVector = net.calculateError();
+				
+				if(errorTrialVector < errorTargetVector) {
+					newPopulation.add(trialVector);
+				}else {
+					newPopulation.add(targetVector);
 				}
-				
-				
-				
 			}
-			
-			
-			
-			
+			System.out.println("iter: " + iteration + ", error: " + bestError);
+			population = newPopulation;
+			iteration++;
 			
 		}
-		return newPopulation.get(0);
+		return best;
 		
 	}
 	
@@ -150,6 +159,11 @@ public class DiffEvol {
 			double error = net.calculateError();
 			// zapis u polje gresaka
 			populationErrors[i] = error;
+			
+			if(error < bestError) {
+				bestError = error;
+				best = population.get(i);
+			}
 			
 		}
 	}
