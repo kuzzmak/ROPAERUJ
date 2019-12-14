@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class TangentHyperbolicLayer implements NeuralNetLayer {
 
-	Neuron[] neurons;
+	private Neuron[] neurons;
 	
 	public TangentHyperbolicLayer(Neuron[] neurons) {
 		this.neurons = neurons;

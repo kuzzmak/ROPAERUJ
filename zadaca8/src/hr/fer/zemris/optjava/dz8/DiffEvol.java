@@ -1,15 +1,18 @@
 package hr.fer.zemris.optjava.dz8;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import hr.fer.zemris.optjava.dz8.NN.NeuralNet;
+import hr.fer.zemris.optjava.dz8.Evaluator.IEvaluator;
 
 public class DiffEvol {
 
+	// evaluator za TDNN ili Elmanovu neuronsku mrezu
+	private static IEvaluator evaluator;
 	// faktor skaliranja razlike vektor kod konstrukcije mutiranog vektora
-	private static final double F = 0.5;
+	private static final double F = 0.8;
 	// velicina populacije
 	private static int populationSize;
 	// maksimalan broj iteracija
@@ -20,8 +23,6 @@ public class DiffEvol {
 	private List<double[]> population;
 	// polje gresaka trenutne populacije
 	private static double[] populationErrors;
-	// neuronska mreza koja se uci
-	private static NeuralNet net;
 	// nacin krizanja
 	private static ICrossover crossover;
 	
@@ -30,14 +31,20 @@ public class DiffEvol {
 	static double[] best;
 	static double bestError = Double.MAX_VALUE;
 	
-	public DiffEvol(int populationSize, int maxIterations, double minError, NeuralNet net, ICrossover crossover, double minVal, double maxVal) {
+	public DiffEvol(IEvaluator evaluator,
+			int populationSize, 
+			int maxIterations, 
+			double minError, 
+			ICrossover crossover, 
+			double minVal, 
+			double maxVal) {
 		
+		DiffEvol.evaluator = evaluator;
 		DiffEvol.populationSize = populationSize;
 		DiffEvol.maxIterations = maxIterations;
 		DiffEvol.minError = minError;
-		DiffEvol.net = net;
 		DiffEvol.populationErrors = new double[populationSize];
-		this.population = makeInitialPopulation(populationSize, net.getNumOfWeights(), minVal, maxVal);
+		this.population = makeInitialPopulation(populationSize, evaluator.getNumOfWeights(), minVal, maxVal);
 		DiffEvol.crossover = crossover;
 		DiffEvol.rand = new Random();
 	}
@@ -45,10 +52,6 @@ public class DiffEvol {
 	public double[] run() {
 		
 		int iteration = 0;
-		
-//		// najbolja greska trenutne populacije
-//		double error = Double.MAX_VALUE;
-		
 		
 		while(iteration < maxIterations && bestError > minError) {
 			
@@ -92,13 +95,9 @@ public class DiffEvol {
 				
 				double[] trialVector = crossover.cross(mutantVector, targetVector);
 				
-				net.setWeights(targetVector);
+				double errorTargetVector = evaluator.evaluate(targetVector);
 				
-				double errorTargetVector = net.calculateError();
-				
-				net.setWeights(trialVector);
-				
-				double errorTrialVector = net.calculateError();
+				double errorTrialVector = evaluator.evaluate(trialVector);
 				
 				if(errorTrialVector < errorTargetVector) {
 					newPopulation.add(trialVector);
@@ -153,10 +152,8 @@ public class DiffEvol {
 	public static void evaluatePopulation(List<double[]> population) {
 		
 		for(int i = 0; i < populationSize; i++) {
-			// postavaljnje tezina mreze
-			net.setWeights(population.get(i));
-			// greska jedinke
-			double error = net.calculateError();
+			
+			double error = evaluator.evaluate(population.get(i));
 			// zapis u polje gresaka
 			populationErrors[i] = error;
 			

@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part1.OptimizationFunction"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part1.SingleObjectiveSolution"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part1.GenAlg"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part1.RouletteWheelSelection"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz4.part1.TournamentSelection"/>
 <fullyQualifiedTypeName name="sortedCollection.Main.customComparator"/>
@@ -48,7 +45,6 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.Sigmoid"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.NeuralNet"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.CLONALG.Antigene"/>
-<fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="java.lang.Double"/>
 <fullyQualifiedTypeName name="java.util.Collections"/>
 <fullyQualifiedTypeName name="java.lang.System"/>
@@ -59,5 +55,9 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.NN.NeuralNet"/>
 <fullyQualifiedTypeName name="java.lang.Math"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.NN.TangentHyperbolic"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.UniformCrossover"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.ICrossover"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.DiffEvol"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.ExponentialCrossover"/>
 </qualifiedTypeNameHistroy>

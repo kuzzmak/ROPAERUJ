@@ -2,7 +2,8 @@ package hr.fer.zemris.optjava.dz8;
 
 import java.util.Random;
 
-import hr.fer.zemris.optjava.dz8.NN.NeuralNet;
+import hr.fer.zemris.optjava.dz8.Evaluator.IEvaluator;
+import hr.fer.zemris.optjava.dz8.Evaluator.TDNNEvaluator;
 
 public class ANNTrainer {
 	
@@ -16,21 +17,21 @@ public class ANNTrainer {
 		int window = 8;
 		int numOfSamples = 600;
 		
-		Dataset dataset = new Dataset(path, window, numOfSamples);
+		Dataset data = new Dataset(path, window, numOfSamples);
 		Dataset.load();
 				
-		int[] architecture = new int[] {window,10,5,1};
-		NeuralNet net = new NeuralNet(architecture, dataset);
+		int[] architecture = new int[] {window,10,1};
 		
+		IEvaluator evaluator = new TDNNEvaluator(architecture, data);
 		int populationSize = 40;
 		int maxIterations = 500;
 		double minError = 0.02;
-		double Cr = 0.5;
+		double Cr = 0.2;
 		ICrossover crossover = new UniformCrossover(Cr);
 		double minVal = -1;
 		double maxVal = 1;
 		
-		DiffEvol alg = new DiffEvol(populationSize, maxIterations, minError, net, crossover, minVal, maxVal);
+		DiffEvol alg = new DiffEvol(evaluator, populationSize, maxIterations, minError, crossover, minVal, maxVal);
 		
 		double[] solution = alg.run();
 		
