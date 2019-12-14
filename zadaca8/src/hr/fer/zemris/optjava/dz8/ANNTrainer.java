@@ -25,7 +25,7 @@ public class ANNTrainer {
 		int populationSize = 40;
 		int maxIterations = 500;
 		double minError = 0.02;
-		double Cr = 0.2;
+		double Cr = 0.5;
 		ICrossover crossover = new UniformCrossover(Cr);
 		double minVal = -1;
 		double maxVal = 1;

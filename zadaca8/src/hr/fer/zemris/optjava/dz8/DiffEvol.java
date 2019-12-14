@@ -49,10 +49,10 @@ public class DiffEvol {
 //		// najbolja greska trenutne populacije
 //		double error = Double.MAX_VALUE;
 		
-		List<double[]> newPopulation = new ArrayList<>();
 		
 		while(iteration < maxIterations && bestError > minError) {
 			
+			List<double[]> newPopulation = new ArrayList<>();
 			evaluatePopulation(population);
 			
 			for(int i = 0; i < populationSize; i++) {
