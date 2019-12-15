@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import hr.fer.zemris.optjava.dz8.Dataset;
-import hr.fer.zemris.optjava.dz8.Sample;
+import hr.fer.zemris.optjava.dz8.Data.Dataset;
+import hr.fer.zemris.optjava.dz8.Data.Sample;
 
 public class NeuralNet {
 

@@ -11,6 +11,8 @@ public class DiffEvol {
 
 	// evaluator za TDNN ili Elmanovu neuronsku mrezu
 	private static IEvaluator evaluator;
+	// string strategije
+	private String strategy;
 	// faktor skaliranja razlike vektor kod konstrukcije mutiranog vektora
 	private static final double F = 0.8;
 	// velicina populacije
@@ -20,7 +22,7 @@ public class DiffEvol {
 	// minimalna greska nakon koje staje algoritam
 	private static double minError;
 	// lista jedinki, trenutna populacija
-	private List<double[]> population;
+	private static List<double[]> population;
 	// polje gresaka trenutne populacije
 	private static double[] populationErrors;
 	// nacin krizanja
@@ -32,6 +34,7 @@ public class DiffEvol {
 	static double bestError = Double.MAX_VALUE;
 	
 	public DiffEvol(IEvaluator evaluator,
+			String strategy, 
 			int populationSize, 
 			int maxIterations, 
 			double minError, 
@@ -53,6 +56,11 @@ public class DiffEvol {
 		
 		int iteration = 0;
 		
+		String[] strategyStrings = strategy.split("/");
+		String baseVectorSelection = strategyStrings[1];
+		String linearCombinations = strategyStrings[2];
+		String croosoverType = strategyStrings[3];
+		
 		while(iteration < maxIterations && bestError > minError) {
 			
 			List<double[]> newPopulation = new ArrayList<>();
@@ -66,14 +74,24 @@ public class DiffEvol {
 				double[] targetVector = population.get(i);
 				chosenIndexes.add(i);
 				
-				int index = rand.nextInt(population.size());
-				while(chosenIndexes.contains(index)) {
-					index = rand.nextInt(population.size());
-				}
-				double[] r0 = population.get(index);
-				chosenIndexes.add(index);
+				// odabir baznog vektora
+				double[] r0 = new double[evaluator.getNumOfWeights()];
 				
-				index = rand.nextInt(population.size());
+				if(baseVectorSelection == "rand") {
+					int index = rand.nextInt(population.size());
+					while(chosenIndexes.contains(index)) {
+						index = rand.nextInt(population.size());
+					}
+					r0 = population.get(index);
+					chosenIndexes.add(index);
+				}else {
+					int index = findBest();
+					r0 = population.get(index);
+					chosenIndexes.add(index);
+				}
+				
+				
+				int index = rand.nextInt(population.size());
 				while(chosenIndexes.contains(index)) {
 					index = rand.nextInt(population.size());
 				}
@@ -165,6 +183,25 @@ public class DiffEvol {
 		}
 	}
 	
-	
+	/**
+	 * Funkcija za dohvat indeksa najbolje jedinke u populaciji
+	 * 
+	 * @return najbolja jedinka ternutne populacije
+	 */
+	public int findBest() {
+		
+		double minErr = populationErrors[0];
+		int index = 0;
+		
+		for(int i = 0; i < populationErrors.length; i++) {
+			
+			if(populationErrors[i] < minErr) {
+				minErr = populationErrors[i];
+				index = i;
+			}
+		}
+		
+		return index;
+	}
 	
 }

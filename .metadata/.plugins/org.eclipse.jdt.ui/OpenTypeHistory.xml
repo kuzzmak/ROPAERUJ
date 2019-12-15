@@ -4,5 +4,6 @@
 <typeInfo handle="=zadaca7/src&lt;hr.fer.zemris.optjava.dz7.NN{NeuralNetLayer.java[NeuralNetLayer" modifiers="513" timestamp="1573806891191"/>
 <typeInfo handle="=zadaca8/src&lt;hr.fer.zemris.optjava.dz8.NN{IActivationFunction.java[IActivationFunction" modifiers="513" timestamp="1576193366158"/>
 <typeInfo handle="=zadaca8/src&lt;hr.fer.zemris.optjava.dz8.NN{NeuralNetLayer.java[NeuralNetLayer" modifiers="513" timestamp="1576193366179"/>
-<typeInfo handle="=zadaca8/src&lt;hr.fer.zemris.optjava.dz8{ICrossover.java[ICrossover" modifiers="513" timestamp="1576272546067"/>
+<typeInfo handle="=zadaca8/src&lt;hr.fer.zemris.optjava.dz8{ICrossover.java[ICrossover" modifiers="513" timestamp="1576275011442"/>
+<typeInfo handle="=zadaca8/src&lt;hr.fer.zemris.optjava.dz8.Evaluator{IEvaluator.java[IEvaluator" modifiers="513" timestamp="1576365778903"/>
 </typeInfoHistroy>

@@ -1,4 +1,4 @@
-package hr.fer.zemris.optjava.dz8;
+package hr.fer.zemris.optjava.dz8.Data;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
