@@ -1,4 +1,4 @@
-package hr.fer.zemris.optjava.dz8.NN;
+package hr.fer.zemris.optjava.dz8.TDNN;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -149,6 +149,11 @@ public class NeuralNet {
 			
 			// izlaz mreze za pojedini uzorak
 			double[] predicted = calculateNet(s.getX());
+			
+			
+			// mozda traba pretvoriti prvo u normalni oblik podatke
+			
+			
 			// ispravan izlaz
 			double[] output = s.getY();
 			for(int i = 0; i < output.length; i++) {
@@ -172,6 +177,13 @@ public class NeuralNet {
 		
 		double[] net = this.calculateNet(x);
 		double[] prediction = new double[net.length];
+		
+//		double[] transformed = new double[predicted.length];
+//		
+//		for(int i = 0; i < transformed.length; i++) {
+//			transformed[i] = 0.5 * (predicted[i] + 1) * (data.getMax() - data.getMin()) + data.getMin();
+//		}
+		
 		for(int i = 0; i < net.length; i++) {
 			prediction[i] = net[i] >= 0.5 ? 1 : 0;
 		}

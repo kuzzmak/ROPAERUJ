@@ -101,6 +101,16 @@ public class DiffEvol {
 				}
 				
 				
+				List<double[]> linCombVectors = new ArrayList<>();
+				// odabir vektora za linearnu kombinaciju
+				for(int j = 0; j < Integer.parseInt(linearCombinations) * 2; j++) {
+					
+					int index = rand.nextInt(population.size());
+					while(chosenIndexes.contains(index)) {
+						index = rand.nextInt(population.size());
+					}
+					
+				}
 				int index = rand.nextInt(population.size());
 				while(chosenIndexes.contains(index)) {
 					index = rand.nextInt(population.size());
@@ -118,7 +128,8 @@ public class DiffEvol {
 				
 				for(int j = 0; j < targetVector.length; j++) {
 					
-					mutantVector[j] = r0[j] + F * (r1[j] - r2[j]);
+//					mutantVector[j] = r0[j] + F * (r1[j] - r2[j]);
+					mutantVector[j] = r0[j] + (F + 0.001 * (rand.nextDouble() - 0.5)) * (r1[j] - r2[j]);
 				}
 				
 				double[] trialVector = crossover.cross(mutantVector, targetVector);

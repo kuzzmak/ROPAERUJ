@@ -1,15 +1,15 @@
-package hr.fer.zemris.optjava.dz8.NN;
+package hr.fer.zemris.optjava.dz8.ElmanNN;
 
 import java.util.Arrays;
 
-public class OutputLayer implements NeuralNetLayer {
-
-	private Neuron[] neurons;
+public class InputLayer implements NeuralNetLayer {
 	
-	public OutputLayer(Neuron[] neurons) {
+	Neuron[] neurons;
+	
+	public InputLayer(Neuron[] neurons) {
 		this.neurons = neurons;
 	}
-	
+
 	@Override
 	public int getNumOfNeurons() {
 		return neurons.length;
@@ -22,12 +22,14 @@ public class OutputLayer implements NeuralNetLayer {
 
 	@Override
 	public IActivationFunction getActivationFunction() {
-		return new TangentHyperbolic();
+		return new Linear();
 	}
 
 	@Override
 	public String toString() {
-		return "OutputLayer [neurons=" + Arrays.toString(neurons) + "]";
+		return "InputLayer [neurons=" + Arrays.toString(neurons) + "]";
 	}
+	
+	
 
 }

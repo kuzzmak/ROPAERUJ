@@ -1,15 +1,15 @@
-package hr.fer.zemris.optjava.dz8.NN;
+package hr.fer.zemris.optjava.dz8.ElmanNN;
 
 import java.util.Arrays;
 
-public class InputLayer implements NeuralNetLayer {
+public class TangentHyperbolicLayer implements NeuralNetLayer {
+
+	private Neuron[] neurons;
 	
-	Neuron[] neurons;
-	
-	public InputLayer(Neuron[] neurons) {
+	public TangentHyperbolicLayer(Neuron[] neurons) {
 		this.neurons = neurons;
 	}
-
+	
 	@Override
 	public int getNumOfNeurons() {
 		return neurons.length;
@@ -22,14 +22,12 @@ public class InputLayer implements NeuralNetLayer {
 
 	@Override
 	public IActivationFunction getActivationFunction() {
-		return new Linear();
+		return new TangentHyperbolic();
 	}
 
 	@Override
 	public String toString() {
-		return "InputLayer [neurons=" + Arrays.toString(neurons) + "]";
+		return "TangentHyperbolicLayer [neurons=" + Arrays.toString(neurons) + "]";
 	}
 	
-	
-
 }

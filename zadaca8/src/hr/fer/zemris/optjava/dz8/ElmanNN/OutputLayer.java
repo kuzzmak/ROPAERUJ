@@ -1,15 +1,15 @@
-package hr.fer.zemris.optjava.dz8.NN;
+package hr.fer.zemris.optjava.dz8.ElmanNN;
 
 import java.util.Arrays;
 
-public class SigmoidalLayer implements NeuralNetLayer {
+public class OutputLayer implements NeuralNetLayer {
+
+	private Neuron[] neurons;
 	
-	Neuron[] neurons;
-	
-	public SigmoidalLayer(Neuron[] neurons) {
+	public OutputLayer(Neuron[] neurons) {
 		this.neurons = neurons;
 	}
-
+	
 	@Override
 	public int getNumOfNeurons() {
 		return neurons.length;
@@ -22,12 +22,12 @@ public class SigmoidalLayer implements NeuralNetLayer {
 
 	@Override
 	public IActivationFunction getActivationFunction() {
-		return new Sigmoid();
+		return new TangentHyperbolic();
 	}
 
 	@Override
 	public String toString() {
-		return "SigmoidalLayer [neurons=" + Arrays.toString(neurons) + "]";
+		return "OutputLayer [neurons=" + Arrays.toString(neurons) + "]";
 	}
 
 }

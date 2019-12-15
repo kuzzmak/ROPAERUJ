@@ -13,6 +13,8 @@ public class Dataset {
 	private static int window;
 	private static int numOfSamples;
 	private static List<Sample> data;
+	private static double min = Double.MAX_VALUE;
+	private static double max = Double.MIN_VALUE;
 	
 	
 	/**
@@ -32,9 +34,6 @@ public class Dataset {
 	public static void load() {
 		
 		List<Double> rawData = new ArrayList<>();
-		
-		double min = Double.MAX_VALUE;
-		double max = Double.MIN_VALUE;
 		
 		// ucitavanje podataka u listu
 		try(BufferedReader reader = new BufferedReader(new FileReader(path))){
@@ -75,11 +74,11 @@ public class Dataset {
 		for(int i = 0; i < numOfSamples; i++) {
 			
 			double[] x = new double[window];
-			double[] y = new double[] {rawData.get(i + window)};
+			double[] y = new double[] {normalizedData.get(i + window)};
 
 			for(int j = 0; j < window; j++) {
 			
-				x[j] = rawData.get(i + j);
+				x[j] = normalizedData.get(i + j);
 				
 			}
 			
@@ -99,4 +98,15 @@ public class Dataset {
 	public static int size() {
 		return data.size();
 	}
+
+
+	public static double getMin() {
+		return min;
+	}
+
+
+	public static double getMax() {
+		return max;
+	}
+	
 }

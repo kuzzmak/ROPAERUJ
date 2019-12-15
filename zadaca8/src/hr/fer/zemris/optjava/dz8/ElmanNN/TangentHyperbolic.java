@@ -1,4 +1,4 @@
-package hr.fer.zemris.optjava.dz8.NN;
+package hr.fer.zemris.optjava.dz8.ElmanNN;
 
 public class TangentHyperbolic implements IActivationFunction {
 

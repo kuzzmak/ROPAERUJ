@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="sortedCollection.Main.customComparator"/>
 <fullyQualifiedTypeName name="sortedCollection.OptimizationFunction"/>
 <fullyQualifiedTypeName name="sortedCollection.TournamentSelection"/>
 <fullyQualifiedTypeName name="sortedCollection.TwoPointCrossover"/>
@@ -53,11 +52,12 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.NN.NeuralNet"/>
 <fullyQualifiedTypeName name="java.lang.Math"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.NN.TangentHyperbolic"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.UniformCrossover"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.ICrossover"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.DiffEvol"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.ExponentialCrossover"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.Evaluator.IEvaluator"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.UniformCrossover"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.Data.Dataset"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.Evaluator.TDNNEvaluator"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.Evaluator.IEvaluator"/>
 </qualifiedTypeNameHistroy>

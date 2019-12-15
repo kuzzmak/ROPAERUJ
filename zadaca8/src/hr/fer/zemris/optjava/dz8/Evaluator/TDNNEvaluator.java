@@ -1,7 +1,7 @@
 package hr.fer.zemris.optjava.dz8.Evaluator;
 
 import hr.fer.zemris.optjava.dz8.Data.Dataset;
-import hr.fer.zemris.optjava.dz8.NN.NeuralNet;
+import hr.fer.zemris.optjava.dz8.TDNN.NeuralNet;
 
 public class TDNNEvaluator implements IEvaluator {
 	
