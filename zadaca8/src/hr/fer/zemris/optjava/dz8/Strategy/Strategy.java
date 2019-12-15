@@ -21,9 +21,9 @@ public class Strategy {
 		Strategy.crossover = temp[3];
 	}
 	
-	public double[] getBaseVector() {
-		
-	}
+//	public double[] getBaseVector() {
+//		
+//	}
 
 	public void setPopulation(List<double[]> population) {
 		this.population = population;

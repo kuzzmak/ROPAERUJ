@@ -19,36 +19,38 @@ public class DiffEvol {
 	private static int populationSize;
 	// maksimalan broj iteracija
 	private static int maxIterations;
+	// vjerojatnost mutacije
+	private double Cr;
 	// minimalna greska nakon koje staje algoritam
 	private static double minError;
 	// lista jedinki, trenutna populacija
 	private static List<double[]> population;
 	// polje gresaka trenutne populacije
 	private static double[] populationErrors;
-	// nacin krizanja
-	private static ICrossover crossover;
-	
+
 	private static Random rand;
-	
+	// najbolja jedinka
 	static double[] best;
+	// najmanja greska do sada
 	static double bestError = Double.MAX_VALUE;
 	
 	public DiffEvol(IEvaluator evaluator,
 			String strategy, 
 			int populationSize, 
 			int maxIterations, 
+			double Cr,
 			double minError, 
-			ICrossover crossover, 
 			double minVal, 
 			double maxVal) {
 		
 		DiffEvol.evaluator = evaluator;
+		this.strategy = strategy;
 		DiffEvol.populationSize = populationSize;
 		DiffEvol.maxIterations = maxIterations;
+		this.Cr = Cr;
 		DiffEvol.minError = minError;
 		DiffEvol.populationErrors = new double[populationSize];
 		this.population = makeInitialPopulation(populationSize, evaluator.getNumOfWeights(), minVal, maxVal);
-		DiffEvol.crossover = crossover;
 		DiffEvol.rand = new Random();
 	}
 	
@@ -59,7 +61,15 @@ public class DiffEvol {
 		String[] strategyStrings = strategy.split("/");
 		String baseVectorSelection = strategyStrings[1];
 		String linearCombinations = strategyStrings[2];
-		String croosoverType = strategyStrings[3];
+		String crossoverType = strategyStrings[3];
+		
+		ICrossover crossover;
+		
+		if(crossoverType == "exp") {
+			crossover = new ExponentialCrossover(Cr);
+		}else {
+			crossover = new UniformCrossover(Cr);
+		}
 		
 		while(iteration < maxIterations && bestError > minError) {
 			
