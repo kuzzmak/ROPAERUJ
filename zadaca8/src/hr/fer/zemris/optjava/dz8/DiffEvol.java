@@ -17,6 +17,8 @@ public class DiffEvol {
 	private static final double F = 0.5;
 	
 	private static final double K = 0.5 * (F + 1);
+	// vjerojatnost odabira samo mutacije ili rekombinacije kod either-or 
+	private double pf = 0.5;
 	// velicina populacije
 	private static int populationSize;
 	// maksimalan broj iteracija
@@ -61,19 +63,23 @@ public class DiffEvol {
 
 		ICrossover crossover;
 
+		// odabir krizanja
 		if (crossoverType == "exp") {
 			crossover = new ExponentialCrossover(Cr);
 		} else {
 			crossover = new UniformCrossover(Cr);
 		}
 
+		// sve dok je broj iteracije manji od maksimalnog ili greska najbolje 
+		// jedinke veca od najmanje prihvatljive greske
 		while (iteration < maxIterations && bestError > minError) {
 
 			List<double[]> newPopulation = new ArrayList<>();
+			// izracun greske svake jedinke populacije
 			evaluatePopulation(population);
 
 			for (int i = 0; i < populationSize; i++) {
-
+				// vec odabrani indeksi u populaciji
 				List<Integer> chosenIndexes = new ArrayList<>();
 
 				// ciljni vektor
@@ -96,17 +102,7 @@ public class DiffEvol {
 					chosenIndexes.add(index);
 				}
 
-//				List<double[]> linCombVectors = new ArrayList<>();
-//				// odabir vektora za linearnu kombinaciju
-//				for(int j = 0; j < Integer.parseInt(linearCombinations) * 2; j++) {
-//					
-//					int index = rand.nextInt(population.size());
-//					while(chosenIndexes.contains(index)) {
-//						index = rand.nextInt(population.size());
-//					}
-//					
-//				}
-
+				// odabir ostala dva vektora, nuzno da svi(r0, r1, r2 i target vector) budu razliciti
 				int index = rand.nextInt(population.size());
 				while (chosenIndexes.contains(index)) {
 					index = rand.nextInt(population.size());
@@ -120,37 +116,41 @@ public class DiffEvol {
 				}
 				double[] r2 = population.get(index);
 
-//				double[] mutantVector = new double[targetVector.length];
-//				
-//				
-//				for(int j = 0; j < targetVector.length; j++) {
-//					
-////					mutantVector[j] = r0[j] + F * (r1[j] - r2[j]);
-//					mutantVector[j] = r0[j] + (F + 0.001 * (rand.nextDouble() - 0.5)) * (r1[j] - r2[j]);
-//				}
-
-				double pf = 0.5;
+				// vektor s kojim se usporedjuje target vector, odnosno jedan od njih
+				// ide dalje u novu populaciju
 				double[] trialVector = new double[targetVector.length];
+				
+				if(crossoverType == "either-or") {
 
-				if (pf > rand.nextDouble()) {
-					for (int j = 0; j < targetVector.length; j++) {
+					if (pf > rand.nextDouble()) {
+						for (int j = 0; j < targetVector.length; j++) {
 
-						trialVector[j] = r0[j] + F * (r1[j] - r2[j]);
-//						trialVector[j] = r0[j] + (F + 0.001 * (rand.nextDouble() - 0.5)) * (r1[j] - r2[j]);
+							trialVector[j] = r0[j] + F * (r1[j] - r2[j]);
+						}
+					} else {
+						for (int j = 0; j < targetVector.length; j++) {
+
+							trialVector[j] = r0[j] + K *(r1[j] + r2[j] - 2 * r0[j]);
+						}
 					}
-				} else {
-					for (int j = 0; j < targetVector.length; j++) {
+					
+				}else {
+					
+					double[] mutantVector = new double[targetVector.length];
 
-						trialVector[j] = r0[j] + K *(r1[j] + r2[j] - 2 * r0[j]);
+					for(int j = 0; j < targetVector.length; j++) {
+						
+						mutantVector[j] = r0[j] + (F + 0.001 * (rand.nextDouble() - 0.5)) * (r1[j] - r2[j]);
 					}
+					
+					trialVector = crossover.cross(mutantVector, targetVector);
 				}
-
-//				double[] trialVector = crossover.cross(mutantVector, targetVector);
-
+				
+				// evaluacija target vectora, odnosno izracun greske
 				double errorTargetVector = evaluator.evaluate(targetVector);
-
+				// evaluacije trial vectora
 				double errorTrialVector = evaluator.evaluate(trialVector);
-
+				// bolji ide u sljedecu generaciju
 				if (errorTrialVector < errorTargetVector) {
 					newPopulation.add(trialVector);
 				} else {
@@ -162,8 +162,8 @@ public class DiffEvol {
 			iteration++;
 
 		}
+		// globalno najbolji je rjesenje
 		return best;
-
 	}
 
 	/**
