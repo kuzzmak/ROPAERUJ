@@ -7,8 +7,6 @@ import java.util.Random;
 import hr.fer.zemris.optjava.dz8.Crossover.ExponentialCrossover;
 import hr.fer.zemris.optjava.dz8.Crossover.ICrossover;
 import hr.fer.zemris.optjava.dz8.Crossover.UniformCrossover;
-import hr.fer.zemris.optjava.dz8.Data.Dataset;
-import hr.fer.zemris.optjava.dz8.Evaluator.ElmanEvaluator;
 import hr.fer.zemris.optjava.dz8.Evaluator.IEvaluator;
 
 public class DiffEvol {

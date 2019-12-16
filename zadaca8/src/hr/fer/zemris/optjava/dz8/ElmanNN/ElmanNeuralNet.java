@@ -139,6 +139,7 @@ public class ElmanNeuralNet {
 					// za prvi sloj se pribroje vrijednosti iz prethodnog konteksta 
 					// pomnozene sa svojim tezinama te se propuste kroz aktivacijsku funkciju
 					for(int j = 0; j < layers.get(1).getNumOfNeurons(); j++) {
+						// tezine kontekstnih neurona su na kraju polja tezina
 						value += this.context[n.getId() - inputNeurons.length] * this.weights[this.weights.length - numOfContextWeights + j];
 					}
 					// zapis izlaza odredjenog neurona
