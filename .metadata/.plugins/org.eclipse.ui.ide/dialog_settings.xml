@@ -43,4 +43,11 @@
 			<item value="C:\Users\kuzmi\Desktop\DZ-03"/>
 		</list>
 	</section>
+	<section name="CleanDialogSettings">
+		<item key="DIALOG_X_ORIGIN" value="433"/>
+		<item key="DIALOG_Y_ORIGIN" value="105"/>
+		<item key="DIALOG_WIDTH" value="500"/>
+		<item key="DIALOG_HEIGHT" value="419"/>
+		<item key="TOGGLE_SELECTED" value="true"/>
+	</section>
 </section>

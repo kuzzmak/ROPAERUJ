@@ -1,10 +1,14 @@
-package hr.fer.zemris.optjava.dz8;
+package hr.fer.zemris.optjava.dz8.ANNTrainer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import hr.fer.zemris.optjava.dz8.Crossover.ExponentialCrossover;
+import hr.fer.zemris.optjava.dz8.Crossover.ICrossover;
+import hr.fer.zemris.optjava.dz8.Crossover.UniformCrossover;
+import hr.fer.zemris.optjava.dz8.Data.Dataset;
+import hr.fer.zemris.optjava.dz8.Evaluator.ElmanEvaluator;
 import hr.fer.zemris.optjava.dz8.Evaluator.IEvaluator;
 
 public class DiffEvol {
@@ -15,7 +19,7 @@ public class DiffEvol {
 	private String strategy;
 	// faktor skaliranja razlike vektor kod konstrukcije mutiranog vektora
 	private static final double F = 0.5;
-	
+	// faktor kod rekombinacijskog vektora
 	private static final double K = 0.5 * (F + 1);
 	// vjerojatnost odabira samo mutacije ili rekombinacije kod either-or 
 	private double pf = 0.5;
@@ -31,12 +35,12 @@ public class DiffEvol {
 	private static List<double[]> population;
 	// polje gresaka trenutne populacije
 	private static double[] populationErrors;
-
-	private static Random rand;
 	// najbolja jedinka
 	static double[] best;
 	// najmanja greska do sada
 	static double bestError = Double.MAX_VALUE;
+	
+	private static Random rand;
 
 	public DiffEvol(IEvaluator evaluator, String strategy, int populationSize, int maxIterations, double Cr,
 			double minError, double minVal, double maxVal) {
@@ -48,14 +52,17 @@ public class DiffEvol {
 		this.Cr = Cr;
 		DiffEvol.minError = minError;
 		DiffEvol.populationErrors = new double[populationSize];
-		this.population = makeInitialPopulation(populationSize, evaluator.getNumOfWeights(), minVal, maxVal);
 		DiffEvol.rand = new Random();
+		DiffEvol.population = makeInitialPopulation(populationSize, evaluator.getNumOfWeights(), minVal, maxVal);
 	}
 
 	public double[] run() {
 
+		// trenutna iteracija algoritma
 		int iteration = 0;
 
+		// string koji sluzi kao strategija odabira baznog vektora, broj linearnih 
+		// kombinacija vektora i nacin krizanja vektora
 		String[] strategyStrings = strategy.split("/");
 		String baseVectorSelection = strategyStrings[1];
 		String linearCombinations = strategyStrings[2];
@@ -89,6 +96,7 @@ public class DiffEvol {
 				// odabir baznog vektora
 				double[] r0 = new double[evaluator.getNumOfWeights()];
 
+				// nasumican odabir baznog vektora
 				if (baseVectorSelection == "rand") {
 					int index = rand.nextInt(population.size());
 					while (chosenIndexes.contains(index)) {
@@ -97,6 +105,7 @@ public class DiffEvol {
 					r0 = population.get(index);
 					chosenIndexes.add(index);
 				} else {
+					// bazni vektor postaje najbolji u trenutnoj populaciji
 					int index = findBest();
 					r0 = population.get(index);
 					chosenIndexes.add(index);
@@ -120,6 +129,7 @@ public class DiffEvol {
 				// ide dalje u novu populaciju
 				double[] trialVector = new double[targetVector.length];
 				
+				// kao trial vector se odabire mutirani ili rekombinacijski vektor
 				if(crossoverType == "either-or") {
 
 					if (pf > rand.nextDouble()) {
@@ -180,14 +190,13 @@ public class DiffEvol {
 
 		List<double[]> population = new ArrayList<>();
 
-		Random rand = new Random();
-
 		for (int i = 0; i < populationSize; i++) {
 
 			double[] weights = new double[dimension];
 
 			for (int j = 0; j < dimension; j++) {
 
+				// svaka tezinska vrijednost je izmedju minVal i maxVal
 				weights[j] = minVal + rand.nextDouble() * (maxVal - minVal);
 
 			}
@@ -213,7 +222,6 @@ public class DiffEvol {
 				bestError = error;
 				best = population.get(i);
 			}
-
 		}
 	}
 
@@ -234,8 +242,6 @@ public class DiffEvol {
 				index = i;
 			}
 		}
-
 		return index;
 	}
-
 }
