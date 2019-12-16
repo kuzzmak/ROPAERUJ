@@ -16,7 +16,7 @@ public class ANNTrainer {
 		
 		String path = "data\\08-Laser-generated-data.txt";
 					  
-		int window = 1;
+		int window = 8;
 		int numOfSamples = 600;
 		
 		Dataset data = new Dataset(path, window, numOfSamples);
@@ -28,10 +28,10 @@ public class ANNTrainer {
 //		
 //		System.out.println(net.calculateError());
 		
-		int[] architecture = new int[] {window,10,1};
+		int[] architecture = new int[] {window,5,4,1};
 		IEvaluator evaluator = new TDNNEvaluator(architecture, data);
 		String strategy = "DE/best/2/bin";
-		int populationSize = 40;
+		int populationSize = 100;
 		int maxIterations = 500;
 		double Cr = 0.98;
 		double minError = 0.02;
