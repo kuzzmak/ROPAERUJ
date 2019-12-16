@@ -111,7 +111,7 @@ public class ElmanNeuralNet {
 		// za svaki sloj izmedju ulaznog i izlaznog
 		for (int i = 1; i < this.layers.size(); i++) {
 			
-			// neuroni speceificni za svaki sloj mreze, od prvog pa nadalje
+			// neuroni specificni za svaki sloj mreze, od prvog pa nadalje
 			Neuron[] layerNeurons = this.layers.get(i).getNeurons();
 			// aktivacijska funkcija pojedinog sloja
 			IActivationFunction layerFunction = this.layers.get(i).getActivationFunction();
@@ -132,15 +132,19 @@ public class ElmanNeuralNet {
 				}
 				// dodavanje biasa
 				value += weights[numOfWeight];
-				// propustanje kroz aktivacijsku funkciju
+				// za svaki sloj koji nije prvo
 				if(i != 1) {
 					this.nets[n.getId()] = layerFunction.valueAt(value);
 				}else {
+					// za prvi sloj se pribroje vrijednosti iz prethodnog konteksta 
+					// pomnozene sa svojim tezinama te se propuste kroz aktivacijsku funkciju
 					for(int j = 0; j < layers.get(1).getNumOfNeurons(); j++) {
 						value += this.context[n.getId() - inputNeurons.length] * this.weights[this.weights.length - numOfContextWeights + j];
-						this.context[n.getId() - inputNeurons.length] *= this.weights[this.weights.length - numOfContextWeights + j];
 					}
+					// zapis izlaza odredjenog neurona
 					this.nets[n.getId()] = layerFunction.valueAt(value);
+					// azuriranje konteksta odredjenog neurona za sljedecu iteraciju
+					this.context[n.getId() - inputNeurons.length] = this.nets[n.getId()];
 				}
 				numOfWeight++;
 			}

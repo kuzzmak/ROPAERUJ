@@ -17,17 +17,17 @@ public class ANNTrainer {
 		
 		String path = "data\\08-Laser-generated-data.txt";
 					  
-		int window = 8;
+		int window = 1;
 		int numOfSamples = 600;
 		
 		Dataset data = new Dataset(path, window, numOfSamples);
 		Dataset.load();
 		
-		int[] architecture = new int[] {window,5,1};
+		int[] architecture = new int[] {window,5,4,1};
 		
 //		int[] architecture = new int[] {window,5,4,1};
-		IEvaluator evaluator = new TDNNEvaluator(architecture, data);
-//		IEvaluator evaluator = new ElmanEvaluator(architecture, data);
+//		IEvaluator evaluator = new TDNNEvaluator(architecture, data);
+		IEvaluator evaluator = new ElmanEvaluator(architecture, data);
 		String strategy = "DE/best/2/either-or";
 		int populationSize = 100;
 		int maxIterations = 500;
