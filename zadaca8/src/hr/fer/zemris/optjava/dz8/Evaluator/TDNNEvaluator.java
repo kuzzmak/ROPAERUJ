@@ -23,4 +23,9 @@ public class TDNNEvaluator implements IEvaluator {
 		return net.getNumOfWeights();
 	}
 
+	@Override
+	public double[] getContext() {
+		return null;
+	}
+
 }

@@ -3,8 +3,6 @@ package hr.fer.zemris.optjava.dz8.ANNTrainer;
 import java.util.Arrays;
 import java.util.Random;
 
-import javax.swing.text.ElementIterator;
-
 import hr.fer.zemris.optjava.dz8.Data.Dataset;
 import hr.fer.zemris.optjava.dz8.Evaluator.ElmanEvaluator;
 import hr.fer.zemris.optjava.dz8.Evaluator.IEvaluator;
@@ -50,13 +48,14 @@ public class ANNTrainer {
 
 			IEvaluator evaluator = new TDNNEvaluator(architecture, data);
 			DiffEvol alg = new DiffEvol(evaluator, strategy, populationSize, maxIterations, Cr, minError, minVal, maxVal);
-			double[] solution = alg.run();
+			double[] weights = alg.run();
 			
 		} else {
 			
 			IEvaluator evaluator = new ElmanEvaluator(architecture, data);
 			DiffEvol alg = new DiffEvol(evaluator, strategy, populationSize, maxIterations, Cr, minError, minVal, maxVal);
-			double[] solution = alg.run();
+			double[] weights = alg.run();
+			double[] context = evaluator.getContext();
 		}
 
 	}

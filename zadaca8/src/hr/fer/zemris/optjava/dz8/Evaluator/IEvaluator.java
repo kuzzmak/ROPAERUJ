@@ -4,5 +4,5 @@ public interface IEvaluator {
 	
 	public double evaluate(double[] x);
 	public int getNumOfWeights();
-
+	public double[] getContext();
 }

@@ -23,4 +23,9 @@ public class ElmanEvaluator implements IEvaluator {
 		return net.getNumOfWeights();
 	}
 
+	@Override
+	public double[] getContext() {
+		return net.getContext();
+	}
+
 }

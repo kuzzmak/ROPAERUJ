@@ -231,6 +231,11 @@ public class ElmanNeuralNet {
 	}
 	
 	
+	public double[] getContext() {
+		return context;
+	}
+
+
 	@Override
 	public String toString() {
 
