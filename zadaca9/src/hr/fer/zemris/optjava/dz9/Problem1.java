@@ -1,9 +1,7 @@
 package hr.fer.zemris.optjava.dz9;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import hr.fer.zemris.optjava.dz9.Functions.IFunction;
 
@@ -13,10 +11,12 @@ public class Problem1 implements MOOPProblem {
 	private int dimension;
 	
 	public Problem1() {
+		
 		this.objectiveFunctions = new ArrayList<>();
 	}
 	
 	public Problem1(List<IFunction> objectiveFunctions) {
+		
 		this.objectiveFunctions = objectiveFunctions;
 		this.dimension = this.objectiveFunctions.get(0).getDimension();
 	}
@@ -37,7 +37,7 @@ public class Problem1 implements MOOPProblem {
 		double[] value = new double[this.dimension];
 		
 		for(int i = 0; i < this.dimension; i++) {
-			value[i] = this.objectiveFunctions.get(i).valueAt(point);
+			value[i] = this.objectiveFunctions.get(i).valueAt(point, true);
 		}
 		
 		return value;
@@ -45,8 +45,8 @@ public class Problem1 implements MOOPProblem {
 
 	@Override
 	public int getDimension() {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		return this.dimension;
 	}
 
 }

@@ -1,8 +1,7 @@
 package hr.fer.zemris.optjava.dz9;
 
-import java.util.Arrays;
-
 import hr.fer.zemris.optjava.dz9.Functions.IFunction;
+import hr.fer.zemris.optjava.dz9.NSGA.NSGA;
 
 public class MOOP {
 
@@ -11,8 +10,9 @@ public class MOOP {
 		IFunction f1 = new IFunction() {
 
 			@Override
-			public double valueAt(double[] point) {
-				return point[0];
+			public double valueAt(double[] point, boolean minimize) {
+				if(minimize) return point[0];
+				return -point[0];
 			}
 
 			@Override
@@ -30,8 +30,9 @@ public class MOOP {
 		IFunction f2 = new IFunction() {
 
 			@Override
-			public double valueAt(double[] point) {
-				return (1 + point[1]) / point[0];
+			public double valueAt(double[] point, boolean minimize) {
+				if(minimize) return (1 + point[1]) / point[0];
+				return -(1 + point[1]) / point[0];
 			}
 
 			@Override
@@ -50,8 +51,9 @@ public class MOOP {
 		problem1.add(f1);
 		problem1.add(f2);
 		
-		double[] value = problem1.evaluate(new double[] {1,1});
-		System.out.println(Arrays.toString(value));
+		int populationSize = 10;
+		NSGA nsga = new NSGA(problem1, populationSize);
+		nsga.run();
 
 	}
 
