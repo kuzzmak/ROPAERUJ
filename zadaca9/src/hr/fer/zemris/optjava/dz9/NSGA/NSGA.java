@@ -50,6 +50,11 @@ public class NSGA {
 		
 	}
 	
+	/**
+	 * Funkcija za stvaranje inicijalne populacije jedinki
+	 * 
+	 * @return lista jedinki
+	 */
 	public List<double[]> makePopulation(){
 		
 		// lista stvorenih jedinki
@@ -68,6 +73,7 @@ public class NSGA {
 			
 			for(int j = 0; j < this.dimension; j++) {
 				
+				// ogranicenja za svaku komponentu rjesenja
 				double min = constraints.get(j)[0];
 				double max = constraints.get(j)[1];
 				
@@ -131,7 +137,6 @@ public class NSGA {
 					if(funcVal_i[k] > funcVal_j[k]) {
 						flag = false;
 					}
-					
 				}
 				
 				// ako jedinka dominira nad nekom jedinom poveca se brojac
