@@ -14,60 +14,54 @@ public class MOOP {
 
 	public static void main(String[] args) {
 
-//		IFunction f1 = new IFunction() {
-//
-//			@Override
-//			public double valueAt(double[] point, boolean minimize) {
-//				if(minimize) return point[0];
-//				return -point[0];
-//			}
-//
-//			@Override
-//			public int getDimension() {
-//				return 2;
-//			}
-//
-//			@Override
-//			public double[] getConstraints() {
-//
-//				return new double[] { 0.1, 1 };
-//			}
-//		};
-//
-//		IFunction f2 = new IFunction() {
-//
-//			@Override
-//			public double valueAt(double[] point, boolean minimize) {
-//				if(minimize) return (1 + point[1]) / point[0];
-//				return -(1 + point[1]) / point[0];
-//			}
-//
-//			@Override
-//			public int getDimension() {
-//				return 2;
-//			}
-//
-//			@Override
-//			public double[] getConstraints() {
-//
-//				return new double[] { 0, 5 };
-//			}
-//		};
-//		
-//		MOOPProblem problem1 = new Problem1();
-//		problem1.add(f1);
-//		problem1.add(f2);
-//		
-//		int populationSize = 10;
-//		NSGA nsga = new NSGA(problem1, populationSize);
-//		nsga.run();
-		functionValues = new ArrayList<>();
-		functionValues.add(new double[] {6,4});
-		functionValues.add(new double[] {5,2});
-		functionValues.add(new double[] {4,1});
-		functionValues.add(new double[] {3,3});
-		functionValues.add(new double[] {2,2});
-		makeFronts();
+		IFunction f1 = new IFunction() {
+
+			@Override
+			public double valueAt(double[] point, boolean minimize) {
+				if(minimize) return point[0];
+				return -point[0];
+			}
+
+			@Override
+			public int getDimension() {
+				return 2;
+			}
+
+			@Override
+			public double[] getConstraints() {
+
+				return new double[] { 0.1, 1 };
+			}
+		};
+
+		IFunction f2 = new IFunction() {
+
+			@Override
+			public double valueAt(double[] point, boolean minimize) {
+				if(minimize) return (1 + point[1]) / point[0];
+				return -(1 + point[1]) / point[0];
+			}
+
+			@Override
+			public int getDimension() {
+				return 2;
+			}
+
+			@Override
+			public double[] getConstraints() {
+
+				return new double[] { 0, 5 };
+			}
+		};
+		
+		MOOPProblem problem1 = new Problem1();
+		problem1.add(f1);
+		problem1.add(f2);
+		
+		int populationSize = 10;
+		NSGA nsga = new NSGA(problem1, populationSize);
+		nsga.run();
+		
 
 	}
 
@@ -138,7 +132,6 @@ public class MOOP {
 			List<Integer> front = new ArrayList<>();
 
 			for(int i = 0; i < population.size(); i++) {
-				
 				
 				if(isDominated.get(i) == 0) {
 					
