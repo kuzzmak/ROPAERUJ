@@ -35,7 +35,7 @@ public class NSGA {
 
 		List<double[]> population = this.makePopulation();
 		this.evaluatePopulation(population);
-		
+
 		System.out.println("Function values");
 		for (int i = 0; i < this.functionValues.size(); i++) {
 			System.out.println(Arrays.toString(this.functionValues.get(i)));
@@ -44,7 +44,6 @@ public class NSGA {
 
 		System.out.println();
 		this.makeFronts(population);
-		
 
 	}
 
@@ -109,10 +108,12 @@ public class NSGA {
 
 		// lista jedinki kojima dominira trenutna jedinka
 		List<List<Integer>> dominates = new ArrayList<>();
+		
 		// stvaranje lista dominacije za svaku jedinku
 		for (int i = 0; i < this.populationSize; i++) {
 			dominates.add(new ArrayList<>());
 		}
+		
 		// broj jedinki koje dominiraju trenutnom jedinkom
 		List<Integer> isDominated = new ArrayList<>();
 		for (int i = 0; i < this.populationSize; i++) {
@@ -150,70 +151,61 @@ public class NSGA {
 
 			}
 		}
-		
+
 		System.out.println();
 		System.out.println("isDominated:");
 		System.out.println(isDominated);
 		System.out.println();
-		
+
 		System.out.println("dominates");
-		for(int i = 0; i < dominates.size(); i++) {
+		for (int i = 0; i < dominates.size(); i++) {
 			System.out.println(dominates.get(i));
 		}
 		System.out.println();
-		
 
-		while(population.size() > 0) {
-			
+		int addedPoints = 0;
+		while (addedPoints < this.populationSize) {
+
 			List<double[]> front = new ArrayList<>();
 
-			for(int i = 0; i < population.size(); i++) {
-				
-				if(isDominated.get(i) == 0) {
+			for (int i = 0; i < population.size(); i++) {
+
+				if (isDominated.get(i) == 0) {
 					
+					isDominated.set(i, -1);
 					front.add(population.get(i));
-					
+					addedPoints++;
 					
 				}
 			}
-			
-			
-			for(double[] d: front) {
-				
+
+			for (double[] d: front) {
+
 				int index = population.indexOf(d);
 				
-				for(int in: dominates.get(index)) {
-					
+				for (int j : dominates.get(index)) {
+
 					System.out.println();
 					System.out.println("isDominated:");
 					System.out.println(isDominated);
 					System.out.println();
-					
-					isDominated.set(in, isDominated.get(in) - 1);
-					
-					
-					
+
+					isDominated.set(j, isDominated.get(j) - 1);
 				}
-				
-				isDominated.remove(index);
-				dominates.remove(index);
-				population.remove(d);
-				
 			}
-			
+
 			
 			fronts.add(front);
 		}
 		System.out.println("fronte");
-		for(int i = 0; i < fronts.size(); i++) {
+		for (int i = 0; i < fronts.size(); i++) {
 			System.out.println("fronta: " + i);
-			for(int j = 0; j < fronts.get(i).size(); j++) {
+			for (int j = 0; j < fronts.get(i).size(); j++) {
 				System.out.println("\t" + Arrays.toString(fronts.get(i).get(j)));
-				
+
 			}
-			
+
 		}
 	}
-	
-	
+
 }
