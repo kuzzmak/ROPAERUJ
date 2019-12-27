@@ -120,6 +120,7 @@ public class NSGA {
 			isDominated.add(0);
 		}
 
+		// lista svih fronti
 		fronts = new ArrayList<>();
 
 		for (int i = 0; i < this.populationSize; i++) {
@@ -152,60 +153,52 @@ public class NSGA {
 			}
 		}
 
-		System.out.println();
-		System.out.println("isDominated:");
-		System.out.println(isDominated);
-		System.out.println();
-
-		System.out.println("dominates");
-		for (int i = 0; i < dominates.size(); i++) {
-			System.out.println(dominates.get(i));
-		}
-		System.out.println();
-
+		// broj jedinki koje su rasporedjene u fronte
 		int addedPoints = 0;
 		while (addedPoints < this.populationSize) {
 
+			// trenutna fronta
 			List<double[]> front = new ArrayList<>();
 
 			for (int i = 0; i < population.size(); i++) {
-
+				
+				
+				// ako neka jedinka nije dominirana nekom drugom, doda se u frontu
 				if (isDominated.get(i) == 0) {
 					
+					// -1 su vec dodane jedinke, odnosno one se preskac u sljedecim iteracijama
 					isDominated.set(i, -1);
 					front.add(population.get(i));
 					addedPoints++;
-					
 				}
 			}
 
+			// za svaku jedinku u fronti
 			for (double[] d: front) {
 
 				int index = population.indexOf(d);
 				
 				for (int j : dominates.get(index)) {
 
-					System.out.println();
-					System.out.println("isDominated:");
-					System.out.println(isDominated);
-					System.out.println();
-
+					// za svaku jedinku u fronti se pogleda skup jedinki kojima ona dominira,
+					// a zatim se tim jedinkama umanji brojac jedinki koje njima dominiraju
 					isDominated.set(j, isDominated.get(j) - 1);
 				}
 			}
 
-			
 			fronts.add(front);
 		}
-		System.out.println("fronte");
-		for (int i = 0; i < fronts.size(); i++) {
-			System.out.println("fronta: " + i);
-			for (int j = 0; j < fronts.get(i).size(); j++) {
-				System.out.println("\t" + Arrays.toString(fronts.get(i).get(j)));
-
-			}
-
-		}
+//		System.out.println("fronte");
+//		for (int i = 0; i < fronts.size(); i++) {
+//			System.out.println("fronta: " + i);
+//			for (int j = 0; j < fronts.get(i).size(); j++) {
+//				System.out.println("\t" + Arrays.toString(fronts.get(i).get(j)) + " " + Arrays.toString(problem.evaluate(fronts.get(i).get(j))));
+//
+//			}
+//
+//		}
 	}
+	
+	
 
 }
