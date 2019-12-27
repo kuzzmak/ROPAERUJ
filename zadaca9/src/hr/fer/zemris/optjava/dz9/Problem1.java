@@ -49,4 +49,8 @@ public class Problem1 implements MOOPProblem {
 		return this.dimension;
 	}
 
+	public List<IFunction> getObjectiveFunctions() {
+		return this.objectiveFunctions;
+	}
+
 }
