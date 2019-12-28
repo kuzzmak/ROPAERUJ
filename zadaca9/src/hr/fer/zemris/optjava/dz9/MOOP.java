@@ -59,7 +59,11 @@ public class MOOP {
 		problem1.add(f2);
 		
 		int populationSize = 10;
-		NSGA nsga = new NSGA(problem1, populationSize);
+		String distanceString = "decision-space";
+		double sigmaShare = 0.5;
+		double alpha = 2;
+		
+		NSGA nsga = new NSGA(problem1, populationSize, distanceString, sigmaShare, alpha);
 		nsga.run();
 		
 

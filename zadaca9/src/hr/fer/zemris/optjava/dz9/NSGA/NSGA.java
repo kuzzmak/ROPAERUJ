@@ -16,19 +16,37 @@ public class NSGA {
 	private int populationSize;
 	// dimenzionalnost pojedine jedinke
 	private int dimension;
+	// vrsta udaljenosti izmedju jedinki
+	private String distanceString;
+	// prag dijeljenje fitnesa
+	private double sigmaShare;
+	// konstanta koja daje oblik funkcije dijeljenja fitnesa
+	private double alpha;
 	// paretove fronte
 	private List<List<double[]>> fronts;
+
+	// minimumi i maksimumi pojedinih komponenata trenutne populacije
+	private double[] min;
+	private double[] max;
+	// konstanta kojojm se mnozi najmanje fitness trenutne fronte i prosljedjuje sljedecoj
+	private double p = 0.8;
 
 	// iznos dobrote pojedine jedinke za svaku od optimizacijskih funkcija
 	private List<double[]> functionValues;
 
 	private Random rand;
 
-	public NSGA(MOOPProblem problem, int populationSize) {
+	public NSGA(MOOPProblem problem, int populationSize, String distanceString, double sigmaShare, double alpha) {
 		this.problem = problem;
 		this.populationSize = populationSize;
 		this.dimension = problem.getDimension();
+		this.distanceString = distanceString;
+		this.sigmaShare = sigmaShare;
+		this.alpha = alpha;
 		this.rand = new Random();
+
+		this.min = new double[this.dimension];
+		this.max = new double[this.dimension];
 	}
 
 	public void run() {
@@ -36,14 +54,29 @@ public class NSGA {
 		List<double[]> population = this.makePopulation();
 		this.evaluatePopulation(population);
 
-		System.out.println("Function values");
-		for (int i = 0; i < this.functionValues.size(); i++) {
-			System.out.println(Arrays.toString(this.functionValues.get(i)));
-		}
-		System.out.println();
+//		for(int i = 0; i < population.size(); i++) {
+//			System.out.println(Arrays.toString(population.get(i)));
+//		}
 
-		System.out.println();
+//		System.out.println("Function values");
+//		for (int i = 0; i < this.functionValues.size(); i++) {
+//			System.out.println(Arrays.toString(this.functionValues.get(i)));
+//		}
+//		System.out.println();
+//
+//		System.out.println();
 		this.makeFronts(population);
+		
+		List<double[]> front1 = this.fronts.get(0);
+		
+		System.out.println("nieche count");
+		double[] niecheCount = this.calculateNiecheCount(front1);
+		System.out.println(Arrays.toString(niecheCount));
+		
+
+		double[] frontFitness = this.calculateFrontFitness(front1, front1.size());
+		System.out.println("front fitness");
+		System.out.println(Arrays.toString(frontFitness));
 
 	}
 
@@ -90,11 +123,25 @@ public class NSGA {
 	 */
 	public void evaluatePopulation(List<double[]> population) {
 
+		Arrays.fill(this.min, Double.MAX_VALUE);
+		Arrays.fill(this.max, Double.MIN_VALUE);
+
 		this.functionValues = new ArrayList<>();
 
 		for (int i = 0; i < this.populationSize; i++) {
 
 			this.functionValues.add(this.problem.evaluate(population.get(i)));
+
+			// odredjivanje minimuma i maksimuma pojedine komponente trenutne populacije
+			for (int j = 0; j < this.dimension; j++) {
+				if (population.get(i)[j] > this.max[j]) {
+					this.max[j] = population.get(i)[j];
+				}
+
+				if (population.get(i)[j] < this.min[j]) {
+					this.min[j] = population.get(i)[j];
+				}
+			}
 
 		}
 	}
@@ -108,12 +155,12 @@ public class NSGA {
 
 		// lista jedinki kojima dominira trenutna jedinka
 		List<List<Integer>> dominates = new ArrayList<>();
-		
+
 		// stvaranje lista dominacije za svaku jedinku
 		for (int i = 0; i < this.populationSize; i++) {
 			dominates.add(new ArrayList<>());
 		}
-		
+
 		// broj jedinki koje dominiraju trenutnom jedinkom
 		List<Integer> isDominated = new ArrayList<>();
 		for (int i = 0; i < this.populationSize; i++) {
@@ -161,11 +208,10 @@ public class NSGA {
 			List<double[]> front = new ArrayList<>();
 
 			for (int i = 0; i < population.size(); i++) {
-				
-				
+
 				// ako neka jedinka nije dominirana nekom drugom, doda se u frontu
 				if (isDominated.get(i) == 0) {
-					
+
 					// -1 su vec dodane jedinke, odnosno one se preskac u sljedecim iteracijama
 					isDominated.set(i, -1);
 					front.add(population.get(i));
@@ -174,10 +220,10 @@ public class NSGA {
 			}
 
 			// za svaku jedinku u fronti
-			for (double[] d: front) {
+			for (double[] d : front) {
 
 				int index = population.indexOf(d);
-				
+
 				for (int j : dominates.get(index)) {
 
 					// za svaku jedinku u fronti se pogleda skup jedinki kojima ona dominira,
@@ -198,7 +244,102 @@ public class NSGA {
 //
 //		}
 	}
-	
-	
 
+	/**
+	 * Funkcija za izracun udaljenosti dvije tocke Ta udaljenost moze biti u
+	 * prostoru rjesenja ili u prostoru kriterijskih funkcija
+	 * 
+	 * @param p1 prva tocka
+	 * @param p2 druga tocka
+	 * @return udaljenost tih tocaka
+	 */
+	public double distance(double[] p1, double[] p2) {
+
+		if (this.distanceString == "decision-space") {
+
+			double distance = 0;
+
+			for (int i = 0; i < this.dimension; i++) {
+
+				distance += Math.pow((p1[i] - p2[i]) / (this.max[i] - this.min[i]), 2);
+			}
+
+			return Math.sqrt(distance);
+
+		} else {
+			return 0;
+		}
+
+	}
+
+	/**
+	 * Funkcija za izracun udaljenosti izedju tocaka neke fronte
+	 * 
+	 * @param front fronta za koju se racunaju udaljenosti
+	 * @return matrica udaljenosti gdje svaki i-ti redak predstavlja udaljenosti do ostalih tocaka 
+	 */
+	public double[][] calculateDistances(List<double[]> front) {
+
+		double[][] distances = new double[front.size()][front.size()];
+
+		for (int i = 0; i < front.size(); i++) {
+			for (int j = 0; j < front.size(); j++) {
+				// tocka je od sebe udaljena 0
+				if (i == j) {
+					distances[i][j] = 0;
+				} else {
+					distances[i][j] = this.distance(front.get(i), front.get(j));
+				}
+			}
+		}
+		return distances;
+	}
+
+	/**
+	 * Funkcija za izracun gudtoce nise za pojedinu jedinku fronte
+	 * 
+	 * @param front fronta za koju se izracunava
+	 * @return polje gustoca nisa 
+	 */
+	public double[] calculateNiecheCount(List<double[]> front) {
+		
+		double[][] distances = this.calculateDistances(front);
+		
+		double[] niecheCount = new double[front.size()];
+		Arrays.fill(niecheCount, 0);
+		
+		for(int i = 0; i < front.size(); i++) {
+			
+			for(int j = 0; j < front.size(); j++) {
+				
+				if(distances[i][j] < this.sigmaShare) {
+					
+					// funkcija dijeljenja
+					niecheCount[i] += 1 - Math.pow(distances[i][j] / this.sigmaShare, 2);
+				}
+			}
+		}
+		
+		return niecheCount;
+	}
+	
+	/**
+	 * Funkcija za izracun fitnesa pojedine fronte
+	 * 
+	 * @param front fronta ciji se fitnes racuna
+	 * @return polje fitnesa pojedine jedinke u fronti
+	 */
+	public double[] calculateFrontFitness(List<double[]> front, double fitness) {
+		
+		double[] frontFitness = new double[front.size()];
+		Arrays.fill(frontFitness, fitness);
+		
+		double[] niecheCount = this.calculateNiecheCount(front);
+		
+		for(int i = 0; i < front.size(); i++) {
+			frontFitness[i] /= niecheCount[i];
+		}
+		
+		return frontFitness;
+	}
 }
