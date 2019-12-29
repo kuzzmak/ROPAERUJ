@@ -2,6 +2,7 @@ package hr.fer.zemris.optjava.dz9.NSGA;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -34,6 +35,10 @@ public class NSGA {
 
 	// iznos dobrote pojedine jedinke za svaku od optimizacijskih funkcija
 	private List<double[]> functionValues;
+
+	private List<double[]> fitness;
+
+	private List<Double> sortedFitness;
 
 	private Random rand;
 
@@ -68,24 +73,53 @@ public class NSGA {
 //		System.out.println();
 		this.makeFronts(population);
 
-		List<double[]> fitness = this.calcuateFitness();
+		this.fitness = this.calcuateFitness();
+		
+		System.out.println("populacija");
+		for(int i = 0; i < population.size(); i++) {
+			System.out.println(Arrays.toString(population.get(i)));
+		}
+		System.out.println();
 
+		
+		System.out.println("fronte");
+		
+		for(int i = 0; i < fronts.size(); i++) {
+			System.out.println("fronta: " + i);
+			for(int j = 0; j < fronts.get(i).size(); j++) {
+				System.out.println("\t" + Arrays.toString(fronts.get(i).get(j)));
+			}
+			
+		}
+		
+		
+		
+		
 		System.out.println("fitness");
 		for (int i = 0; i < fitness.size(); i++) {
 			System.out.println(Arrays.toString(fitness.get(i)));
 		}
-		
-		System.out.println("front0");
-		for(int i = 0; i < fronts.get(0).size(); i++) {
-			System.out.println(Arrays.toString(fronts.get(0).get(i)));
-		}
+
+		List<double[]> populationSorted = this.populationSort();
 		System.out.println();
+		System.out.println("population sorted");
 		
-		System.out.println("dorted front 0");
-		List<double[]> sortedFront = this.frontSort(fronts.get(0), fitness.get(0));
-		for(int i = 0; i < sortedFront.size(); i++) {
-			System.out.println(Arrays.toString(sortedFront.get(i)));
+		for(int i = 0; i < populationSorted.size(); i++) {
+			
+			System.out.println(Arrays.toString(populationSorted.get(i)));
 		}
+
+//		System.out.println("front0");
+//		for(int i = 0; i < fronts.get(0).size(); i++) {
+//			System.out.println(Arrays.toString(fronts.get(0).get(i)));
+//		}
+//		System.out.println();
+//		
+//		System.out.println("dorted front 0");
+//		List<double[]> sortedFront = this.frontSort(fronts.get(0), fitness.get(0));
+//		for(int i = 0; i < sortedFront.size(); i++) {
+//			System.out.println(Arrays.toString(sortedFront.get(i)));
+//		}
 
 	}
 
@@ -397,6 +431,12 @@ public class NSGA {
 		return fitness;
 	}
 
+	/**
+	 * Funkcija za odabir indeksa s maksimalnim fitnesom
+	 * 
+	 * @param frontFitness trenutno promatrana fronta
+	 * @return indeks s maksimalnim fitnesom
+	 */
 	public int maxIndex(double[] frontFitness) {
 		int maxAt = 0;
 
@@ -407,24 +447,62 @@ public class NSGA {
 	}
 
 	/**
-	 * Funkcija za sortiranje jedinki u fronti prema njihovom indeksu 
+	 * Funkcija za sortiranje jedinki u fronti prema njihovom fitnesu
 	 * 
-	 * @param front
-	 * @param frontFitness
+	 * @param front fronta koja se sortira
+	 * @param frontFitness fitness konkretne fronte
 	 */
 	public List<double[]> frontSort(List<double[]> front, double[] frontFitness) {
 
 		double[] fitnessCopy = frontFitness.clone();
 		List<double[]> sortedFront = new ArrayList<>();
-		
-		for(int i = 0; i < front.size(); i++) {
-			
+
+		for (int i = 0; i < front.size(); i++) {
+
 			int maxIndex = this.maxIndex(fitnessCopy);
 			sortedFront.add(front.get(maxIndex));
 			fitnessCopy[maxIndex] = -1;
 		}
-		
+
 		return sortedFront;
 	}
+
+	/**
+	 * Funkcija koja fitness svake fronte stavi u listu i sortira padajuce
+	 * 
+	 */
+	public void sortFitness() {
+		
+		this.sortedFitness = new ArrayList<>();
+
+		for (int i = 0; i < this.fitness.size(); i++) {
+
+			for (int j = 0; j < this.fitness.get(i).length; j++) {
+
+				sortedFitness.add(this.fitness.get(i)[j]);
+			}
+		}
+
+		Collections.sort(sortedFitness, Collections.reverseOrder());
+	}
+
+	public List<double[]> populationSort() {
+		
+		List<double[]> sortedPopulation = new ArrayList<>();
+		
+		for(int i = 0; i < this.fronts.size(); i++) {
+			
+			sortedPopulation.addAll(this.frontSort(this.fronts.get(i), this.fitness.get(i)));
+		}
+		
+		return sortedPopulation;
+	}
+	
+//	public double[] proportionateSelection() {
+//		
+//		
+//		
+//		return 0;
+//	}
 
 }
