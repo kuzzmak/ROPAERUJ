@@ -41,7 +41,6 @@
 <fullyQualifiedTypeName name="java.util.Random"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.Util"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.NN.NeuralNet"/>
-<fullyQualifiedTypeName name="java.lang.Math"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.NN.TangentHyperbolic"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.ICrossover"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.DiffEvol"/>
@@ -60,4 +59,5 @@
 <fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz9.NSGA.NSGA"/>
+<fullyQualifiedTypeName name="java.lang.Math"/>
 </qualifiedTypeNameHistroy>

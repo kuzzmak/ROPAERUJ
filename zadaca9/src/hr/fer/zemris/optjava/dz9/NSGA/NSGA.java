@@ -28,7 +28,8 @@ public class NSGA {
 	// minimumi i maksimumi pojedinih komponenata trenutne populacije
 	private double[] min;
 	private double[] max;
-	// konstanta kojojm se mnozi najmanje fitness trenutne fronte i prosljedjuje sljedecoj
+	// konstanta kojojm se mnozi najmanje fitness trenutne fronte i prosljedjuje
+	// sljedecoj
 	private double p = 0.8;
 
 	// iznos dobrote pojedine jedinke za svaku od optimizacijskih funkcija
@@ -66,17 +67,25 @@ public class NSGA {
 //
 //		System.out.println();
 		this.makeFronts(population);
-		
-		List<double[]> front1 = this.fronts.get(0);
-		
-		System.out.println("nieche count");
-		double[] niecheCount = this.calculateNiecheCount(front1);
-		System.out.println(Arrays.toString(niecheCount));
-		
 
-		double[] frontFitness = this.calculateFrontFitness(front1, front1.size());
-		System.out.println("front fitness");
-		System.out.println(Arrays.toString(frontFitness));
+		List<double[]> fitness = this.calcuateFitness();
+
+		System.out.println("fitness");
+		for (int i = 0; i < fitness.size(); i++) {
+			System.out.println(Arrays.toString(fitness.get(i)));
+		}
+		
+		System.out.println("front0");
+		for(int i = 0; i < fronts.get(0).size(); i++) {
+			System.out.println(Arrays.toString(fronts.get(0).get(i)));
+		}
+		System.out.println();
+		
+		System.out.println("dorted front 0");
+		List<double[]> sortedFront = this.frontSort(fronts.get(0), fitness.get(0));
+		for(int i = 0; i < sortedFront.size(); i++) {
+			System.out.println(Arrays.toString(sortedFront.get(i)));
+		}
 
 	}
 
@@ -276,7 +285,8 @@ public class NSGA {
 	 * Funkcija za izracun udaljenosti izedju tocaka neke fronte
 	 * 
 	 * @param front fronta za koju se racunaju udaljenosti
-	 * @return matrica udaljenosti gdje svaki i-ti redak predstavlja udaljenosti do ostalih tocaka 
+	 * @return matrica udaljenosti gdje svaki i-ti redak predstavlja udaljenosti do
+	 *         ostalih tocaka
 	 */
 	public double[][] calculateDistances(List<double[]> front) {
 
@@ -299,30 +309,30 @@ public class NSGA {
 	 * Funkcija za izracun gudtoce nise za pojedinu jedinku fronte
 	 * 
 	 * @param front fronta za koju se izracunava
-	 * @return polje gustoca nisa 
+	 * @return polje gustoca nisa
 	 */
 	public double[] calculateNiecheCount(List<double[]> front) {
-		
+
 		double[][] distances = this.calculateDistances(front);
-		
+
 		double[] niecheCount = new double[front.size()];
 		Arrays.fill(niecheCount, 0);
-		
-		for(int i = 0; i < front.size(); i++) {
-			
-			for(int j = 0; j < front.size(); j++) {
-				
-				if(distances[i][j] < this.sigmaShare) {
-					
+
+		for (int i = 0; i < front.size(); i++) {
+
+			for (int j = 0; j < front.size(); j++) {
+
+				if (distances[i][j] < this.sigmaShare) {
+
 					// funkcija dijeljenja
 					niecheCount[i] += 1 - Math.pow(distances[i][j] / this.sigmaShare, 2);
 				}
 			}
 		}
-		
+
 		return niecheCount;
 	}
-	
+
 	/**
 	 * Funkcija za izracun fitnesa pojedine fronte
 	 * 
@@ -330,16 +340,91 @@ public class NSGA {
 	 * @return polje fitnesa pojedine jedinke u fronti
 	 */
 	public double[] calculateFrontFitness(List<double[]> front, double fitness) {
-		
+
 		double[] frontFitness = new double[front.size()];
 		Arrays.fill(frontFitness, fitness);
-		
+
 		double[] niecheCount = this.calculateNiecheCount(front);
-		
-		for(int i = 0; i < front.size(); i++) {
+
+		for (int i = 0; i < front.size(); i++) {
 			frontFitness[i] /= niecheCount[i];
 		}
-		
+
 		return frontFitness;
 	}
+
+	/**
+	 * Funkcija za pronalazak minimalnog fitnesa neke fronte
+	 * 
+	 * @param frontFitness polje fitnesa neke fronte
+	 * @return najmanji fitnes
+	 */
+	public double findMinFitness(double[] frontFitness) {
+
+		double minFitness = frontFitness[0];
+
+		for (int i = 0; i < frontFitness.length; i++) {
+			if (frontFitness[i] < minFitness) {
+				minFitness = frontFitness[i];
+			}
+		}
+		return minFitness;
+	}
+
+	/**
+	 * Funkcija za izracun fitnesa svih fronti
+	 * 
+	 * @return lista fitnesa pojedine fronte
+	 */
+	public List<double[]> calcuateFitness() {
+
+		List<double[]> fitness = new ArrayList<>();
+
+		// fitnes koji se prosljedjuje sljedecoj fronti kao mmaksimalni fitness koji se
+		// dodjeljuje svakoj jedinci fronte
+		double nextFitness = this.fronts.get(0).size();
+
+		for (int i = 0; i < this.fronts.size(); i++) {
+
+			double[] frontFitness = this.calculateFrontFitness(this.fronts.get(i), nextFitness * this.p);
+
+			nextFitness = this.findMinFitness(frontFitness);
+
+			fitness.add(frontFitness);
+
+		}
+
+		return fitness;
+	}
+
+	public int maxIndex(double[] frontFitness) {
+		int maxAt = 0;
+
+		for (int i = 0; i < frontFitness.length; i++) {
+			maxAt = frontFitness[i] > frontFitness[maxAt] ? i : maxAt;
+		}
+		return maxAt;
+	}
+
+	/**
+	 * Funkcija za sortiranje jedinki u fronti prema njihovom indeksu 
+	 * 
+	 * @param front
+	 * @param frontFitness
+	 */
+	public List<double[]> frontSort(List<double[]> front, double[] frontFitness) {
+
+		double[] fitnessCopy = frontFitness.clone();
+		List<double[]> sortedFront = new ArrayList<>();
+		
+		for(int i = 0; i < front.size(); i++) {
+			
+			int maxIndex = this.maxIndex(fitnessCopy);
+			sortedFront.add(front.get(maxIndex));
+			fitnessCopy[maxIndex] = -1;
+		}
+		
+		return sortedFront;
+	}
+
 }
