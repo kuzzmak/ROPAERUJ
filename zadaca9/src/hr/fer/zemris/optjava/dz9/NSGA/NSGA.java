@@ -15,6 +15,8 @@ public class NSGA {
 	private MOOPProblem problem;
 	// velicina populacije
 	private int populationSize;
+	// broj iteracija nakonkojih algoritam staje
+	private int maxIterations;
 	// dimenzionalnost pojedine jedinke
 	private int dimension;
 	// vrsta udaljenosti izmedju jedinki
@@ -32,19 +34,26 @@ public class NSGA {
 	// konstanta kojojm se mnozi najmanje fitness trenutne fronte i prosljedjuje
 	// sljedecoj
 	private double p = 0.8;
-
+	// vjerojatnost mutacije
+	private double m = 0.02;
+	// alpha kod BLXa krizanja
+	private double alphaB = 0.2;
 	// iznos dobrote pojedine jedinke za svaku od optimizacijskih funkcija
 	private List<double[]> functionValues;
-
+	// fitnes vrijednosti svake jednke po fronti
 	private List<double[]> fitness;
-
+	// sortiran fitnes populacije padajuce
 	private List<Double> sortedFitness;
+	// sortirana trenutna populacija po fitnesu
+	private List<double[]> populationSorted;
 
 	private Random rand;
 
-	public NSGA(MOOPProblem problem, int populationSize, String distanceString, double sigmaShare, double alpha) {
+	public NSGA(MOOPProblem problem, int populationSize, int maxIterations, String distanceString, double sigmaShare,
+			double alpha) {
 		this.problem = problem;
 		this.populationSize = populationSize;
+		this.maxIterations = maxIterations;
 		this.dimension = problem.getDimension();
 		this.distanceString = distanceString;
 		this.sigmaShare = sigmaShare;
@@ -57,70 +66,69 @@ public class NSGA {
 
 	public void run() {
 
+		int currentIteration = 0;
+
 		List<double[]> population = this.makePopulation();
-		this.evaluatePopulation(population);
 
-//		for(int i = 0; i < population.size(); i++) {
-//			System.out.println(Arrays.toString(population.get(i)));
-//		}
+		while (currentIteration < this.maxIterations) {
 
-//		System.out.println("Function values");
-//		for (int i = 0; i < this.functionValues.size(); i++) {
-//			System.out.println(Arrays.toString(this.functionValues.get(i)));
-//		}
-//		System.out.println();
-//
-//		System.out.println();
-		this.makeFronts(population);
+			this.evaluatePopulation(population);
 
-		this.fitness = this.calcuateFitness();
-		
-		System.out.println("populacija");
-		for(int i = 0; i < population.size(); i++) {
-			System.out.println(Arrays.toString(population.get(i)));
-		}
-		System.out.println();
+			this.makeFronts(population);
 
-		
-		System.out.println("fronte");
-		
-		for(int i = 0; i < fronts.size(); i++) {
-			System.out.println("fronta: " + i);
-			for(int j = 0; j < fronts.get(i).size(); j++) {
-				System.out.println("\t" + Arrays.toString(fronts.get(i).get(j)));
+			this.fitness = this.calcuateFitness();
+
+			this.sortFitness();
+
+			System.out.println("populacija");
+			for (int i = 0; i < population.size(); i++) {
+				System.out.println(Arrays.toString(population.get(i)));
 			}
+			System.out.println();
+//
+//			System.out.println("fronte");
+//
+//			for (int i = 0; i < fronts.size(); i++) {
+//				System.out.println("fronta: " + i);
+//				for (int j = 0; j < fronts.get(i).size(); j++) {
+//					System.out.println("\t" + Arrays.toString(fronts.get(i).get(j)));
+//				}
+//
+//			}
+//
+//			System.out.println("fitness");
+//			for (int i = 0; i < fitness.size(); i++) {
+//				System.out.println(Arrays.toString(fitness.get(i)));
+//			}
+
+			this.populationSorted = this.populationSort();
+//			System.out.println();
+//			System.out.println("population sorted");
+//
+//			for (int i = 0; i < populationSorted.size(); i++) {
+//
+//				System.out.println(Arrays.toString(populationSorted.get(i)));
+//			}
+//
+//			System.out.println("selected:");
+//			System.out.println(Arrays.toString(this.proportionalSelection()));
+
+			List<double[]> newPopulation = new ArrayList<>();
 			
+			while (newPopulation.size() != population.size()) {
+				double[] parent1 = this.proportionalSelection();
+				double[] parent2 = this.proportionalSelection();
+//			System.out.println("parent1: " + Arrays.toString(parent1));
+//			System.out.println("parent2: " + Arrays.toString(parent2));
+				double[] child = this.BLXa(parent1, parent2);
+				this.mutate(child);
+				newPopulation.add(child);
+			}
+			population = new ArrayList<>(newPopulation);
+//			System.out.println("child: " + Arrays.toString(child));
+			System.out.println("current iteration: " + currentIteration);
+			currentIteration++;
 		}
-		
-		
-		
-		
-		System.out.println("fitness");
-		for (int i = 0; i < fitness.size(); i++) {
-			System.out.println(Arrays.toString(fitness.get(i)));
-		}
-
-		List<double[]> populationSorted = this.populationSort();
-		System.out.println();
-		System.out.println("population sorted");
-		
-		for(int i = 0; i < populationSorted.size(); i++) {
-			
-			System.out.println(Arrays.toString(populationSorted.get(i)));
-		}
-
-//		System.out.println("front0");
-//		for(int i = 0; i < fronts.get(0).size(); i++) {
-//			System.out.println(Arrays.toString(fronts.get(0).get(i)));
-//		}
-//		System.out.println();
-//		
-//		System.out.println("dorted front 0");
-//		List<double[]> sortedFront = this.frontSort(fronts.get(0), fitness.get(0));
-//		for(int i = 0; i < sortedFront.size(); i++) {
-//			System.out.println(Arrays.toString(sortedFront.get(i)));
-//		}
-
 	}
 
 	/**
@@ -246,7 +254,7 @@ public class NSGA {
 		// broj jedinki koje su rasporedjene u fronte
 		int addedPoints = 0;
 		while (addedPoints < this.populationSize) {
-
+			
 			// trenutna fronta
 			List<double[]> front = new ArrayList<>();
 
@@ -449,7 +457,7 @@ public class NSGA {
 	/**
 	 * Funkcija za sortiranje jedinki u fronti prema njihovom fitnesu
 	 * 
-	 * @param front fronta koja se sortira
+	 * @param front        fronta koja se sortira
 	 * @param frontFitness fitness konkretne fronte
 	 */
 	public List<double[]> frontSort(List<double[]> front, double[] frontFitness) {
@@ -472,7 +480,7 @@ public class NSGA {
 	 * 
 	 */
 	public void sortFitness() {
-		
+
 		this.sortedFitness = new ArrayList<>();
 
 		for (int i = 0; i < this.fitness.size(); i++) {
@@ -486,23 +494,98 @@ public class NSGA {
 		Collections.sort(sortedFitness, Collections.reverseOrder());
 	}
 
+	/**
+	 * Funkcija koja svaku frontu sortira po fitnesu i dodaje u novu listu gdje su
+	 * jedinke sortirane silazno po fitnesu
+	 * 
+	 * @return lista sortiranih jedinki
+	 */
 	public List<double[]> populationSort() {
-		
+
 		List<double[]> sortedPopulation = new ArrayList<>();
-		
-		for(int i = 0; i < this.fronts.size(); i++) {
-			
+
+		for (int i = 0; i < this.fronts.size(); i++) {
+
 			sortedPopulation.addAll(this.frontSort(this.fronts.get(i), this.fitness.get(i)));
 		}
-		
+
 		return sortedPopulation;
 	}
-	
-//	public double[] proportionateSelection() {
-//		
-//		
-//		
-//		return 0;
-//	}
 
+	/**
+	 * Funkcija za odabir roditelja pomocu proporcionalne selekcije
+	 * 
+	 * @return roditelj
+	 */
+	public double[] proportionalSelection() {
+
+		// vjerojatnost koju treba preci da se izabere jedinka
+		double p_sel = rand.nextDouble();
+		// suma kojom se dijeli svaki fitnes radi normalizacije
+		double sum = 0;
+
+		List<Double> tempFitness = new ArrayList<>();
+		tempFitness.addAll(this.sortedFitness);
+
+		for (int i = 0; i < tempFitness.size(); i++) {
+
+			sum += tempFitness.get(i);
+		}
+
+		// zbroj svih fitnesa je 1
+		for (int i = 0; i < tempFitness.size(); i++) {
+			tempFitness.set(i, tempFitness.get(i) / sum);
+		}
+
+		double s = 0;
+		for (int i = 0; i < tempFitness.size(); i++) {
+
+			s += tempFitness.get(i);
+			if (s >= p_sel)
+				return this.populationSorted.get(i);
+		}
+		return this.populationSorted.get(populationSorted.size() - 1);
+	}
+
+	/**
+	 * Funkcija za krizanje dva roditelja metodom BLXa
+	 * 
+	 * @param parent1 prvi roditelj
+	 * @param parent2 drugi roditelj
+	 * @return dijete
+	 */
+	public double[] BLXa(double[] parent1, double[] parent2) {
+
+		double[] child = parent1.clone();
+
+		for (int i = 0; i < child.length; i++) {
+
+			double di = Math.abs(parent1[i] - parent2[i]);
+
+			double lower = Math.min(parent1[i], parent2[i]) - alphaB * di;
+			double upper = Math.max(parent1[i], parent2[i]) + alphaB * di;
+
+			double u = rand.nextDouble() * (upper - lower) + lower;
+
+			child[i] = u;
+
+		}
+
+		return child;
+	}
+
+	/**
+	 * Funkcija za mutaciju jedinke
+	 * 
+	 * @param child jedinka koja se mutira
+	 */
+	public void mutate(double[] child) {
+		
+		for(int i = 0; i < child.length; i++) {
+			
+			if(this.m > rand.nextDouble()) {
+				child[i] += rand.nextGaussian();
+			}
+		}
+	}
 }
