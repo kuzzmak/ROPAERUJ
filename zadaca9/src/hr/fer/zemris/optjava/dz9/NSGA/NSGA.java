@@ -35,9 +35,9 @@ public class NSGA {
 	// sljedecoj
 	private double p = 0.8;
 	// vjerojatnost mutacije
-	private double m = 0.02;
+	private double m = 0.05;
 	// alpha kod BLXa krizanja
-	private double alphaB = 0.2;
+	private double alphaB = 0.1;
 	// iznos dobrote pojedine jedinke za svaku od optimizacijskih funkcija
 	private List<double[]> functionValues;
 	// fitnes vrijednosti svake jednke po fronti
@@ -79,12 +79,16 @@ public class NSGA {
 			this.fitness = this.calcuateFitness();
 
 			this.sortFitness();
-
-			System.out.println("populacija");
-			for (int i = 0; i < population.size(); i++) {
-				System.out.println(Arrays.toString(population.get(i)));
+			System.out.println("popoulacije: ");
+			for(int i = 0; i < fronts.get(0).size(); i++) {
+				System.out.println(Arrays.toString(fronts.get(0).get(i)));
 			}
 			System.out.println();
+//			System.out.println("populacija");
+//			for (int i = 0; i < population.size(); i++) {
+//				System.out.println(Arrays.toString(population.get(i)));
+//			}
+//			System.out.println();
 //
 //			System.out.println("fronte");
 //
@@ -117,7 +121,12 @@ public class NSGA {
 			
 			while (newPopulation.size() != population.size()) {
 				double[] parent1 = this.proportionalSelection();
+				
 				double[] parent2 = this.proportionalSelection();
+				
+				while(Arrays.equals(parent1, parent2)) {
+					parent2 = this.proportionalSelection();
+				}
 //			System.out.println("parent1: " + Arrays.toString(parent1));
 //			System.out.println("parent2: " + Arrays.toString(parent2));
 				double[] child = this.BLXa(parent1, parent2);
@@ -251,7 +260,6 @@ public class NSGA {
 			}
 		}
 
-		// broj jedinki koje su rasporedjene u fronte
 		int addedPoints = 0;
 		while (addedPoints < this.populationSize) {
 			
@@ -367,7 +375,7 @@ public class NSGA {
 				if (distances[i][j] < this.sigmaShare) {
 
 					// funkcija dijeljenja
-					niecheCount[i] += 1 - Math.pow(distances[i][j] / this.sigmaShare, 2);
+					niecheCount[i] += 1 - Math.pow(distances[i][j] / this.sigmaShare, this.alpha);
 				}
 			}
 		}
