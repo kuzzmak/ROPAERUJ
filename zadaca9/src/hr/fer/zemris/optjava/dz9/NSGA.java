@@ -69,6 +69,22 @@ public class NSGA {
 		this.max = new double[this.dimension];
 	}
 
+	
+	public List<double[]> getFunctionValues() {
+		return functionValues;
+	}
+
+
+	public List<Double> getSortedFitness() {
+		return sortedFitness;
+	}
+
+
+	public List<double[]> getPopulationSorted() {
+		return populationSorted;
+	}
+
+
 	public List<List<double[]>> run() {
 
 		int currentIteration = 0;
@@ -96,6 +112,12 @@ public class NSGA {
 		this.evaluatePopulation(population);
 
 		this.makeFronts(population);
+		
+		this.fitness = this.calcuateFitness();
+
+		this.sortFitness();
+		
+		this.populationSorted = this.populationSort();
 		
 		return fronts;
 	}

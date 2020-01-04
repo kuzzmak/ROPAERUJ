@@ -4,11 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import org.jfree.chart.*;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.PlotOrientation;
@@ -18,49 +21,62 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-
 public class Graph extends JFrame {
 
-    private static final String title = "Fronts";
-    private static final Random rand = new Random();
-    private static XYSeries added = new XYSeries("Added");
+	private static XYSeries added = new XYSeries("Added");
+	private static String chartName;
+	private static JFreeChart jfc;
 
-    public Graph(String s, List<List<double[]>> fronts) {
-        super(s);
-        final ChartPanel chartPanel = createDemoPanel(fronts);
-        this.add(chartPanel, BorderLayout.CENTER);
-    }
+	public Graph(String chartName, List<double[]> fv) {
+		super(chartName);
+		Graph.chartName = chartName;
+		final ChartPanel chartPanel = createDemoPanel(fv);
+		this.add(chartPanel, BorderLayout.CENTER);
+	}
 
-    public static ChartPanel createDemoPanel(List<List<double[]>> fronts) {
-        JFreeChart jfreechart = ChartFactory.createScatterPlot(
-            title, "X", "Y", createSampleData(fronts),
-            PlotOrientation.VERTICAL, true, true, false);
-        XYPlot xyPlot = (XYPlot) jfreechart.getPlot();
-        xyPlot.setDomainCrosshairVisible(true);
-        xyPlot.setRangeCrosshairVisible(true);
-        XYItemRenderer renderer = xyPlot.getRenderer();
-        renderer.setSeriesPaint(0, Color.blue);
-        NumberAxis domain = (NumberAxis) xyPlot.getDomainAxis();
-        domain.setVerticalTickLabels(true);
-        return new ChartPanel(jfreechart);
-    }
+	private ChartPanel createDemoPanel(List<double[]> fv) {
+		Graph.jfc = ChartFactory.createScatterPlot(Graph.chartName, "X", "Y", createSampleData(fv),
+				PlotOrientation.VERTICAL, true, true, false);
+		 
+		XYPlot xyPlot = (XYPlot) Graph.jfc.getPlot();
+		xyPlot.setDomainCrosshairVisible(true);
+		xyPlot.setRangeCrosshairVisible(true);
+		XYItemRenderer renderer = xyPlot.getRenderer();
+		renderer.setSeriesPaint(0, Color.blue);
+		NumberAxis domain = (NumberAxis) xyPlot.getDomainAxis();
+		domain.setVerticalTickLabels(true);
 
-    public static XYDataset createSampleData(List<List<double[]>> fronts) {
-        XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
-        XYSeries series = new XYSeries("Random");
-        
-        for (int i = 0; i < fronts.size(); i++) {
-            for(int j = 0; j < fronts.get(i).size(); j++) {
-            	double[] point = fronts.get(i).get(j);
-            	series.add(point[0], point[1]);
-            }
-        	
-            
-        }
-        xySeriesCollection.addSeries(series);
-        xySeriesCollection.addSeries(added);
-        return xySeriesCollection;
-    }
+		
+		return new ChartPanel(Graph.jfc);
+	}
 
-   
+	private XYDataset createSampleData(List<double[]> fv) {
+		XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
+		XYSeries series = new XYSeries("Random");
+
+		for (int i = 0; i < fv.size(); i++) {
+			double[] point = fv.get(i);
+			series.add(point[0], point[1]);
+		}
+
+		xySeriesCollection.addSeries(series);
+		xySeriesCollection.addSeries(added);
+		return xySeriesCollection;
+	}
+	
+	public static void saveChart() {
+		
+		OutputStream out;
+		try {
+			ChartPanel cp = new ChartPanel(jfc);
+			out = new FileOutputStream(chartName);
+			ChartUtils.writeChartAsPNG(out, jfc, cp.getWidth(), cp.getHeight());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 }

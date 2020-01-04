@@ -3,17 +3,17 @@ package hr.fer.zemris.optjava.dz9;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Problem1 implements MOOPProblem {
+public class Problem implements MOOPProblem {
 	
 	private List<IFunction> objectiveFunctions;
 	private int dimension;
 	
-	public Problem1() {
+	public Problem() {
 		
 		this.objectiveFunctions = new ArrayList<>();
 	}
 	
-	public Problem1(List<IFunction> objectiveFunctions) {
+	public Problem(List<IFunction> objectiveFunctions) {
 		
 		this.objectiveFunctions = objectiveFunctions;
 		this.dimension = this.objectiveFunctions.get(0).getDimension();
