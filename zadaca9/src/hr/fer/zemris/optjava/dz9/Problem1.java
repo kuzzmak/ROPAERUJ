@@ -3,8 +3,6 @@ package hr.fer.zemris.optjava.dz9;
 import java.util.ArrayList;
 import java.util.List;
 
-import hr.fer.zemris.optjava.dz9.Functions.IFunction;
-
 public class Problem1 implements MOOPProblem {
 	
 	private List<IFunction> objectiveFunctions;

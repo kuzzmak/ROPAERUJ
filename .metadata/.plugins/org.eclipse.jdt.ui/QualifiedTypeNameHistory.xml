@@ -35,7 +35,6 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.Sigmoid"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.NeuralNet"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.CLONALG.Antigene"/>
-<fullyQualifiedTypeName name="java.util.Collections"/>
 <fullyQualifiedTypeName name="java.lang.System"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz8.Dataset"/>
 <fullyQualifiedTypeName name="java.util.Random"/>
@@ -60,4 +59,5 @@
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz9.NSGA.NSGA"/>
 <fullyQualifiedTypeName name="java.lang.Math"/>
+<fullyQualifiedTypeName name="java.util.Collections"/>
 </qualifiedTypeNameHistroy>

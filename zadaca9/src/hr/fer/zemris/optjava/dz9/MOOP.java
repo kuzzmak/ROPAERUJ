@@ -1,11 +1,9 @@
 package hr.fer.zemris.optjava.dz9;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import hr.fer.zemris.optjava.dz9.Functions.IFunction;
-import hr.fer.zemris.optjava.dz9.NSGA.NSGA;
+import javax.swing.JFrame;
 
 public class MOOP {
 	
@@ -58,114 +56,27 @@ public class MOOP {
 		problem1.add(f1);
 		problem1.add(f2);
 		
-		int populationSize = 100;
+		int populationSize = 50;
 		int maxIterations = 500;
 		String distanceString = "decision-space";
-		double sigmaShare = 0.6;
+		double sigmaShare = 0.1;
 		double alpha = 2;
 		
 		NSGA nsga = new NSGA(problem1, populationSize, maxIterations, distanceString, sigmaShare, alpha);
-		nsga.run();
+		List<List<double[]>> fronts = nsga.run();
 		
-
-	}
-
-	public static void makeFronts() {
-
-		// lista jedinki kojima dominira trenutna jedinka
-		List<List<Integer>> dominates = new ArrayList<>();
-		// stvaranje lista dominacije za svaku jedinku
-		for (int i = 0; i < 5; i++) {
-			dominates.add(new ArrayList<>());
-		}
-		// broj jedinki koje dominiraju trenutnom jedinkom
-		List<Integer> isDominated = new ArrayList<>();
-		for(int i = 0; i < 5; i++) {
-			isDominated.add(0);
-		}
-
-		fronts = new ArrayList<>();
-		
-		for (int i = 0; i < 5; i++) {
-
-			// vrijednosti funkcija tenutno promatrane jedinke
-			double[] funcVal_i = functionValues.get(i);
-
-			for (int j = 0; j < 5; j++) {
-				if (i == j)
-					continue;
-
-				// prmomijeni se u false ako rjesenje ne dominira nad nekim drugim
-				boolean flag = true;
-
-				double[] funcVal_j = functionValues.get(j);
-
-				for (int k = 0; k < 2; k++) {
-
-					if (funcVal_i[k] > funcVal_j[k]) {
-						flag = false;
-					}
-				}
-
-				// ako jedinka dominira nad nekom jedinom poveca se brojac
-				if (flag) {
-					isDominated.set(j, isDominated.get(j) + 1);
-					dominates.get(i).add(j);
-				}
-
-			}
-			
-		}
-
-		System.out.println("isDominated " + isDominated);
-		System.out.println();
-		for (int i = 0; i < dominates.size(); i++) {
-			System.out.println(dominates.get(i));
-		}
-
-		List<Integer> population = new ArrayList<>();
-		population.add(1);
-		population.add(2);
-		population.add(3);
-		population.add(4);
-		population.add(5);
-		
-		int addedPoints = 0;
-		int populationSize = population.size();
-		while(addedPoints < populationSize) {
-			
-			List<Integer> front = new ArrayList<>();
-
-			for(int i = 0; i < population.size(); i++) {
-				
-				if(isDominated.get(i) == 0) {
-					
-					front.add(population.get(i));
-					addedPoints ++;
-					
-					for(Integer in: dominates.get(i)) {
-						
-						isDominated.set(in, isDominated.get(in) - 1);
-					}
-				}
-				
-			}
-			
-			for(Integer in: front) {
-				isDominated.remove(population.indexOf(in));
-				dominates.remove(population.indexOf(in));
-				population.remove(in);
-			}
-			
-			
-			
-			fronts.add(front);
-		}
-		System.out.println();
-		System.out.println("fronte");
 		for(int i = 0; i < fronts.size(); i++) {
-			System.out.println(fronts.get(i));
+			System.out.println("fronta: " + i);
+			for(int j = 0; j < fronts.get(i).size(); j++) {
+				System.out.println("\t" + Arrays.toString(fronts.get(i).get(j)));
+			}
 		}
+		
+		Graph graph = new Graph("Graph", fronts);
+		graph.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		graph.pack();
+		graph.setLocationRelativeTo(null);
+		graph.setVisible(true);
+
 	}
-	
 }
