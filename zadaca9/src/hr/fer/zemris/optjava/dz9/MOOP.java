@@ -13,6 +13,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
 public class MOOP {
 
@@ -251,7 +253,12 @@ public class MOOP {
 
 			JFreeChart xylineChart = ChartFactory.createXYLineChart(chartName, "f1", "f2",
 					dataset, PlotOrientation.VERTICAL, true, true, false);
+			
+			XYPlot plot = xylineChart.getXYPlot();
+			XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(false, true);
+			plot.setRenderer(renderer);
 
+			
 			int width = 640; 
 			int height = 480; 
 			File XYChart = new File(chartName + ".jpeg");
