@@ -88,44 +88,52 @@ public class NSGA {
 
 		int currentIteration = 0;
 
+		// inicijalna populacija
 		List<Double[]> population = this.makePopulation();
-
+		// evaluacija inicijalne populacije
 		this.evaluatePopulation(population);
-
+		// stvaranje fronta inicijalne populacije
 		this.makeFronts(population);
-
-//		List<Double[]> front = fronts.get(0);
-//
-//		System.out.println("prije sorta");
-//		for (int i = 0; i < front.size(); i++) {
-//
-//			System.out.println(Arrays.toString(front.get(i)));
-//		}
-//		System.out.println();
-//		this.sortByFunction(front, problem.getObjectiveFunctions().get(0));
-//
-//		System.out.println("Nakon sorta");
-//		for (int i = 0; i < front.size(); i++) {
-//
-//			System.out.println(Arrays.toString(front.get(i)));
-//		}
+		// odredjivanje fitnesa inicjalne populacije
+		this.fitness = this.calcuateFitness();
+		// sortiranje fitnesa padajuce
+		this.sortFitness();
+		// sortiranje populacije prema fitnesu
+		this.populationSorted = this.populationSort();
+		// novo stvorena djeca
+		List<Double[]> children = this.makeNewPopulation(population);	
+		// unija djece i inicijalne populacije
+		population.addAll(children);
+		// evaluacija cijele populacije
+		this.evaluatePopulation(population);
+		// stvaranje fronta cijele populacije
+		this.makeFronts(population);
+		// nova populacija za sljedecu iteraciju algoritma
+		List<Double[]> newPopulation = new ArrayList<>();
 		
-		List<double[]> crw = this.crowdingDistanceAssignment();
+		// brojac za trenutnu frontu
+		int i = 0;
 		
-		for(int i = 0; i < crw.size(); i++) {
-			System.out.println(Arrays.toString(crw.get(i)));
+		// dodavanje jedinki iz fronta sve do kada ima mjesta smjestiti cijelu frontu u novu populaciju
+		while(newPopulation.size() < this.populationSize) {
+			// ako ima mjesta dodaju se jedinke iz sljedece fronte
+			if(newPopulation.size() + fronts.get(i).size() < this.populationSize) {
+				newPopulation.addAll(fronts.get(i));
+				i++;
+			}else {
+				// nema mjesta za sve jedinke
+				
+				break;
+				
+				
+			}
+			
+			
+			
 		}
-
-//		this.fitness = this.calcuateFitness();
-//
-//		this.sortFitness();
-//		
-//		this.populationSorted = this.populationSort();
-//		
-//		
-//		
-//		
-//
+		
+		System.out.println(newPopulation.size());
+		
 //		while (currentIteration < this.maxIterations) {
 //
 //			this.evaluatePopulation(population);
@@ -246,21 +254,6 @@ public class NSGA {
 
 		return population;
 	}
-
-//	public List<double[]> makeChildPopulation(List<double[]> population){
-//		
-//		List<double[]> children = new ArrayList<>();
-//		
-//		while(children.size() < population.size()) {
-//			
-//			double[] parent1 = 
-//			
-//			
-//			
-//		}
-//		
-//		return children;
-//	}
 
 	/**
 	 * Funkcija za evaluaciju populacije
@@ -454,7 +447,7 @@ public class NSGA {
 		Double[][] distances = this.calculateDistances(front);
 
 		Double[] niecheCount = new Double[front.size()];
-		Arrays.fill(niecheCount, 0);
+		Arrays.fill(niecheCount, 0.);
 
 		for (int i = 0; i < front.size(); i++) {
 
@@ -565,7 +558,7 @@ public class NSGA {
 
 			int maxIndex = this.maxIndex(fitnessCopy);
 			sortedFront.add(front.get(maxIndex));
-			fitnessCopy[maxIndex] = (double) -1;
+			fitnessCopy[maxIndex] = -1.;
 		}
 
 		return sortedFront;
@@ -719,7 +712,7 @@ public class NSGA {
 
 			this.mutate(child);
 
-			while (newPopulation.contains(child)) {
+			while (newPopulation.contains(child) || population.contains(child)) {
 				this.mutate(child);
 			}
 
