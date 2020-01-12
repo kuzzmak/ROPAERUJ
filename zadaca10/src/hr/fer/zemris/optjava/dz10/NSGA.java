@@ -141,20 +141,26 @@ public class NSGA {
 				}
 			}
 			
-			Double[] child = this.binaryTournament(newPopulation, population, cda);
-			
-			
-			population = new ArrayList<>(newPopulation);
 			children = this.makeChildren(newPopulation, population, cda);
+			population = new ArrayList<>(newPopulation);
+			currentIteration++;
 			
-			
+			System.out.println("current iteration: " + currentIteration);
 		}
-
 		return fronts;
 	}
 	
-	
-	public Double[] binaryTournament(List<Double[]> newPopulation, List<Double[]> population, List<Double[]> cda) {
+	/**
+	 * Funkcija za turnirsku selekciju roditelja iz populacije u koju su vec dodane 
+	 * najbolje jedinke. Odaberu se dvije jedinke iz populacije, odredi se njihov rang(fronta)
+	 * pomocu liste fronti i usporedi. Ako je jednak rang obje jedinke, dohvaca se njihova crowding
+	 * udaljenost koja je prije toga izracunata za svaku frontu pa se onda prema tome usporede.
+	 * 
+	 * @param newPopulation populacije iz koje se biraju jedinke
+	 * @param cda lista crowding udaljenosti za svaku frontu
+	 * @return odabrana jedinka
+	 */
+	public Double[] binaryTournament(List<Double[]> newPopulation, List<Double[]> cda) {
 		
 		Set<Integer> selectedIndexes = new HashSet<>();
 		
@@ -198,12 +204,12 @@ public class NSGA {
 		
 		while(children.size() < this.populationSize) {
 			
-			Double[] parent1 = this.binaryTournament(newPopulation, population, cda);
+			Double[] parent1 = this.binaryTournament(newPopulation, cda);
 
-			Double[] parent2 = this.binaryTournament(newPopulation, population, cda);
+			Double[] parent2 = this.binaryTournament(newPopulation, cda);
 
 			while (Arrays.equals(parent1, parent2)) {
-				parent2 = this.binaryTournament(newPopulation, population, cda);
+				parent2 = this.binaryTournament(newPopulation, cda);
 			}
 
 			Double[] child = this.BLXa(parent1, parent2);

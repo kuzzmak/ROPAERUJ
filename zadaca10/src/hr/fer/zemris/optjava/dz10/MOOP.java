@@ -1,20 +1,21 @@
 package hr.fer.zemris.optjava.dz10;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 public class MOOP {
 
@@ -236,29 +237,17 @@ public class MOOP {
 //				e.printStackTrace();
 //			}
 //
-//			String chartName = distanceString;
-//
-//			final XYSeries data = new XYSeries(chartName);
-//			
-//			List<Double[]> fv = nsga.getFunctionValues();
-//			
-//			for(int i = 0; i < fv.size(); i++) {
-//				data.add(fv.get(i)[0], fv.get(i)[1]);
-//			}
-//
-//			
-//			final XYSeriesCollection dataset = new XYSeriesCollection();
-//			dataset.addSeries(data);
-//			
-//
-//			JFreeChart xylineChart = ChartFactory.createXYLineChart(chartName, "f1", "f2",
-//					dataset, PlotOrientation.VERTICAL, true, true, false);
-//			
-//			XYPlot plot = xylineChart.getXYPlot();
-//			XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(false, true);
-//			plot.setRenderer(renderer);
-//
-//			
+			
+			String chartName = distanceString;
+			
+			SwingUtilities.invokeLater(() -> {
+				Graph example = new Graph(chartName, nsga.getFunctionValues());
+				example.setSize(800, 400);
+				example.setLocationRelativeTo(null);
+				example.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+				example.setVisible(true);
+			});
+
 //			int width = 640; 
 //			int height = 480; 
 //			File XYChart = new File(chartName + ".jpeg");
