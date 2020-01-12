@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-
-import org.jfree.chart.util.ArrayUtils;
+import java.util.Set;
 
 public class NSGA {
 
@@ -90,6 +90,7 @@ public class NSGA {
 
 		// inicijalna populacija
 		List<Double[]> population = this.makePopulation();
+
 		// evaluacija inicijalne populacije
 		this.evaluatePopulation(population);
 		// stvaranje fronta inicijalne populacije
@@ -100,96 +101,169 @@ public class NSGA {
 		this.sortFitness();
 		// sortiranje populacije prema fitnesu
 		this.populationSorted = this.populationSort();
-		// novo stvorena djeca
-		List<Double[]> children = this.makeNewPopulation(population);	
-		// unija djece i inicijalne populacije
-		population.addAll(children);
-		// evaluacija cijele populacije
-		this.evaluatePopulation(population);
-		// stvaranje fronta cijele populacije
-		this.makeFronts(population);
-		// nova populacija za sljedecu iteraciju algoritma
-		List<Double[]> newPopulation = new ArrayList<>();
-		
-		// brojac za trenutnu frontu
-		int i = 0;
-		
-		// dodavanje jedinki iz fronta sve do kada ima mjesta smjestiti cijelu frontu u novu populaciju
-		while(newPopulation.size() < this.populationSize) {
-			// ako ima mjesta dodaju se jedinke iz sljedece fronte
-			if(newPopulation.size() + fronts.get(i).size() < this.populationSize) {
-				newPopulation.addAll(fronts.get(i));
-				i++;
-			}else {
-				// nema mjesta za sve jedinke
-				
-				break;
-				
-				
+
+		while (currentIteration < this.maxIterations) {
+
+			// novo stvorena djeca
+			List<Double[]> children = this.makeNewPopulation(population);
+			// unija djece i inicijalne populacije
+			population.addAll(children);
+			// evaluacija cijele populacije
+			this.evaluatePopulation(population);
+			// stvaranje fronta cijele populacije
+			this.makeFronts(population);
+			// nova populacija za sljedecu iteraciju algoritma
+			List<Double[]> newPopulation = new ArrayList<>();
+
+			// brojac za trenutnu frontu
+			int i = 0;
+
+			List<Double[]> cda = this.crowdingDistanceAssignment();
+
+			// dodavanje jedinki iz fronta sve do kada ima mjesta smjestiti cijelu frontu u
+			// novu populaciju
+			while (newPopulation.size() < this.populationSize) {
+				// ako ima mjesta dodaju se jedinke iz sljedece fronte
+				if (newPopulation.size() + fronts.get(i).size() < this.populationSize) {
+					newPopulation.addAll(fronts.get(i));
+					i++;
+				} else { // nema mjesta za sve jedinke
+
+					// broj jedinki koji nedostaje do potpune populacije
+					int populationNeeded = this.populationSize - newPopulation.size();
+
+					// sortirana fronta na kojoj je zapelo prema crowding udaljenosti
+					List<Double[]> sortedFrontByCD = this.frontSort(fronts.get(i), cda.get(i));
+
+					for (int j = 0; j < populationNeeded; j++) {
+						newPopulation.add(sortedFrontByCD.get(j));
+					}
+				}
 			}
 			
+			Double[] child = this.binaryTournament(newPopulation, population, cda);
+			
+			
+			population = new ArrayList<>(newPopulation);
+			children = this.makeChildren(newPopulation, population, cda);
 			
 			
 		}
-		
-		System.out.println(newPopulation.size());
-		
-//		while (currentIteration < this.maxIterations) {
-//
-//			this.evaluatePopulation(population);
-//
-//			this.makeFronts(population);
-//
-//			this.fitness = this.calcuateFitness();
-//
-//			this.sortFitness();
-//			
-//			this.populationSorted = this.populationSort();
-//			
-//			population = new ArrayList<>(this.makeNewPopulation(population));
-//			
-//			System.out.println("current iteration: " + currentIteration);
-//			currentIteration++;
-//		}
-//		
-//		this.evaluatePopulation(population);
-//
-//		this.makeFronts(population);
-//		
-//		this.fitness = this.calcuateFitness();
-//
-//		this.sortFitness();
-//		
-//		this.populationSorted = this.populationSort();
 
 		return fronts;
 	}
 	
+	
+	public Double[] binaryTournament(List<Double[]> newPopulation, List<Double[]> population, List<Double[]> cda) {
+		
+		Set<Integer> selectedIndexes = new HashSet<>();
+		
+		int selectedIndex = this.rand.nextInt(newPopulation.size());
+		selectedIndexes.add(selectedIndex);
+		
+		Double[] child1 = newPopulation.get(selectedIndex);
+		
+		selectedIndex = this.rand.nextInt(newPopulation.size());
+		
+		while(selectedIndexes.contains(selectedIndex)) {
+			selectedIndex = this.rand.nextInt(newPopulation.size());
+		}
+		
+		Double[] child2 = newPopulation.get(selectedIndex);
+		
+		int rank1 = this.findFrontIndex(child1);
+		int rank2 = this.findFrontIndex(child2);
+		
+		if(rank1 < rank2) return child1;
+		if(rank2 < rank1) return child2;
+		
+		
+		int child1IndexInFront = fronts.get(rank1).indexOf(child1);
+		int child2IndexInFront = fronts.get(rank2).indexOf(child2);
+		
+		double crowdingDistance1 = cda.get(rank1)[child1IndexInFront];
+		double crowdingDistance2 = cda.get(rank2)[child2IndexInFront];
+		
+		if(crowdingDistance1 > crowdingDistance2) return child1;
+		return child2;
+		
+	}
+	
+	
+	
+	
+	public List<Double[]> makeChildren(List<Double[]> newPopulation, List<Double[]> population, List<Double[]> cda){
+		
+		List<Double[]> children = new ArrayList<>();
+		
+		while(children.size() < this.populationSize) {
+			
+			Double[] parent1 = this.binaryTournament(newPopulation, population, cda);
+
+			Double[] parent2 = this.binaryTournament(newPopulation, population, cda);
+
+			while (Arrays.equals(parent1, parent2)) {
+				parent2 = this.binaryTournament(newPopulation, population, cda);
+			}
+
+			Double[] child = this.BLXa(parent1, parent2);
+
+			this.mutate(child);
+
+			while (children.contains(child) || population.contains(child)) {
+				this.mutate(child);
+			}
+
+			children.add(child);
+		}
+		return children;
+	}
+	
+	/**
+	 * Funkcija za pronalazak fronte kojoj neko rjesenje pripada
+	 * 
+	 * @param chosen rjesenje za koje se pokusava naci fronta
+	 * @return indeks fronte u kojoj se chosen nalazi
+	 */
+	public int findFrontIndex(Double[] chosen) {
+		
+		for(int i = 0; i < fronts.size(); i++) {
+			
+			if(fronts.get(i).contains(chosen)) return i;
+		}
+		return -1;
+	}
+
 	/**
 	 * Funkcija za izracun crowding udaljenosti svih fronti
 	 * 
 	 * @return lista crowding udaljenosti pojedine fronte
 	 */
-	public List<double[]> crowdingDistanceAssignment() {
+	public List<Double[]> crowdingDistanceAssignment() {
 
-		List<double[]> crowdingDistances = new ArrayList<>();
+		List<Double[]> crowdingDistances = new ArrayList<>();
 		List<IFunction> functions = problem.getObjectiveFunctions();
 
 		for (int i = 0; i < fronts.size(); i++) {
 
-			double[] tempCrowding = new double[fronts.get(i).size()];
-			
+			// crowding udaljenosti pojedine fronte
+			Double[] tempCrowding = new Double[fronts.get(i).size()];
+			Arrays.fill(tempCrowding, 0.);
+
 			for (int j = 0; j < functions.size(); j++) {
-				
+
+				// sortirana fronta prema kriterijskoj funkciji
 				List<Double[]> sortedFront = this.sortByFunction(fronts.get(i), functions.get(j));
-				
+
+				// prvi i zadnji clan postavljaju se na beskonacno
 				tempCrowding[0] = Double.POSITIVE_INFINITY;
 				tempCrowding[tempCrowding.length - 1] = Double.POSITIVE_INFINITY;
-				
-				for(int k = 1; k < sortedFront.size() - 1; k++) {
-					
-					tempCrowding[k] = tempCrowding[k] + sortedFront.get(k + 1)[j] - sortedFront.get(k - 1)[j]; 
-					
+
+				for (int k = 1; k < sortedFront.size() - 1; k++) {
+
+					tempCrowding[k] = tempCrowding[k]
+							+ (sortedFront.get(k + 1)[j] - sortedFront.get(k - 1)[j]) / (this.max[j] - this.min[j]);
+
 				}
 			}
 			crowdingDistances.add(tempCrowding);
@@ -206,7 +280,7 @@ public class NSGA {
 	public List<Double[]> sortByFunction(List<Double[]> front, IFunction function) {
 
 		List<Double[]> sortedFront = new ArrayList<>(front);
-		
+
 		Collections.sort(sortedFront, new Comparator<Double[]>() {
 
 			@Override
@@ -222,7 +296,7 @@ public class NSGA {
 				return 0;
 			}
 		});
-		
+
 		return sortedFront;
 	}
 
