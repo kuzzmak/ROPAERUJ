@@ -61,6 +61,7 @@ public class NSGA {
 		this.alpha = alpha;
 		this.rand = new Random();
 
+		// tvrda ogranicenja
 		this.constraints = new ArrayList<>();
 
 		// dohvacanje ogranicenja funkcija
@@ -72,18 +73,11 @@ public class NSGA {
 		this.max = new Double[this.dimension];
 	}
 
-	public List<Double[]> getFunctionValues() {
-		return functionValues;
-	}
-
-	public List<Double> getSortedFitness() {
-		return sortedFitness;
-	}
-
-	public List<Double[]> getPopulationSorted() {
-		return populationSorted;
-	}
-
+	/**
+	 * Glavna funkcija algritma.
+	 *  
+	 * @return lista fronti
+	 */
 	public List<List<Double[]>> run() {
 
 		int currentIteration = 0;
@@ -117,7 +111,8 @@ public class NSGA {
 
 			// brojac za trenutnu frontu
 			int i = 0;
-
+			
+			// stvaranje liste crowding udaljenosti za svaku frontu
 			List<Double[]> cda = this.crowdingDistanceAssignment();
 
 			// dodavanje jedinki iz fronta sve do kada ima mjesta smjestiti cijelu frontu u
@@ -140,70 +135,87 @@ public class NSGA {
 					}
 				}
 			}
-			
+
 			children = this.makeChildren(newPopulation, population, cda);
 			population = new ArrayList<>(newPopulation);
 			currentIteration++;
-			
+
 			System.out.println("current iteration: " + currentIteration);
 		}
+
+		this.evaluatePopulation(population);
+		this.makeFronts(population);
+
 		return fronts;
 	}
-	
+
 	/**
-	 * Funkcija za turnirsku selekciju roditelja iz populacije u koju su vec dodane 
-	 * najbolje jedinke. Odaberu se dvije jedinke iz populacije, odredi se njihov rang(fronta)
-	 * pomocu liste fronti i usporedi. Ako je jednak rang obje jedinke, dohvaca se njihova crowding
-	 * udaljenost koja je prije toga izracunata za svaku frontu pa se onda prema tome usporede.
+	 * Funkcija za turnirsku selekciju roditelja iz populacije u koju su vec dodane
+	 * najbolje jedinke. Odaberu se dvije jedinke iz populacije, odredi se njihov
+	 * rang(fronta) pomocu liste fronti i usporedi. Ako je jednak rang obje jedinke,
+	 * dohvaca se njihova crowding udaljenost koja je prije toga izracunata za svaku
+	 * frontu pa se onda prema tome usporede.
 	 * 
 	 * @param newPopulation populacije iz koje se biraju jedinke
-	 * @param cda lista crowding udaljenosti za svaku frontu
+	 * @param cda           lista crowding udaljenosti za svaku frontu
 	 * @return odabrana jedinka
 	 */
 	public Double[] binaryTournament(List<Double[]> newPopulation, List<Double[]> cda) {
-		
+
 		Set<Integer> selectedIndexes = new HashSet<>();
-		
+
 		int selectedIndex = this.rand.nextInt(newPopulation.size());
 		selectedIndexes.add(selectedIndex);
-		
+
 		Double[] child1 = newPopulation.get(selectedIndex);
-		
+
 		selectedIndex = this.rand.nextInt(newPopulation.size());
-		
-		while(selectedIndexes.contains(selectedIndex)) {
+
+		while (selectedIndexes.contains(selectedIndex)) {
 			selectedIndex = this.rand.nextInt(newPopulation.size());
 		}
-		
+
 		Double[] child2 = newPopulation.get(selectedIndex);
-		
+
+		// dohvat fronte svake jedinke
 		int rank1 = this.findFrontIndex(child1);
 		int rank2 = this.findFrontIndex(child2);
-		
-		if(rank1 < rank2) return child1;
-		if(rank2 < rank1) return child2;
-		
-		
+
+		if (rank1 < rank2)
+			return child1;
+		if (rank2 < rank1)
+			return child2;
+
+		// indeksi svake jedinke unutar fronte
 		int child1IndexInFront = fronts.get(rank1).indexOf(child1);
 		int child2IndexInFront = fronts.get(rank2).indexOf(child2);
-		
+
+		// dohvat crowding udaljenosti svake jedinke
 		double crowdingDistance1 = cda.get(rank1)[child1IndexInFront];
 		double crowdingDistance2 = cda.get(rank2)[child2IndexInFront];
+
+		if (crowdingDistance1 > crowdingDistance2)
+			return child1;
 		
-		if(crowdingDistance1 > crowdingDistance2) return child1;
 		return child2;
-		
 	}
-	
-	
-	
-	
-	public List<Double[]> makeChildren(List<Double[]> newPopulation, List<Double[]> population, List<Double[]> cda){
-		
+
+	/**
+	 * Funkcija za stvaranje populacije djece iz novo stvorene populacije.
+	 * Roditelji se biraju binarnom turnirskom selekcijom, krizaju i na kraju
+	 * se dijete mutira i dodaje u populaciju djece.
+	 * 
+	 * @param newPopulation populacija iz koje se biraju roditelji
+	 * @param population ukupna populacije velicine 2 * populationSize
+	 * @param cda crowding udaljenosti svake fronte
+	 * @return populacija djece za sljedecu iteraciju
+	 */
+	public List<Double[]> makeChildren(List<Double[]> newPopulation, List<Double[]> population, List<Double[]> cda) {
+
 		List<Double[]> children = new ArrayList<>();
-		
-		while(children.size() < this.populationSize) {
-			
+
+		while (children.size() < this.populationSize) {
+
 			Double[] parent1 = this.binaryTournament(newPopulation, cda);
 
 			Double[] parent2 = this.binaryTournament(newPopulation, cda);
@@ -224,7 +236,7 @@ public class NSGA {
 		}
 		return children;
 	}
-	
+
 	/**
 	 * Funkcija za pronalazak fronte kojoj neko rjesenje pripada
 	 * 
@@ -232,10 +244,11 @@ public class NSGA {
 	 * @return indeks fronte u kojoj se chosen nalazi
 	 */
 	public int findFrontIndex(Double[] chosen) {
-		
-		for(int i = 0; i < fronts.size(); i++) {
-			
-			if(fronts.get(i).contains(chosen)) return i;
+
+		for (int i = 0; i < fronts.size(); i++) {
+
+			if (fronts.get(i).contains(chosen))
+				return i;
 		}
 		return -1;
 	}
@@ -801,24 +814,17 @@ public class NSGA {
 
 		return newPopulation;
 	}
-
-	/**
-	 * Funkcija za provejru je li neko rjesenje zadovoljivo
-	 * 
-	 * @param solution rjesenje koje se provjerva
-	 * @return true ili false
-	 */
-	public boolean isFeasible(double[] solution) {
-
-		for (int i = 0; i < solution.length; i++) {
-
-			double min = this.constraints.get(i)[0];
-			double max = this.constraints.get(i)[1];
-
-			if (solution[i] > max || solution[i] < min)
-				return false;
-		}
-
-		return true;
+	
+	public List<Double[]> getFunctionValues() {
+		return functionValues;
 	}
+
+	public List<Double> getSortedFitness() {
+		return sortedFitness;
+	}
+
+	public List<Double[]> getPopulationSorted() {
+		return populationSorted;
+	}
+
 }

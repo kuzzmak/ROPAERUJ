@@ -1,5 +1,6 @@
 package hr.fer.zemris.optjava.dz10;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,13 +10,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.chart.ChartUtils;
 
 public class MOOP {
 
@@ -155,8 +150,8 @@ public class MOOP {
 
 		int problemNum = Integer.parseInt(args[0]);
 		int populationSize = Integer.parseInt(args[1]);
-		String distanceString = args[2];
-		int maxIterations = Integer.parseInt(args[3]);
+		int maxIterations = Integer.parseInt(args[2]);
+		String distanceString = "objective-space";
 		double sigmaShare = 0.1;
 		double alpha = 2;
 
@@ -204,42 +199,43 @@ public class MOOP {
 			NSGA nsga = new NSGA(problem2, populationSize, maxIterations, distanceString, sigmaShare, alpha);
 			List<List<Double[]>> fronts = nsga.run();
 
-//			System.out.println("Broj fronte: broj jedinki u fronti");
-//			for (int i = 0; i < fronts.size(); i++) {
-//				System.out.println(i + ": " + fronts.get(i).size());
-//			}
-//
-//			List<Double> fitness = nsga.getSortedFitness();
-//			List<Double[]> population = nsga.getPopulationSorted();
-//			
-//
-//			// zapis populacije u datoteku
-//			try (FileWriter fw = new FileWriter(solutions)) {
-//
-//				PrintWriter pw = new PrintWriter(fw);
-//
-//				for (int i = 0; i < population.size(); i++) {
-//					pw.write(Arrays.toString(population.get(i)) + "\n");
-//				}
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//
-//			// zapis fitnesa populacije u datoteku
-//			try (FileWriter fw = new FileWriter(solutionsFitness)) {
-//
-//				PrintWriter pw = new PrintWriter(fw);
-//
-//				for (int i = 0; i < fitness.size(); i++) {
-//					pw.write(fitness.get(i) + "\n");
-//				}
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//
+			System.out.println("Broj fronte: broj jedinki u fronti");
+			for (int i = 0; i < fronts.size(); i++) {
+				System.out.println(i + ": " + fronts.get(i).size());
+			}
+
+			List<Double> fitness = nsga.getSortedFitness();
+			List<Double[]> population = nsga.getPopulationSorted();
+			
+
+			// zapis populacije u datoteku
+			try (FileWriter fw = new FileWriter(solutions)) {
+
+				PrintWriter pw = new PrintWriter(fw);
+
+				for (int i = 0; i < population.size(); i++) {
+					pw.write(Arrays.toString(population.get(i)) + "\n");
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			// zapis fitnesa populacije u datoteku
+			try (FileWriter fw = new FileWriter(solutionsFitness)) {
+
+				PrintWriter pw = new PrintWriter(fw);
+
+				for (int i = 0; i < fitness.size(); i++) {
+					pw.write(fitness.get(i) + "\n");
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 			
 			String chartName = distanceString;
 			
+			// prikaz grafa
 			SwingUtilities.invokeLater(() -> {
 				Graph example = new Graph(chartName, nsga.getFunctionValues());
 				example.setSize(800, 400);
@@ -247,16 +243,6 @@ public class MOOP {
 				example.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 				example.setVisible(true);
 			});
-
-//			int width = 640; 
-//			int height = 480; 
-//			File XYChart = new File(chartName + ".jpeg");
-//			try {
-//				ChartUtils.saveChartAsJPEG(XYChart, xylineChart, width, height);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-
 		}
 	}
 }
