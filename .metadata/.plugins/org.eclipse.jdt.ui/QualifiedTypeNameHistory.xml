@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="java.util.LinkedHashMap"/>
-<fullyQualifiedTypeName name="sortedCollection.RAPGA"/>
-<fullyQualifiedTypeName name="sortedCollection.UniformCrossover"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz5.part1.IOptAlgorithm"/>
 <fullyQualifiedTypeName name="java.io.FileNotFoundException"/>
 <fullyQualifiedTypeName name="java.util.Scanner"/>
@@ -60,4 +57,7 @@
 <fullyQualifiedTypeName name="java.util.Comparator"/>
 <fullyQualifiedTypeName name="org.jfree.chart.util.ArrayUtils"/>
 <fullyQualifiedTypeName name="org.jfree.data.xy.XYSeries"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.rng.IRNG"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.rng.IRNGProvider"/>
+<fullyQualifiedTypeName name="java.lang.ThreadLocal"/>
 </qualifiedTypeNameHistroy>
