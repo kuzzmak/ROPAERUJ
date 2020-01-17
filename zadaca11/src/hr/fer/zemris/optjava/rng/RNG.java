@@ -15,10 +15,15 @@ public class RNG {
 
 		try {
 			
-			in = new FileInputStream("/zadaca11/src/rng-config.properties");
+			String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+			
+			String fileName = "rng-config.properties";
+			
+			in = new FileInputStream(rootPath + fileName);
 			prop.load(in);
 
 			String className = prop.getProperty("rng-provider");
+			System.out.println(className);
 
 			RNG.rngProvider = (IRNGProvider) Class.forName(className).newInstance();
 
