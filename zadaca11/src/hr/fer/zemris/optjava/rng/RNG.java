@@ -1,5 +1,7 @@
 package hr.fer.zemris.optjava.rng;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 public class RNG {
@@ -7,8 +9,23 @@ public class RNG {
 	private static IRNGProvider rngProvider;
 
 	static {
-		
+
 		Properties prop = new Properties();
+		FileInputStream in;
+
+		try {
+			
+			in = new FileInputStream("/zadaca11/src/rng-config.properties");
+			prop.load(in);
+
+			String className = prop.getProperty("rng-provider");
+
+			RNG.rngProvider = (IRNGProvider) Class.forName(className).newInstance();
+
+		} catch (IOException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
 		// Stvorite primjerak razreda Properties;
 		// Nad Classloaderom razreda RNG tražite InputStream prema resursu
 		// rng-config.properties
