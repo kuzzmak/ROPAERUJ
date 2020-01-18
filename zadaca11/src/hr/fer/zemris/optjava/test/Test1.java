@@ -8,7 +8,7 @@ public class Test1 {
 	public static void main(String[] args) {
 		IRNG rng = RNG.getRNG();
 		for (int i = 0; i < 20; i++) {
-			System.out.println(rng.nextInt(-5, 5));
+			System.out.println(rng.nextFloat(-5, 5));
 		}
 	}
 }

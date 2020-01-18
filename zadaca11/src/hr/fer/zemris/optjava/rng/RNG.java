@@ -10,8 +10,8 @@ public class RNG {
 
 	static {
 
-		Properties prop = new Properties();
-		FileInputStream in;
+		Properties properties = new Properties();
+		FileInputStream inputStream;
 
 		try {
 			
@@ -19,11 +19,10 @@ public class RNG {
 			
 			String fileName = "rng-config.properties";
 			
-			in = new FileInputStream(rootPath + fileName);
-			prop.load(in);
+			inputStream = new FileInputStream(rootPath + fileName);
+			properties.load(inputStream);
 
-			String className = prop.getProperty("rng-provider");
-			System.out.println(className);
+			String className = properties.getProperty("rng-provider");
 
 			RNG.rngProvider = (IRNGProvider) Class.forName(className).newInstance();
 
