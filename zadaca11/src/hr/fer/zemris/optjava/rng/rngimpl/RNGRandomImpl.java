@@ -20,7 +20,7 @@ public class RNGRandomImpl implements IRNG{
 	@Override
 	public double nextDouble(double min, double max) {
 		
-		if (min >= max) {
+		if (min > max) {
 			throw new IllegalArgumentException("max must be greater than min");
 		}
 		
@@ -35,7 +35,7 @@ public class RNGRandomImpl implements IRNG{
 	@Override
 	public float nextFloat(float min, float max) {
 		
-		if (min >= max) {
+		if (min > max) {
 			throw new IllegalArgumentException("max must be greater than min");
 		}
 		
@@ -50,7 +50,7 @@ public class RNGRandomImpl implements IRNG{
 	@Override
 	public int nextInt(int min, int max) {
 		
-		if (min >= max) {
+		if (min > max) {
 			throw new IllegalArgumentException("max must be greater than min");
 		}
 		
