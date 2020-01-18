@@ -15,7 +15,7 @@ public class Util {
 	private static double alpha = 0.2;
 	
 	
-	public List<GASolution<int[]>> makePopulation(int populationSize, int solutionSize, IRNG rng){
+	public static List<GASolution<int[]>> makePopulation(int populationSize, int solutionSize, IRNG rng){
 		
 		List<GASolution<int[]>> population = new ArrayList<>();
 		
@@ -32,6 +32,14 @@ public class Util {
 		}
 		
 		return population;
+	}
+	
+	public static void evaluatePopulation(List<GASolution<int[]>> population, Evaluator evaluator) {
+		
+		for(int i = 0; i < population.size(); i++) {
+			
+			evaluator.evaluate(population.get(i));
+		}
 	}
 	
 	public static void mutate(IntSolution solution, IRNG rng) {
@@ -68,7 +76,7 @@ public class Util {
 	}
 	
 	
-	public void sort(List<GASolution<int[]>> population){
+	public static void sort(List<GASolution<int[]>> population){
 		
 		Collections.sort(population, new Comparator<GASolution<int[]>>() {
 
@@ -84,7 +92,7 @@ public class Util {
 					return -1;
 				return 0;
 			}
-		});
+		}.reversed());
 	}
 	
 //	public static GASolution<int[]> select(List<GASolution<int[]>> population){
