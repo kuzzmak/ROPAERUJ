@@ -3,6 +3,7 @@ package hr.fer.zemris.optjava.GA;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 
 import hr.fer.zemris.optjava.rng.EVOThread;
 import hr.fer.zemris.optjava.rng.IRNG;
@@ -16,6 +17,9 @@ public class GA {
 	private double minError;
 	private Evaluator evaluator;
 	
+	// broj najbojlih jedinki populacije koji se dodaje u sljedecu populaciju
+	private int firstN = 2;
+
 	GASolution<int[]> PILL = new IntSolution(new int[] {});
 
 	public GA(int populationSize, int solutionSize, int maxIterations, double minError, Evaluator evaluator) {
@@ -56,10 +60,11 @@ public class GA {
 						// dohvat prve jedinke iz reda
 						GASolution<int[]> solution = unprocessedQueue.poll();
 						// ako je dohvacena jedinka PILL, dretva se gasi
-						if(solution == PILL) break;
+						if (solution == PILL)
+							break;
 						// dodjeljivanje fitnesa jedinki
 						evaluator.evaluate(solution);
-						
+
 						processedQueue.add(solution);
 					}
 				}
@@ -72,26 +77,54 @@ public class GA {
 			thread.start();
 		}
 
-//		while(currentIteration < this.maxIterations && currentBestError > this.minError) {
+		while (currentIteration < this.maxIterations && currentBestError > this.minError) {
 
-		unprocessedQueue.addAll(population);
+			unprocessedQueue.addAll(population);
 
-		List<GASolution<int[]>> processedPopulation = new ArrayList<>();
+			List<GASolution<int[]>> processedPopulation = new ArrayList<>();
 
-		while (processedPopulation.size() != this.populationSize) {
-			if (processedQueue.peek() != null) {
-				processedPopulation.add(processedQueue.poll());
+			while (processedPopulation.size() != this.populationSize) {
+				if (processedQueue.peek() != null) {
+					processedPopulation.add(processedQueue.poll());
+				}
 			}
-		}
+
 			Util.sort(processedPopulation);
 
-//		}
-		
-		GASolution<int[]> sol = Util.select(processedPopulation, rng);
-		System.out.println(sol);
-		
+			currentBestError = -processedPopulation.get(0).fitness;
+			
+			List<GASolution<int[]>> offspring = new ArrayList<>();
+			
+			// dodavanje prvih firstN jedinki u populaciju offspring
+			offspring.addAll(processedPopulation.stream().limit(firstN).collect(Collectors.toList()));
+			
+			while (offspring.size() < this.populationSize + 2) {
+				
+				GASolution<int[]> parent1 = Util.select(processedPopulation, rng);
+				GASolution<int[]> parent2 = Util.select(processedPopulation, rng);
+
+				while (parent1 == parent2) {
+					parent2 = Util.select(processedPopulation, rng);
+				}
+
+				GASolution<int[]> child1 = Util.BLXa(parent1, parent2, rng);
+				GASolution<int[]> child2 = Util.BLXa(parent1, parent2, rng);
+
+				Util.mutate(child1, rng);
+				Util.mutate(child2, rng);
+				
+				offspring.add(child1);
+				offspring.add(child2);
+			}
+
+			System.out.println("current iter: " + currentIteration + ", minerr: " + currentBestError);
+			
+			population = new ArrayList<>(offspring);
+			currentIteration++;
+		}
+
 		// gasenje pokrenutih dretvi
-		for(int i = 0; i < cores; i++) {
+		for (int i = 0; i < cores; i++) {
 			unprocessedQueue.add(PILL);
 		}
 

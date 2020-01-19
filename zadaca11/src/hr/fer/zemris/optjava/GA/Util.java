@@ -41,7 +41,7 @@ public class Util {
 		}
 	}
 
-	public static void mutate(IntSolution solution, IRNG rng) {
+	public static void mutate(GASolution<int[]> solution, IRNG rng) {
 
 		for (int i = 0; i < solution.data.length; i++) {
 

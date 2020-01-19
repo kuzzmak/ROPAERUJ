@@ -20,10 +20,10 @@ public class Test3 {
 		GrayScaleImage template = new GrayScaleImage(width, height);
 		GrayScaleImage.load(file);
 		
-		int populationSize = 20;
+		int populationSize = 100;
 		int Np = 100;
 		int solutionSize = 1 + 5 * Np;
-		int maxIterations = 100;
+		int maxIterations = 10000;
 		double minError = 100;
 
 //		Runnable job = new Runnable() {
@@ -60,10 +60,8 @@ public class Test3 {
 		Evaluator evaluator = new Evaluator(template);
 		GA ga = new GA(populationSize, solutionSize, maxIterations, minError, evaluator);
 		GASolution<int[]> solution = ga.run();
-//		System.out.println(solution);
-		int cores = Runtime.getRuntime().availableProcessors();
-//		System.out.println(cores);
 
+		
 	}
 
 }
