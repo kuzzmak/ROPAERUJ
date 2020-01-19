@@ -60,9 +60,9 @@ public class Test3 {
 		Evaluator evaluator = new Evaluator(template);
 		GA ga = new GA(populationSize, solutionSize, maxIterations, minError, evaluator);
 		GASolution<int[]> solution = ga.run();
-		System.out.println(solution);
+//		System.out.println(solution);
 		int cores = Runtime.getRuntime().availableProcessors();
-		System.out.println(cores);
+//		System.out.println(cores);
 
 	}
 
