@@ -11,11 +11,11 @@ import hr.fer.zemris.optjava.rng.IRNG;
 public class Util {
 
 	// vjerojatnost mutacije
-	private static double p = 0.05;
+	private static double p = 0.2;
 
-	private static double alpha = 0.2;
+	private static double alpha = 0.02;
 
-	public static List<GASolution<int[]>> makePopulation(int populationSize, int solutionSize, IRNG rng) {
+	public static List<GASolution<int[]>> makePopulation(int populationSize, int solutionSize, IRNG rng, int width, int height) {
 
 		List<GASolution<int[]>> population = new ArrayList<>();
 
@@ -23,8 +23,20 @@ public class Util {
 
 			IntSolution is = new IntSolution(new int[solutionSize]);
 
-			for (int j = 0; j < solutionSize; j++) {
-				is.data[j] = rng.nextInt(-128, 127);
+			// boja			
+			is.data[0] = rng.nextInt(-128, 127);
+			
+			for (int j = 1; j < solutionSize - 1; j += 5) {
+				// sirina slike
+				is.data[j] = rng.nextInt(0, width);
+				// visina slike
+				is.data[j + 1] = rng.nextInt(0, height);
+				// broj koraka u x smjeru
+				is.data[j + 2] = rng.nextInt(0, is.data[j]);
+				// broj koraka u y smjeru
+				is.data[j + 3] = rng.nextInt(0, is.data[j + 1]);
+				// boja piksela
+				is.data[j + 4] = rng.nextInt(-128, 127);
 			}
 
 			population.add(is);
@@ -41,13 +53,47 @@ public class Util {
 		}
 	}
 
-	public static void mutate(GASolution<int[]> solution, IRNG rng) {
+	public static void mutate(GASolution<int[]> solution, IRNG rng, int width, int height) {
 
-		for (int i = 0; i < solution.data.length; i++) {
+		System.out.println(solution);
+		// boja
+		if(p > rng.nextDouble()) {
+			solution.data[0] += (int) (rng.nextGaussian() * rng.nextInt(-128, 127));
+		}
+		
+		for (int i = 1; i < solution.data.length - 1; i += 5) {
 
+			double rand = rng.nextGaussian();
+			
+			// odabir koji pravokutnik mutirati
 			if (p > rng.nextDouble()) {
-				solution.data[i] += (int) (rng.nextDouble() * rng.nextInt(-128, 127));
+				
+				double randWidth = rng.nextInt(0, width);
+				if(!(solution.data[i] + rand * randWidth > width || solution.data[i] + rand * randWidth < 0)) {
+					solution.data[i] += rand * randWidth;
+				}
+				
+				double randHeight = rng.nextInt(0, height);
+				if(!(solution.data[i + 1] + rand * randHeight > height || solution.data[i + 1] + rand * randHeight < 0)) {
+					solution.data[i] += rand * randHeight;
+				}
+				
+				double randX = rng.nextInt(0, solution.data[i]);
+				if(!(solution.data[i + 2] + rand * randX > width)) {
+					solution.data[i + 2] += rand * randX;
+				}
+				
+				double randY = rng.nextInt(0, solution.data[i + 1]);
+				if(!(solution.data[i + 3] + rand * randY > width)) {
+					solution.data[i + 3] += rand * randY;
+				}
+				
+				double randColor = rng.nextInt(-128, 127);
+				if(!(solution.data[i + 4] + rand * randColor > 127 || solution.data[i + 4] + rand * randColor < -128)) {
+					solution.data[i + 4] += rand * randColor;
+				}
 			}
+			
 		}
 	}
 

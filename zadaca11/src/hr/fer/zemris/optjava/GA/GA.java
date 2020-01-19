@@ -16,18 +16,22 @@ public class GA {
 	private int maxIterations;
 	private double minError;
 	private Evaluator evaluator;
+	private int width;
+	private int height;
 	
 	// broj najbojlih jedinki populacije koji se dodaje u sljedecu populaciju
-	private int firstN = 2;
+	private int firstN = 1;
 
 	GASolution<int[]> PILL = new IntSolution(new int[] {});
 
-	public GA(int populationSize, int solutionSize, int maxIterations, double minError, Evaluator evaluator) {
+	public GA(int populationSize, int solutionSize, int maxIterations, double minError, Evaluator evaluator, int width, int height) {
 		this.populationSize = populationSize;
 		this.solutionSize = solutionSize;
 		this.maxIterations = maxIterations;
 		this.minError = minError;
 		this.evaluator = evaluator;
+		this.width = width;
+		this.height = height;
 	}
 
 	public void evaluate() {
@@ -38,7 +42,7 @@ public class GA {
 
 		IRNG rng = RNG.getRNG();
 
-		List<GASolution<int[]>> population = Util.makePopulation(populationSize, solutionSize, rng);
+		List<GASolution<int[]>> population = Util.makePopulation(populationSize, solutionSize, rng, width, height);
 
 		int cores = Runtime.getRuntime().availableProcessors();
 
@@ -89,10 +93,11 @@ public class GA {
 				}
 			}
 
+			processedPopulation.remove(processedPopulation.size() - 1);
+			processedPopulation.remove(processedPopulation.size() - 2);
+			
 			Util.sort(processedPopulation);
 
-			currentBestError = -processedPopulation.get(0).fitness;
-			
 			List<GASolution<int[]>> offspring = new ArrayList<>();
 			
 			// dodavanje prvih firstN jedinki u populaciju offspring
@@ -110,8 +115,8 @@ public class GA {
 				GASolution<int[]> child1 = Util.BLXa(parent1, parent2, rng);
 				GASolution<int[]> child2 = Util.BLXa(parent1, parent2, rng);
 
-				Util.mutate(child1, rng);
-				Util.mutate(child2, rng);
+				Util.mutate(child1, rng, this.width, this.height);
+				Util.mutate(child2, rng, this.width, this.height);
 				
 				offspring.add(child1);
 				offspring.add(child2);
@@ -119,8 +124,25 @@ public class GA {
 
 			System.out.println("current iter: " + currentIteration + ", minerr: " + currentBestError);
 			
+//			unprocessedQueue.addAll(offspring);
+//			
+//			processedPopulation = new ArrayList<>();
+//			
+//			while (processedPopulation.size() != this.populationSize + 2) {
+//				if (processedQueue.peek() != null) {
+//					processedPopulation.add(processedQueue.poll());
+//				}
+//			}
+//			
+//			Util.sort(processedPopulation);
+//			
+//			offspring.remove(offspring.size() - 1);
+//			offspring.remove(offspring.size() - 2);
+			
 			population = new ArrayList<>(offspring);
 			currentIteration++;
+			
+			currentBestError = -population.get(0).fitness;
 		}
 
 		// gasenje pokrenutih dretvi
