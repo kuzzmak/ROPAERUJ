@@ -69,15 +69,15 @@ public class Util {
 			if (p > rng.nextDouble()) {
 				
 				double randWidth = rng.nextInt(0, width);
-				if(!(solution.data[i] + rand * randWidth > width || solution.data[i] + rand * randWidth < 0)) {
+				if((solution.data[i] + rand * randWidth <= width) && (solution.data[i] + rand * randWidth >= 0)) {
 					solution.data[i] += rand * randWidth;
 				}
 				
 				double randHeight = rng.nextInt(0, height);
-				if(!(solution.data[i + 1] + rand * randHeight > height || solution.data[i + 1] + rand * randHeight < 0)) {
-					solution.data[i] += rand * randHeight;
+				if((solution.data[i + 1] + rand * randHeight <= height) && (solution.data[i + 1] + rand * randHeight >= 0)) {
+					solution.data[i + 1] += rand * randHeight;
 				}
-				
+
 				double randX = rng.nextInt(0, solution.data[i]);
 				if(!(solution.data[i + 2] + rand * randX > width)) {
 					solution.data[i + 2] += rand * randX;
