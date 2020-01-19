@@ -2,13 +2,11 @@ package hr.fer.zemris.optjava.test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
+import hr.fer.zemris.optjava.GA.Evaluator;
+import hr.fer.zemris.optjava.GA.GA;
 import hr.fer.zemris.optjava.GA.GASolution;
-import hr.fer.zemris.optjava.GA.Util;
 import hr.fer.zemris.optjava.GrayScaleImage.GrayScaleImage;
-import hr.fer.zemris.optjava.rng.IRNG;
-import hr.fer.zemris.optjava.rng.RNG;
 
 public class Test3 {
 
@@ -22,7 +20,7 @@ public class Test3 {
 		GrayScaleImage template = new GrayScaleImage(width, height);
 		template = GrayScaleImage.load(file);
 		
-		int populationSize = 100;
+		int populationSize = 10;
 		int Np = 100;
 		int solutionSize = 1 + 5 * Np;
 		int maxIterations = 2000;
@@ -59,20 +57,20 @@ public class Test3 {
 ////
 ////		EVOThread thread = new EVOThread(job);
 ////		thread.start();
-//		Evaluator evaluator = new Evaluator(template);
-//		GA ga = new GA(populationSize, solutionSize, maxIterations, minError, evaluator);
-//		GASolution<int[]> solution = ga.run();
-//		
-//		GrayScaleImage im = new GrayScaleImage(width, height);
-//		evaluator.draw(solution, im);
-//		
-//		File saveTo = new File("generated.png");
-//		im.save(saveTo);
-//
-//		System.out.println(solution);
-		IRNG rng = RNG.getRNG();
-		List<GASolution<int[]>> population = Util.makePopulation(populationSize, solutionSize, rng, width, height);
-		Util.mutate(population.get(0), rng, width, height);
+		Evaluator evaluator = new Evaluator(template);
+		GA ga = new GA(populationSize, solutionSize, maxIterations, minError, evaluator, width, height);
+		GASolution<int[]> solution = ga.run();
+		
+		GrayScaleImage im = new GrayScaleImage(width, height);
+		evaluator.draw(solution, im);
+		
+		File saveTo = new File("generated.png");
+		im.save(saveTo);
+
+		System.out.println(solution);
+//		IRNG rng = RNG.getRNG();
+//		List<GASolution<int[]>> population = Util.makePopulation(populationSize, solutionSize, rng, width, height);
+//		Util.mutate(population.get(0), rng, width, height);
 		
 	}
 

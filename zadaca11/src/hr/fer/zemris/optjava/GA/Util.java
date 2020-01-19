@@ -55,7 +55,6 @@ public class Util {
 
 	public static void mutate(GASolution<int[]> solution, IRNG rng, int width, int height) {
 
-		System.out.println(solution);
 		// boja
 		if(p > rng.nextDouble()) {
 			solution.data[0] += (int) (rng.nextGaussian() * rng.nextInt(-128, 127));
@@ -93,7 +92,6 @@ public class Util {
 					solution.data[i + 4] += rand * randColor;
 				}
 			}
-			
 		}
 	}
 
@@ -115,7 +113,32 @@ public class Util {
 			child.data[i] = u;
 
 		}
-
+		return child;
+	}
+	
+	public static GASolution<int[]> cross(GASolution<int[]> parent1, GASolution<int[]> parent2, IRNG rng) {
+		IntSolution child = (IntSolution) parent1.duplicate();
+		
+		child.data[0] = rng.nextDouble() >= 0.5 ? parent1.data[0] : parent2.data[0];
+		
+		for(int i = 1; i < child.size() - 1; i += 5) {
+			
+			double p = rng.nextDouble();
+			
+			if(p >= 0.5) {
+				child.data[i] = parent1.data[i];
+				child.data[i + 1] = parent1.data[i + 1];
+				child.data[i + 2] = parent1.data[i + 2];
+				child.data[i + 3] = parent1.data[i + 3];
+				child.data[i + 3] = parent1.data[i + 4];
+			}else {
+				child.data[i] = parent2.data[i];
+				child.data[i + 1] = parent2.data[i + 1];
+				child.data[i + 2] = parent2.data[i + 2];
+				child.data[i + 3] = parent2.data[i + 3];
+				child.data[i + 4] = parent2.data[i + 4];
+			}
+		}
 		return child;
 	}
 
@@ -165,7 +188,6 @@ public class Util {
 				return population.get(i);
 			}
 		}
-		
 		return population.get(0);
 	}
 }

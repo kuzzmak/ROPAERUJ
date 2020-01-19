@@ -20,7 +20,7 @@ public class GA {
 	private int height;
 	
 	// broj najbojlih jedinki populacije koji se dodaje u sljedecu populaciju
-	private int firstN = 1;
+	private int firstN = 2;
 
 	GASolution<int[]> PILL = new IntSolution(new int[] {});
 
@@ -32,10 +32,6 @@ public class GA {
 		this.evaluator = evaluator;
 		this.width = width;
 		this.height = height;
-	}
-
-	public void evaluate() {
-
 	}
 
 	public GASolution<int[]> run() {
@@ -87,23 +83,27 @@ public class GA {
 
 			List<GASolution<int[]>> processedPopulation = new ArrayList<>();
 
-			while (processedPopulation.size() != this.populationSize) {
+			while (processedPopulation.size() != population.size()) {
 				if (processedQueue.peek() != null) {
 					processedPopulation.add(processedQueue.poll());
 				}
 			}
-
-			processedPopulation.remove(processedPopulation.size() - 1);
-			processedPopulation.remove(processedPopulation.size() - 2);
 			
 			Util.sort(processedPopulation);
+			
+			currentBestError = -processedPopulation.get(0).fitness;
+			
+			// brisanje zadnjih firstN jedinki
+			for(int i = 0; i < firstN; i++) {
+				processedPopulation.remove(processedPopulation.size() - 1);
+			}
 
 			List<GASolution<int[]>> offspring = new ArrayList<>();
 			
 			// dodavanje prvih firstN jedinki u populaciju offspring
 			offspring.addAll(processedPopulation.stream().limit(firstN).collect(Collectors.toList()));
 			
-			while (offspring.size() < this.populationSize + 2) {
+			while (offspring.size() < this.populationSize + this.firstN) {
 				
 				GASolution<int[]> parent1 = Util.select(processedPopulation, rng);
 				GASolution<int[]> parent2 = Util.select(processedPopulation, rng);
@@ -112,8 +112,8 @@ public class GA {
 					parent2 = Util.select(processedPopulation, rng);
 				}
 
-				GASolution<int[]> child1 = Util.BLXa(parent1, parent2, rng);
-				GASolution<int[]> child2 = Util.BLXa(parent1, parent2, rng);
+				GASolution<int[]> child1 = Util.cross(parent1, parent2, rng);
+				GASolution<int[]> child2 = Util.cross(parent1, parent2, rng);
 
 				Util.mutate(child1, rng, this.width, this.height);
 				Util.mutate(child2, rng, this.width, this.height);
@@ -124,25 +124,8 @@ public class GA {
 
 			System.out.println("current iter: " + currentIteration + ", minerr: " + currentBestError);
 			
-//			unprocessedQueue.addAll(offspring);
-//			
-//			processedPopulation = new ArrayList<>();
-//			
-//			while (processedPopulation.size() != this.populationSize + 2) {
-//				if (processedQueue.peek() != null) {
-//					processedPopulation.add(processedQueue.poll());
-//				}
-//			}
-//			
-//			Util.sort(processedPopulation);
-//			
-//			offspring.remove(offspring.size() - 1);
-//			offspring.remove(offspring.size() - 2);
-			
 			population = new ArrayList<>(offspring);
 			currentIteration++;
-			
-			currentBestError = -population.get(0).fitness;
 		}
 
 		// gasenje pokrenutih dretvi
