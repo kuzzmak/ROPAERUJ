@@ -41,7 +41,9 @@ public class GA {
 		int currentIteration = 0;
 		double currentBestError = Double.MAX_VALUE;
 
+		// red jedinki koje nisu vrednovane
 		ConcurrentLinkedQueue<GASolution<int[]>> unprocessedQueue = new ConcurrentLinkedQueue<>();
+		// red jedinki koje su vrednovane
 		ConcurrentLinkedQueue<GASolution<int[]>> processedQueue = new ConcurrentLinkedQueue<>();
 
 		Runnable job = new Runnable() {
@@ -49,17 +51,22 @@ public class GA {
 			@Override
 			public void run() {
 				while (true) {
+					// ako postoji neka jedinka u redu, dohvaca se
 					if (unprocessedQueue.peek() != null) {
+						// dohvat prve jedinke iz reda
 						GASolution<int[]> solution = unprocessedQueue.poll();
+						// ako je dohvacena jedinka PILL, dretva se gasi
 						if(solution == PILL) break;
-						System.out.println(solution);
+						// dodjeljivanje fitnesa jedinki
 						evaluator.evaluate(solution);
+						
 						processedQueue.add(solution);
 					}
 				}
 			}
 		};
 
+		// pokretanje dretvi
 		for (int i = 0; i < cores; i++) {
 			EVOThread thread = new EVOThread(job);
 			thread.start();
@@ -76,15 +83,14 @@ public class GA {
 				processedPopulation.add(processedQueue.poll());
 			}
 		}
-
-//			Util.sort(processedPopulation);
-
-//			for(int j = 0; j < processedPopulation.size(); j++) {
-//				System.out.println(processedPopulation.get(j).fitness);
-//			}
+			Util.sort(processedPopulation);
 
 //		}
 		
+		GASolution<int[]> sol = Util.select(processedPopulation, rng);
+		System.out.println(sol);
+		
+		// gasenje pokrenutih dretvi
 		for(int i = 0; i < cores; i++) {
 			unprocessedQueue.add(PILL);
 		}
