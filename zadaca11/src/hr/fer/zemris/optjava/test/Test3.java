@@ -20,8 +20,8 @@ public class Test3 {
 		GrayScaleImage template = new GrayScaleImage(width, height);
 		template = GrayScaleImage.load(file);
 		
-		int populationSize = 10;
-		int Np = 100;
+		int populationSize = 100;
+		int Np = 200;
 		int solutionSize = 1 + 5 * Np;
 		int maxIterations = 2000;
 		double minError = 10;

@@ -11,7 +11,7 @@ import hr.fer.zemris.optjava.rng.IRNG;
 public class Util {
 
 	// vjerojatnost mutacije
-	private static double p = 0.2;
+	private static double p = 0.05;
 
 	private static double alpha = 0.02;
 
@@ -45,13 +45,13 @@ public class Util {
 		return population;
 	}
 
-	public static void evaluatePopulation(List<GASolution<int[]>> population, Evaluator evaluator) {
-
-		for (int i = 0; i < population.size(); i++) {
-
-			evaluator.evaluate(population.get(i));
-		}
-	}
+//	public static void evaluatePopulation(List<GASolution<int[]>> population, Evaluator evaluator, ) {
+//
+//		for (int i = 0; i < population.size(); i++) {
+//
+//			evaluator.evaluate(population.get(i));
+//		}
+//	}
 
 	public static void mutate(GASolution<int[]> solution, IRNG rng, int width, int height) {
 

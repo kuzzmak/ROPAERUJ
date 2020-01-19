@@ -29,11 +29,11 @@ public class Evaluator implements IGAEvaluator<int[]> {
 	}
 
 	@Override
-	public void evaluate(GASolution<int[]> p) {
-		// Ovo nije višedretveno sigurno!
-		if (im == null) {
-			im = new GrayScaleImage(template.getWidth(), template.getHeight());
-		}
+	public void evaluate(GASolution<int[]> p, GrayScaleImage im) {
+//		// Ovo nije višedretveno sigurno!
+//		if (im == null) {
+//			im = new GrayScaleImage(template.getWidth(), template.getHeight());
+//		}
 		draw(p, im);
 		byte[] data = im.getData();
 		byte[] tdata = template.getData();

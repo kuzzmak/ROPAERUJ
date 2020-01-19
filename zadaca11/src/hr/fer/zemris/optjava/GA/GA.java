@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
+import hr.fer.zemris.optjava.GrayScaleImage.GrayScaleImage;
 import hr.fer.zemris.optjava.rng.EVOThread;
 import hr.fer.zemris.optjava.rng.IRNG;
 import hr.fer.zemris.optjava.rng.RNG;
+import hr.fer.zemris.optjava.rng.rngimpl.RNGRandomImpl;
 
 public class GA {
 
@@ -50,6 +52,8 @@ public class GA {
 		// red jedinki koje su vrednovane
 		ConcurrentLinkedQueue<GASolution<int[]>> processedQueue = new ConcurrentLinkedQueue<>();
 
+		ThreadLocal<GrayScaleImage> tlgs = ThreadLocal.withInitial(() -> {return new GrayScaleImage(width, height);});
+		
 		Runnable job = new Runnable() {
 
 			@Override
@@ -63,7 +67,7 @@ public class GA {
 						if (solution == PILL)
 							break;
 						// dodjeljivanje fitnesa jedinki
-						evaluator.evaluate(solution);
+						evaluator.evaluate(solution, tlgs.get());
 
 						processedQueue.add(solution);
 					}
