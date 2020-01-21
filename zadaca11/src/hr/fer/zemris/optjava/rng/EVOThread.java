@@ -1,12 +1,19 @@
 package hr.fer.zemris.optjava.rng;
 
+import hr.fer.zemris.optjava.GA.Evaluator;
 import hr.fer.zemris.optjava.rng.rngimpl.RNGRandomImpl;
 
 public class EVOThread extends Thread implements IRNGProvider {
 
 	private IRNG rng = new RNGRandomImpl();
+	private Evaluator evaluator;
 
 	public EVOThread() {
+	}
+	
+	public EVOThread(Runnable target, Evaluator evaluator) {
+		super(target);
+		this.evaluator = evaluator;
 	}
 
 	public EVOThread(Runnable target) {
@@ -40,6 +47,10 @@ public class EVOThread extends Thread implements IRNGProvider {
 	@Override
 	public IRNG getRNG() {
 		return rng;
+	}
+	
+	public Evaluator getEvaluator() {
+		return evaluator;
 	}
 
 }

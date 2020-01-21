@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import hr.fer.zemris.optjava.GrayScaleImage.GrayScaleImage;
 import hr.fer.zemris.optjava.rng.EVOThread;
 import hr.fer.zemris.optjava.rng.IRNG;
 
@@ -12,12 +11,8 @@ public class Task implements Callable<List<GASolution<int[]>>>{
 
 	private List<GASolution<int[]>> population;
 	private double p;
-	private Evaluator evaluator;
 	private int numOfChildren;
-	// svaki zadatak ima svoju sliku za evaluaciju
-	private GrayScaleImage im;
 
-	
 	/**
 	 * @param population trenutna populacija
 	 * @param evaluator za evaluaciju pojedine jedinke
@@ -27,16 +22,12 @@ public class Task implements Callable<List<GASolution<int[]>>>{
 	 * @param rng generator slucajnih brojeva
 	 */
 	public Task(List<GASolution<int[]>> population,
-							  Evaluator evaluator,
 							  	 double p,
-							  	 	int numOfChildren,
-			ThreadLocal<GrayScaleImage> tlgsi) {
+							  	 	int numOfChildren) {
 		
 		this.population = population;
-		this.evaluator = evaluator;
 		this.p = p;
 		this.numOfChildren = numOfChildren;
-		this.im = tlgsi.get();
 	}
 	
 	@Override
@@ -44,16 +35,15 @@ public class Task implements Callable<List<GASolution<int[]>>>{
 		
 		IRNG rng = ((EVOThread)Thread.currentThread()).getRNG();
 		
+		Evaluator evaluator = ((EVOThread)Thread.currentThread()).getEvaluator();		
 		// lista djece koje svaki zadatak mora stvoriti
 		List<GASolution<int[]>> children = new ArrayList<>();
 		
 		// evaluacije populacije
 		for(GASolution<int[]> solution: this.population) {
-			this.evaluator.evaluate(solution, this.im);
+			evaluator.evaluate(solution);
 		}
 		
-//		// sortiranje populacije
-//		Util.sort(this.population);
 		
 		while(children.size() < this.numOfChildren) {
 			
@@ -67,9 +57,9 @@ public class Task implements Callable<List<GASolution<int[]>>>{
 			// krizanje roditelja da bi se dobilo dijete
 			GASolution<int[]> child = Util.cross(parent1, parent2, rng);
 			// mutacija djetea
-			Util.mutate(child, rng, p);
+			Util.mutate(child, rng, this.p);
 			// evaluacija djeteta
-			evaluator.evaluate(child, im);
+			evaluator.evaluate(child);
 			
 			children.add(child);
 		}

@@ -76,7 +76,7 @@ public class GA1 {
 						if (solution == PILL)
 							break;
 						// dodjeljivanje fitnesa jedinki
-						evaluator.evaluate(solution, tlgs.get());
+//						evaluator.evaluate(solution, tlgs.get());
 
 						processedQueue.add(solution);
 					}

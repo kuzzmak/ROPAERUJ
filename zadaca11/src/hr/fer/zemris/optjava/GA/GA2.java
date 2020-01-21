@@ -31,6 +31,8 @@ public class GA2 {
 	private static double p = 0.05;
 	private int firstN = 2;
 	
+	protected static GrayScaleImage template;
+	
 	private ThreadLocal<GrayScaleImage> tlgsi = ThreadLocal.withInitial(() -> {return new GrayScaleImage(width, height);});
 
 	/**
@@ -68,7 +70,7 @@ public class GA2 {
 		// staza do png slike kuce
 		File file = new File(this.pathToTemplate);
 		
-		GrayScaleImage template = new GrayScaleImage(width, height);
+		template = new GrayScaleImage(width, height);
 		try {
 			template = GrayScaleImage.load(file);
 		} catch (IOException e1) {
@@ -91,7 +93,7 @@ public class GA2 {
 		// inicijalna evaluacija populacije
 		GrayScaleImage im = new GrayScaleImage(width, height);
 		for(GASolution<int[]> solution: population) {
-			evaluator.evaluate(solution, im);
+			evaluator.evaluate(solution);
 		}
 		
 		// glavna petlja
@@ -108,7 +110,7 @@ public class GA2 {
 			// dodavanje poslova 
 			for(int i = 0; i < (this.populationSize + firstN) / numOfChildren; i++) {
 				
-				tasks.add(new Task(population, evaluator, p, numOfChildren, tlgsi));
+				tasks.add(new Task(population, p, numOfChildren));
 			}
 			
 			// dohvacanje rezultata

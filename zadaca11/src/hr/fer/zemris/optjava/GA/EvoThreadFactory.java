@@ -8,7 +8,7 @@ public class EvoThreadFactory implements ThreadFactory {
 
 	@Override
 	public Thread newThread(Runnable arg0) {
-		return new EVOThread(arg0);
+		return new EVOThread(arg0, new Evaluator(GA2.template));
 	}
 
 }
