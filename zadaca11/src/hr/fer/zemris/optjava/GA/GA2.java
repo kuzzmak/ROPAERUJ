@@ -63,9 +63,7 @@ public class GA2 {
 		// velicina pojedine jedinke
 		int solutionSize = 1 + 5 * this.Np;
 		// broj djece koji svaki task generira
-		int numOfChildren = 2;
-		
-		this.pathToTemplate = "picture/11-kuca-200-133.png"; // maknuti
+		int numOfChildren = 5;
 		
 		// staza do png slike kuce
 		File file = new File(this.pathToTemplate);
@@ -132,13 +130,13 @@ public class GA2 {
 				}
 			}
 			
-			population = new ArrayList<>(children);
-			
-			Util.sort(population);
+			Util.sort(children);
 			
 			for(int i = 0; i < firstN; i++) {
-				population.remove(population.size() - 1);
+				children.remove(children.size() - 1);
 			}
+			
+			population = new ArrayList<>(children);
 			
 			// trenutna greska najbolje jedinke
 			currentError = -population.get(0).fitness;
@@ -152,8 +150,6 @@ public class GA2 {
 		
 		// najbolja jedinka
 		GASolution<int[]> best = population.get(0);
-		
-		this.pathToGeneratedPicture = "generated.png"; //maknuti
 		
 		// spremanje najboljg rjesenja kao slike
 		File saveTo = new File(this.pathToGeneratedPicture);
