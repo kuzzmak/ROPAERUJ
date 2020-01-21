@@ -11,6 +11,9 @@ public class Util {
 
 	// vjerojatnost mutacije
 	private static double p = 0.05;
+	
+	private static final int width = 200;
+	private static final int height = 133;
 
 //	private static double alpha = 0.02;
 
@@ -24,7 +27,7 @@ public class Util {
 	 * @param height visina slike
 	 * @return lista jedinki
 	 */
-	public static List<GASolution<int[]>> makePopulation(int populationSize, int solutionSize, IRNG rng, int width, int height) {
+	public static List<GASolution<int[]>> makePopulation(int populationSize, int solutionSize, IRNG rng) {
 
 		List<GASolution<int[]>> population = new ArrayList<>();
 
@@ -60,7 +63,7 @@ public class Util {
 	 * @param width sirina slike
 	 * @param height visina slike
 	 */
-	public static void mutate(GASolution<int[]> solution, IRNG rng, int width, int height) {
+	public static void mutate(GASolution<int[]> solution, IRNG rng) {
 
 		// boja
 		if(p > rng.nextDouble()) {
@@ -220,4 +223,5 @@ public class Util {
 		}
 		return population.get(0);
 	}
+	
 }

@@ -22,8 +22,6 @@ public class Test2 {
 				GASolution<int[]> parent2 = new IntSolution(new int[] { -128, 100, 23, -90, -10, 103 });
 				System.out.println(parent1);
 				System.out.println(parent2);
-				GASolution<int[]> child = Util.BLXa(parent1, parent2, rng);
-				System.out.println(child);
 			}
 		};
 

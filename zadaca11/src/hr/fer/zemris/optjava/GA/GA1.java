@@ -11,26 +11,33 @@ import hr.fer.zemris.optjava.rng.IRNG;
 import hr.fer.zemris.optjava.rng.RNG;
 import hr.fer.zemris.optjava.rng.rngimpl.RNGRandomImpl;
 
-public class GA {
+public class GA1 {
 
 	private int populationSize;
 	private int solutionSize;
 	private int maxIterations;
 	private double minError;
+	private int firstN;
 	private Evaluator evaluator;
 	private int width;
 	private int height;
 	
-	// broj najbojlih jedinki populacije koji se dodaje u sljedecu populaciju
-	private int firstN = 2;
-
+	// jedinka za gasenje dretvi
 	GASolution<int[]> PILL = new IntSolution(new int[] {});
 
-	public GA(int populationSize, int solutionSize, int maxIterations, double minError, Evaluator evaluator, int width, int height) {
+	public GA1(int populationSize, 
+			int solutionSize, 
+			int maxIterations, 
+			double minError,
+			int firstN,
+			Evaluator evaluator, 
+			int width, 
+			int height) {
 		this.populationSize = populationSize;
 		this.solutionSize = solutionSize;
 		this.maxIterations = maxIterations;
 		this.minError = minError;
+		this.firstN = firstN;
 		this.evaluator = evaluator;
 		this.width = width;
 		this.height = height;
@@ -40,7 +47,7 @@ public class GA {
 
 		IRNG rng = RNG.getRNG();
 
-		List<GASolution<int[]>> population = Util.makePopulation(populationSize, solutionSize, rng, width, height);
+		List<GASolution<int[]>> population = Util.makePopulation(populationSize, solutionSize, rng);
 
 		int cores = Runtime.getRuntime().availableProcessors();
 
@@ -119,8 +126,8 @@ public class GA {
 				GASolution<int[]> child1 = Util.cross(parent1, parent2, rng);
 				GASolution<int[]> child2 = Util.cross(parent1, parent2, rng);
 
-				Util.mutate(child1, rng, this.width, this.height);
-				Util.mutate(child2, rng, this.width, this.height);
+				Util.mutate(child1, rng);
+				Util.mutate(child2, rng);
 				
 				offspring.add(child1);
 				offspring.add(child2);
@@ -137,6 +144,8 @@ public class GA {
 			unprocessedQueue.add(PILL);
 		}
 
+		Util.sort(population);
+		
 		return population.get(0);
 	}
 
