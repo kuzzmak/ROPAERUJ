@@ -22,6 +22,8 @@ public class GA1 {
 	private int width;
 	private int height;
 	
+	private static double p = 0.05;
+	
 	// jedinka za gasenje dretvi
 	GASolution<int[]> PILL = new IntSolution(new int[] {});
 
@@ -126,8 +128,8 @@ public class GA1 {
 				GASolution<int[]> child1 = Util.cross(parent1, parent2, rng);
 				GASolution<int[]> child2 = Util.cross(parent1, parent2, rng);
 
-				Util.mutate(child1, rng);
-				Util.mutate(child2, rng);
+				Util.mutate(child1, rng, p);
+				Util.mutate(child2, rng, p);
 				
 				offspring.add(child1);
 				offspring.add(child2);

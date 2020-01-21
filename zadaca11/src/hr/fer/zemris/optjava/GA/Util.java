@@ -9,9 +9,6 @@ import hr.fer.zemris.optjava.rng.IRNG;
 
 public class Util {
 
-	// vjerojatnost mutacije
-	private static double p = 0.05;
-	
 	private static final int width = 200;
 	private static final int height = 133;
 
@@ -63,7 +60,7 @@ public class Util {
 	 * @param width sirina slike
 	 * @param height visina slike
 	 */
-	public static void mutate(GASolution<int[]> solution, IRNG rng) {
+	public static void mutate(GASolution<int[]> solution, IRNG rng, double p) {
 
 		// boja
 		if(p > rng.nextDouble()) {
