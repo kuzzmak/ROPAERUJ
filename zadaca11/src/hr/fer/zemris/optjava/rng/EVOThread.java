@@ -53,4 +53,7 @@ public class EVOThread extends Thread implements IRNGProvider {
 		return evaluator;
 	}
 
+	public void setEvaluator(Evaluator evaluator) {
+		this.evaluator = evaluator;
+	}
 }

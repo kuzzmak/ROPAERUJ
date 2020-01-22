@@ -22,19 +22,13 @@ public class GA2 {
 	private int populationSize;
 	private int maxIterations;
 	private double minError;
-	private String pathToParameterFile;
 	private String pathToGeneratedPicture;
-	
-	private static final int height = 133;
-	private static final int width = 200;
-
-	private static double p = 0.05;
-	private int firstN = 2;
+	private double p;
+	private int firstN;
+	private int numOfChildren;
 	
 	protected static GrayScaleImage template;
 	
-	private ThreadLocal<GrayScaleImage> tlgsi = ThreadLocal.withInitial(() -> {return new GrayScaleImage(width, height);});
-
 	/**
 	 * @param pathToTemplate staza do originalne PNG slike
 	 * @param np broj pravokutnika
@@ -45,15 +39,17 @@ public class GA2 {
 	 * @param pathToGeneratedPicture staza do lokacije spremanje generirane slike
 	 */
 	public GA2(String pathToTemplate, int np, int populationSize, int maxIterations, double minError,
-			String pathToParameterFile, String pathToGeneratedPicture) {
+			String pathToGeneratedPicture, int firstN, double p, int numOfChildren) {
 		super();
 		this.pathToTemplate = pathToTemplate;
 		this.Np = np;
 		this.populationSize = populationSize;
 		this.maxIterations = maxIterations;
 		this.minError = minError;
-		this.pathToParameterFile = pathToParameterFile;
 		this.pathToGeneratedPicture = pathToGeneratedPicture;
+		this.firstN = firstN;
+		this.p = p;
+		this.numOfChildren = numOfChildren;
 	}
 		
 	public GASolution<int[]> run(){
@@ -64,19 +60,18 @@ public class GA2 {
 		double currentError = Double.MAX_VALUE;
 		// velicina pojedine jedinke
 		int solutionSize = 1 + 5 * this.Np;
-		// broj djece koji svaki task generira
-		int numOfChildren = 5;
 		
 		// staza do png slike kuce
 		File file = new File(this.pathToTemplate);
 		
-		template = new GrayScaleImage(width, height);
+		// ucitavanje templatea
 		try {
 			template = GrayScaleImage.load(file);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 		
+		// evaluator za evaluaciju populacije na pocetku
 		Evaluator evaluator = new Evaluator(template);
 		
 		// generator slucajnih brojeva
@@ -91,7 +86,7 @@ public class GA2 {
 		List<GASolution<int[]>> population = Util.makePopulation(this.populationSize, solutionSize, rng);
 		
 		// inicijalna evaluacija populacije
-		GrayScaleImage im = new GrayScaleImage(width, height);
+		
 		for(GASolution<int[]> solution: population) {
 			evaluator.evaluate(solution);
 		}
@@ -108,7 +103,7 @@ public class GA2 {
 			List<Callable<List<GASolution<int[]>>>> tasks = new ArrayList<>();
 			
 			// dodavanje poslova 
-			for(int i = 0; i < (this.populationSize + firstN) / numOfChildren; i++) {
+			for(int i = 0; i < this.populationSize / numOfChildren; i++) {
 				
 				tasks.add(new Task(population, p, numOfChildren));
 			}
@@ -152,6 +147,8 @@ public class GA2 {
 		
 		// najbolja jedinka
 		GASolution<int[]> best = population.get(0);
+		
+		GrayScaleImage im = new GrayScaleImage(Util.width, Util.height);
 		
 		// spremanje najboljg rjesenja kao slike
 		File saveTo = new File(this.pathToGeneratedPicture);

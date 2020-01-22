@@ -1,5 +1,7 @@
 package hr.fer.zemris.optjava.GA;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -9,48 +11,54 @@ import hr.fer.zemris.optjava.GrayScaleImage.GrayScaleImage;
 import hr.fer.zemris.optjava.rng.EVOThread;
 import hr.fer.zemris.optjava.rng.IRNG;
 import hr.fer.zemris.optjava.rng.RNG;
-import hr.fer.zemris.optjava.rng.rngimpl.RNGRandomImpl;
 
 public class GA1 {
 
+	private String pathToTemplate;
+	private int Np;
 	private int populationSize;
-	private int solutionSize;
 	private int maxIterations;
 	private double minError;
+	private String pathToGeneratedPicture;
 	private int firstN;
-	private Evaluator evaluator;
-	private int width;
-	private int height;
 	
-	private static double p = 0.05;
+	private double p;
 	
 	// jedinka za gasenje dretvi
 	GASolution<int[]> PILL = new IntSolution(new int[] {});
 
-	public GA1(int populationSize, 
-			int solutionSize, 
-			int maxIterations, 
-			double minError,
-			int firstN,
-			Evaluator evaluator, 
-			int width, 
-			int height) {
+	
+	/**
+	 * @param pathToTemplate staza do originalne PNG slike
+	 * @param np broj pravokutnika
+	 * @param populationSize velicina populacije
+	 * @param maxIterations broj iteracija
+	 * @param minError minimalni -fitnes
+	 * @param pathToParameterFile staza do txt datoteke za ispis optimalnih parametara
+	 * @param pathToGeneratedPicture staza do lokacije spremanje generirane slike
+	 */
+	public GA1(String pathToTemplate, int np, int populationSize, int maxIterations, double minError,
+			String pathToGeneratedPicture, int firstN, double p) {
+		super();
+		this.pathToTemplate = pathToTemplate;
+		this.Np = np;
 		this.populationSize = populationSize;
-		this.solutionSize = solutionSize;
 		this.maxIterations = maxIterations;
 		this.minError = minError;
+		this.pathToGeneratedPicture = pathToGeneratedPicture;
 		this.firstN = firstN;
-		this.evaluator = evaluator;
-		this.width = width;
-		this.height = height;
+		this.p = p;
 	}
 
 	public GASolution<int[]> run() {
 
 		IRNG rng = RNG.getRNG();
+		
+		int solutionSize = 1 + 5 * this.Np;
 
 		List<GASolution<int[]>> population = Util.makePopulation(populationSize, solutionSize, rng);
 
+		// broj dretvi koji ce se stvoriti
 		int cores = Runtime.getRuntime().availableProcessors();
 
 		int currentIteration = 0;
@@ -60,13 +68,15 @@ public class GA1 {
 		ConcurrentLinkedQueue<GASolution<int[]>> unprocessedQueue = new ConcurrentLinkedQueue<>();
 		// red jedinki koje su vrednovane
 		ConcurrentLinkedQueue<GASolution<int[]>> processedQueue = new ConcurrentLinkedQueue<>();
-
-		ThreadLocal<GrayScaleImage> tlgs = ThreadLocal.withInitial(() -> {return new GrayScaleImage(width, height);});
 		
 		Runnable job = new Runnable() {
 
 			@Override
 			public void run() {
+				
+				// dohvat evaluatora pojedine dretve
+				Evaluator evaluator = ((EVOThread)Thread.currentThread()).getEvaluator();
+				
 				while (true) {
 					// ako postoji neka jedinka u redu, dohvaca se
 					if (unprocessedQueue.peek() != null) {
@@ -76,17 +86,24 @@ public class GA1 {
 						if (solution == PILL)
 							break;
 						// dodjeljivanje fitnesa jedinki
-//						evaluator.evaluate(solution, tlgs.get());
-
+						evaluator.evaluate(solution);
 						processedQueue.add(solution);
 					}
 				}
 			}
 		};
 
+		GrayScaleImage template = new GrayScaleImage(Util.width, Util.height);
+		try {
+			template = GrayScaleImage.load(new File(this.pathToTemplate));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		// pokretanje dretvi
 		for (int i = 0; i < cores; i++) {
 			EVOThread thread = new EVOThread(job);
+			thread.setEvaluator(new Evaluator(template.duplicate()));
 			thread.start();
 		}
 
@@ -147,6 +164,20 @@ public class GA1 {
 		}
 
 		Util.sort(population);
+		
+		GASolution<int[]> best = population.get(0);
+		
+		// spremanje slike
+		Evaluator evaluator = new Evaluator(template);
+		GrayScaleImage im = new GrayScaleImage(Util.width, Util.height);
+		evaluator.draw(best, im);
+		
+		File saveTo = new File(this.pathToGeneratedPicture);
+		try {
+			im.save(saveTo);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		return population.get(0);
 	}

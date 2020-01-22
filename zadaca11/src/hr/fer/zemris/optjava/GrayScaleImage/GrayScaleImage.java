@@ -44,6 +44,10 @@ public class GrayScaleImage {
 	public byte[] getData() {
 		return data;
 	}
+	
+	public GrayScaleImage duplicate() {
+		return new GrayScaleImage(this.width, this.height, this.data);
+	}
 
 	public void rectangle(int x, int y, int w, int h, byte color) {
 		int xs = x;

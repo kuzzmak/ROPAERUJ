@@ -3,7 +3,9 @@ package hr.fer.zemris.optjava.test;
 import java.io.File;
 import java.io.IOException;
 
-import hr.fer.zemris.optjava.GA.Task;
+import hr.fer.zemris.optjava.GA.Evaluator;
+import hr.fer.zemris.optjava.GA.GA1;
+import hr.fer.zemris.optjava.GA.GASolution;
 import hr.fer.zemris.optjava.GrayScaleImage.GrayScaleImage;
 
 public class Test3 {
@@ -21,7 +23,7 @@ public class Test3 {
 		int populationSize = 100;
 		int Np = 200;
 		int solutionSize = 1 + 5 * Np;
-		int maxIterations = 2000;
+		int maxIterations = 200;
 		double minError = 10;
 		int firstN = 2;
 		
@@ -57,9 +59,9 @@ public class Test3 {
 ////		EVOThread thread = new EVOThread(job);
 ////		thread.start();
 //		Evaluator evaluator = new Evaluator(template);
-//		GA1 ga = new GA1(populationSize, solutionSize, maxIterations, minError, firstN, evaluator, width, height);
+//		GA1 ga = new GA1(populationSize, solutionSize, maxIterations, minError, firstN);
 //		GASolution<int[]> solution = ga.run();
-//		
+////		
 //		GrayScaleImage im = new GrayScaleImage(width, height);
 //		evaluator.draw(solution, im);
 //		
