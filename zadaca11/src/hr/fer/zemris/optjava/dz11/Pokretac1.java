@@ -14,14 +14,14 @@ public class Pokretac1 {
 		int np = Integer.parseInt(args[1]);
 		int populationSize = Integer.parseInt(args[2]);
 		int maxIterations = Integer.parseInt(args[3]);
-		double minError = Double.parseDouble(args[4]);
+		double minFitness = Double.parseDouble(args[4]);
 		String pathToParameterFile = args[5];
 		String pathToGeneratedPicture = args[6];
 		
 		int firstN = 5;
 		double p = 0.05;
 
-		GA1 ga = new GA1(pathToTemplate, np, populationSize, maxIterations, minError, 
+		GA1 ga = new GA1(pathToTemplate, np, populationSize, maxIterations, minFitness, 
 				pathToGeneratedPicture, firstN, p);
 		
 		GASolution<int[]> solution = ga.run();

@@ -14,7 +14,7 @@ public class Pokretac2 {
 		int np = Integer.parseInt(args[1]);
 		int populationSize = Integer.parseInt(args[2]);
 		int maxIterations = Integer.parseInt(args[3]);
-		double minError = Double.parseDouble(args[4]);
+		double minFitness = Double.parseDouble(args[4]);
 		String pathToParameterFile = args[5];
 		String pathToGeneratedPicture = args[6];
 		
@@ -22,7 +22,7 @@ public class Pokretac2 {
 		double p = 0.05;
 		int numOfChildren = 5;
 
-		GA2 ga = new GA2(pathToTemplate, np, populationSize, maxIterations, minError, 
+		GA2 ga = new GA2(pathToTemplate, np, populationSize, maxIterations, minFitness, 
 				pathToGeneratedPicture, firstN, p, numOfChildren);
 		
 		GASolution<int[]> solution = ga.run();

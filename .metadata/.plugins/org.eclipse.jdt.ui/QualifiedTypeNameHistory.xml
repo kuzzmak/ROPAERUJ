@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz5.part2.OptimizaitonFunction"/>
 <fullyQualifiedTypeName name="java.util.Iterator"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz5.part2.CONSTANTS"/>
 <fullyQualifiedTypeName name="java.util.stream.Stream"/>
@@ -42,7 +41,6 @@
 <fullyQualifiedTypeName name="java.io.PrintWriter"/>
 <fullyQualifiedTypeName name="java.io.OutputStream"/>
 <fullyQualifiedTypeName name="org.jfree.chart.renderer.xy.XYLineAndShapeRenderer"/>
-<fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="java.util.Comparator"/>
 <fullyQualifiedTypeName name="org.jfree.chart.util.ArrayUtils"/>
 <fullyQualifiedTypeName name="org.jfree.data.xy.XYSeries"/>
@@ -50,14 +48,16 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.rng.IRNGProvider"/>
 <fullyQualifiedTypeName name="java.lang.ThreadLocal"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.GA.Util"/>
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="java.util.concurrent.Executors"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.GA.GA1"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.GA.GA2"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.GA.GASolution"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.rng.RNG"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.rng.EVOThread"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.GA.EvoThreadFactory"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.GA.GA1"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.GA.Util"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.GrayScaleImage.GrayScaleImage"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.GA.GASolution"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.GA.Evaluator"/>
 </qualifiedTypeNameHistroy>

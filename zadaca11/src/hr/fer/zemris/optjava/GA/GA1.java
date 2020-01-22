@@ -18,7 +18,7 @@ public class GA1 {
 	private int Np;
 	private int populationSize;
 	private int maxIterations;
-	private double minError;
+	private double minFitness;
 	private String pathToGeneratedPicture;
 	private int firstN;
 	
@@ -37,14 +37,14 @@ public class GA1 {
 	 * @param pathToParameterFile staza do txt datoteke za ispis optimalnih parametara
 	 * @param pathToGeneratedPicture staza do lokacije spremanje generirane slike
 	 */
-	public GA1(String pathToTemplate, int np, int populationSize, int maxIterations, double minError,
+	public GA1(String pathToTemplate, int np, int populationSize, int maxIterations, double minFitness,
 			String pathToGeneratedPicture, int firstN, double p) {
 		super();
 		this.pathToTemplate = pathToTemplate;
 		this.Np = np;
 		this.populationSize = populationSize;
 		this.maxIterations = maxIterations;
-		this.minError = minError;
+		this.minFitness = minFitness;
 		this.pathToGeneratedPicture = pathToGeneratedPicture;
 		this.firstN = firstN;
 		this.p = p;
@@ -62,7 +62,7 @@ public class GA1 {
 		int cores = Runtime.getRuntime().availableProcessors();
 
 		int currentIteration = 0;
-		double currentBestError = Double.MAX_VALUE;
+		double currentBestFitness = Double.MIN_VALUE;
 
 		// red jedinki koje nisu vrednovane
 		ConcurrentLinkedQueue<GASolution<int[]>> unprocessedQueue = new ConcurrentLinkedQueue<>();
@@ -107,7 +107,7 @@ public class GA1 {
 			thread.start();
 		}
 
-		while (currentIteration < this.maxIterations && currentBestError > this.minError) {
+		while (currentIteration < this.maxIterations && currentBestFitness < this.minFitness) {
 
 			unprocessedQueue.addAll(population);
 
@@ -121,7 +121,7 @@ public class GA1 {
 			
 			Util.sort(processedPopulation);
 			
-			currentBestError = -processedPopulation.get(0).fitness;
+			currentBestFitness = processedPopulation.get(0).fitness;
 			
 			// brisanje zadnjih firstN jedinki
 			for(int i = 0; i < firstN; i++) {
@@ -152,7 +152,7 @@ public class GA1 {
 				offspring.add(child2);
 			}
 
-			System.out.println("current iter: " + currentIteration + ", minerr: " + currentBestError);
+			System.out.println("current iter: " + currentIteration + ", bestfit: " + currentBestFitness);
 			
 			population = new ArrayList<>(offspring);
 			currentIteration++;

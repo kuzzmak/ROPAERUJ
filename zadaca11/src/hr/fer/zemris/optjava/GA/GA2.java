@@ -21,7 +21,7 @@ public class GA2 {
 	private int Np;
 	private int populationSize;
 	private int maxIterations;
-	private double minError;
+	private double minFitness;
 	private String pathToGeneratedPicture;
 	private double p;
 	private int firstN;
@@ -38,14 +38,14 @@ public class GA2 {
 	 * @param pathToParameterFile staza do txt datoteke za ispis optimalnih parametara
 	 * @param pathToGeneratedPicture staza do lokacije spremanje generirane slike
 	 */
-	public GA2(String pathToTemplate, int np, int populationSize, int maxIterations, double minError,
+	public GA2(String pathToTemplate, int np, int populationSize, int maxIterations, double minFitness,
 			String pathToGeneratedPicture, int firstN, double p, int numOfChildren) {
 		super();
 		this.pathToTemplate = pathToTemplate;
 		this.Np = np;
 		this.populationSize = populationSize;
 		this.maxIterations = maxIterations;
-		this.minError = minError;
+		this.minFitness = minFitness;
 		this.pathToGeneratedPicture = pathToGeneratedPicture;
 		this.firstN = firstN;
 		this.p = p;
@@ -57,7 +57,7 @@ public class GA2 {
 		// trenutna iteracija algoritma
 		int currentIter = 0;
 		// najbolja greska do sada
-		double currentError = Double.MAX_VALUE;
+		double currentFitness = Double.MIN_VALUE;
 		// velicina pojedine jedinke
 		int solutionSize = 1 + 5 * this.Np;
 		
@@ -92,7 +92,7 @@ public class GA2 {
 		}
 		
 		// glavna petlja
-		while(currentIter < this.maxIterations && currentError > this.minError) {
+		while(currentIter < this.maxIterations && currentFitness < this.minFitness) {
 			
 			List<GASolution<int[]>> children = new ArrayList<>();
 			
@@ -136,9 +136,9 @@ public class GA2 {
 			population = new ArrayList<>(children);
 			
 			// trenutna greska najbolje jedinke
-			currentError = -population.get(0).fitness;
+			currentFitness = population.get(0).fitness;
 			
-			System.out.println("current iter: " + currentIter + ", err: " + currentError);
+			System.out.println("current iter: " + currentIter + ", minfit: " + currentFitness);
 			currentIter++;
 		}
 		
