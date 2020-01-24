@@ -82,21 +82,7 @@ public class Test {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-//            	column++;
-//            	
-//            	if(column != 0) {
-//            		grid[row][column - 1].setIcon(null);
-//            	}
-//            	
-//            	if(column == width) {
-//            		column = 0;
-//            	}
-//            	
-//            	System.out.println("row: " + row + ", col: " + column);
-//                grid[row][column].setIcon(antIcon);
-
-				degrees += 90;
-				degrees = degrees % 360;
+				rightTurn();
 
 				setAntIcon(degrees % 360);
 			}
@@ -107,22 +93,8 @@ public class Test {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-//            	row++;
-//            	
-//            	if(row != 0) {
-//            		grid[row - 1][column].setIcon(null);
-//            	}
-//            	
-//            	if(row == height) {
-//            		row = 0;
-//            	}
-//            	
-//            	System.out.println("row: " + row + ", col: " + column);
-//                grid[row][column].setIcon(antIcon);
-
-				degrees += 270;
-				degrees = degrees % 360;
-
+				leftTurn();
+				
 				setAntIcon(degrees);
 			}
 		});
@@ -132,55 +104,10 @@ public class Test {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-//            	row++;
-//            	
-//            	if(row != 0) {
-//            		grid[row - 1][column].setIcon(null);
-//            	}
-//            	
-//            	if(row == height) {
-//            		row = 0;
-//            	}
-//            	
-//            	System.out.println("row: " + row + ", col: " + column);
-//                grid[row][column].setIcon(antIcon);
-
-				switch (degrees) {
+				grid[row][column].setIcon(null);
 				
-				case 0:
-					column++;
-					if (column != 0) {
-						grid[row][column - 1].setIcon(null);
-					}
-					if(column == width) {
-						column = 0;
-					}
-					break;
-					
-				case 90:
-					row++;
-					if(row != 0) {
-	            		grid[row - 1][column].setIcon(null);
-	            	}
-	            	
-	            	if(row == height) {
-	            		row = 0;
-	            	}
-	            	break;
-	            	
-				case 180:
-					column--;
-					
-					if(column != 0) {
-						grid[row][column + 1].setIcon(null);
-					}
-					if(column < 0) {
-						column = width - 1;
-					}
-	            	break;
-
-				}
-
+				step();
+				
 				setAntIcon(degrees);
 			}
 		});
@@ -191,8 +118,69 @@ public class Test {
 		frame.add(container);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
-		frame.setSize(500, 500);
 		frame.setVisible(true);
+	}
+	
+	/**
+	 * Funkcija koja okrece mrava lijevo za 90 stupnjeva
+	 * 
+	 */
+	public void leftTurn() {
+		degrees += 270;
+		degrees = degrees % 360;
+	}
+	
+	/**
+	 * Funkcija koja okrece mrava desno za 90 stupnjeva
+	 * 
+	 */
+	public void rightTurn() {
+		degrees += 90;
+		degrees = degrees % 360;
+	}
+	
+	/**
+	 * Funkcija koja pomice mrava za jedan korak u smjeru odredjenom s <code>degrees</code>
+	 * 
+	 */
+	public void step() {
+		switch (degrees) {
+
+		case 0:
+
+			column++;
+			column += width;
+			column %= width;
+
+			break;
+
+		case 90:
+
+			row++;
+			row += height;
+			row %= height;
+
+			break;
+
+		case 180:
+
+			column--;
+			column += width;
+			column %= width;
+
+			break;
+
+		case 270:
+
+			row--;
+			row += height;
+			row %= height;
+
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	/**
@@ -233,7 +221,7 @@ public class Test {
 	}
 
 	public static void main(String[] args) {
-		Test test = new Test(3, 3);
+		Test test = new Test(10, 10);
 	}
 
 }
