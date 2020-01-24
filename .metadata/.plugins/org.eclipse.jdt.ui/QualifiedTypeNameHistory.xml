@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="java.util.Iterator"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz5.part2.CONSTANTS"/>
-<fullyQualifiedTypeName name="java.util.stream.Stream"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz6.TSPConfiguration"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz6.GreedyAlgorithm"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz7.NN.Neuron"/>
@@ -60,4 +57,7 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.GrayScaleImage.GrayScaleImage"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.GA.GASolution"/>
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.GA.Evaluator"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz12.test.Test"/>
+<fullyQualifiedTypeName name="java.awt.Image"/>
+<fullyQualifiedTypeName name="java.awt.BorderLayout"/>
 </qualifiedTypeNameHistroy>
