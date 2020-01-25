@@ -15,6 +15,13 @@ public class PR3 extends Expression implements IFunction {
 		this.outputs = new ArrayList<>();
 	}
 	
+	public PR3(String name, Status status, int numberOfOutputs, List<Expression> outputs) {
+		this.name = name;
+		this.status = status;
+		this.numberOfOutputs = numberOfOutputs;
+		this.outputs = outputs;
+	}
+	
 	@Override
 	public int getNumberOfOutputs() {
 		return this.numberOfOutputs;
@@ -42,5 +49,10 @@ public class PR3 extends Expression implements IFunction {
 	@Override
 	public List<Expression> getOutputs() {
 		return outputs;
+	}
+
+	@Override
+	public Expression duplicate() {
+		return new PR3(this.name, this.status, this.numberOfOutputs, new ArrayList<>());
 	}
 }

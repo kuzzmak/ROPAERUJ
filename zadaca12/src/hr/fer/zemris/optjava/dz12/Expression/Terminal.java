@@ -20,4 +20,9 @@ public class Terminal extends Expression{
 	public String toString() {
 		return "Terminal [" + action + "]";
 	}
+
+	@Override
+	public Expression duplicate() {
+		return new Terminal(this.name, this.action);
+	}
 }
