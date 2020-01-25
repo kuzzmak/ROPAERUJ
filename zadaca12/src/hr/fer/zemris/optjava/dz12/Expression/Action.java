@@ -1,4 +1,4 @@
-package Expression;
+package hr.fer.zemris.optjava.dz12.Expression;
 
 /**
  * Enumeracija za moguce akcije koje mrav moze obaviti

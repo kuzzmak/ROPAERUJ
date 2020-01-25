@@ -1,4 +1,4 @@
-package Expression;
+package hr.fer.zemris.optjava.dz12.Expression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 public class IF extends Expression implements IFunction{
 
 	private int numberOfOutputs;
-	private List<IExpression> outputs;
+	private List<Expression> outputs;
 	
 	public IF() {
 		this.name = "IF";
@@ -21,7 +21,7 @@ public class IF extends Expression implements IFunction{
 	}
 
 	@Override
-	public void addOutput(IExpression expression) {
+	public void addOutput(Expression expression) {
 		
 		if(outputs.size() + 1> this.getNumberOfOutputs()) {
 			throw new AssertionError("Nemoguce dodati vise od dva izlaza u IF");
@@ -32,5 +32,15 @@ public class IF extends Expression implements IFunction{
 	@Override
 	public String toString() {
 		return "IF [" + outputs + "]";
+	}
+
+	@Override
+	public boolean canAdd() {
+		return outputs.size() + 1 <= getNumberOfOutputs();
+	}
+	
+	@Override
+	public List<Expression> getOutputs() {
+		return outputs;
 	}
 }

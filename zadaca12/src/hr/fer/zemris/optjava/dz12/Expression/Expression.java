@@ -1,4 +1,4 @@
-package Expression;
+package hr.fer.zemris.optjava.dz12.Expression;
 
 public abstract class Expression implements IExpression{
 

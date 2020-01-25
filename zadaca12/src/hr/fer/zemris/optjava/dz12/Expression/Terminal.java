@@ -1,4 +1,4 @@
-package Expression;
+package hr.fer.zemris.optjava.dz12.Expression;
 
 /**
  * Razred koji predstavlja terminale, odnosno listove stabla
