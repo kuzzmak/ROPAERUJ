@@ -11,7 +11,7 @@ import hr.fer.zemris.optjava.dz12.Expression.Status;
  */
 public class Terminal extends Expression{
 
-	Action action;
+	public Action action;
 	
 	public Terminal(String name, Action action) {
 		this.name = name;
@@ -21,7 +21,7 @@ public class Terminal extends Expression{
 
 	@Override
 	public String toString() {
-		return "Terminal [" + action + "]";
+		return "" + action;
 	}
 
 	@Override

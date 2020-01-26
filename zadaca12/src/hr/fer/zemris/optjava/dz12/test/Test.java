@@ -34,34 +34,40 @@ import hr.fer.zemris.optjava.dz12.Terminal.Terminal;
 public class Test {
 
 	JFrame frame = new JFrame();
+	// matrica gumba koji predstavljaju pojedino polje
 	static JButton[][] grid;
+	// matrica s hranom
 	static int[][] mapData;
-	Icon antIcon;
-	private static int row = 0;
-	private static int column = 0;
+	// broj stupaca mape
 	static int width;
+	// broj redaka mape
 	static int height;
-
-	static int degrees = 0;
+	
 
 	// slika mrava u svakoj mogucoj orijentaciji
 	static ImageIcon ant0;
 	static ImageIcon ant90;
 	static ImageIcon ant180;
 	static ImageIcon ant270;
-
+	// slika hrane
 	static ImageIcon food;
 
-	static Random rand;
-
+	// brojac pojedene hrane, fitnes
 	static int foodEaten = 0;
-
+	// trenutni redak rava
+	private static int row = 0;
+	// tenutni stupac mrava
+	private static int column = 0;
+	// usmjerenje mrava, moze biti 0, 90, 180 i 270
+		static int degrees = 0;
+	// labela koja prikazuje broj pojedene hrane
 	static JLabel score = new JLabel("Score: 0");
-
-	static List<Expression> functions = new ArrayList<>();
-	static List<Expression> terminals = new ArrayList<>();
-
-	public Test(int width, int height) {
+	// lista akcija koje su se dogodile do sada slijedno jedna iza druge
+	static List<Action> actionsTaken = new ArrayList<>();
+	
+	static Random rand;
+	
+	public Test(int width, int height, boolean animate) {
 
 		rand = new Random();
 
@@ -116,7 +122,7 @@ public class Test {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				rightTurn();
+				rightTurn(animate);
 
 			}
 		});
@@ -126,7 +132,7 @@ public class Test {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				leftTurn();
+				leftTurn(animate);
 
 			}
 		});
@@ -136,7 +142,7 @@ public class Test {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				move();
+				move(animate);
 
 			}
 		});
@@ -170,31 +176,35 @@ public class Test {
 
 	/**
 	 * Funkcija koja okrece mrava lijevo za 90 stupnjeva
+	 * @param animate prikazuje li se ili ne pomak mrava na polju
 	 * 
 	 */
-	public static void leftTurn() {
+	public static void leftTurn(boolean animate) {
 		degrees += 270;
 		degrees = degrees % 360;
-		setAntIcon(degrees);
+		if(animate) setAntIcon(degrees);
 	}
 
 	/**
 	 * Funkcija koja okrece mrava desno za 90 stupnjeva
+	 * @param animate prikazuje li se ili ne pomak mrava na polju
 	 * 
 	 */
-	public static void rightTurn() {
+	public static void rightTurn(boolean animate) {
 		degrees += 90;
 		degrees = degrees % 360;
-		setAntIcon(degrees);
+		if(animate) setAntIcon(degrees);
 	}
 
 	/**
 	 * Funkcija koja pomice mrava za jedan korak u smjeru odredjenom s
 	 * <code>degrees</code>
+	 * @param animate prikazuje li se ili ne pomak mrava na polju
 	 * 
 	 */
-	public static void move() {
-		grid[row][column].setIcon(null);
+	public static void move(boolean animate) {
+		
+		if(animate) grid[row][column].setIcon(null);
 
 		switch (degrees) {
 
@@ -242,7 +252,7 @@ public class Test {
 			score.setText("Score: " + String.valueOf(foodEaten));
 		}
 
-		setAntIcon(degrees);
+		if(animate) setAntIcon(degrees);
 	}
 
 	/**
@@ -325,45 +335,23 @@ public class Test {
 		return false;
 	}
 
-//	public void walk(int numOfMoves) {
-//
-//		int[] moves = generateMoves(numOfMoves);
-//
-//		for (int i = 0; i < moves.length; i++) {
-//
-//			switch (moves[i]) {
-//
-//			case 0:
-//				leftTurn();
-//				break;
-//			case 1:
-//				rightTurn();
-//				break;
-//			case 2:
-//				move();
-//				break;
-//			default:
-//				break;
-//			}
-//
-//			try {
-//				Thread.currentThread();
-//				Thread.sleep(1000);
-//			} catch (InterruptedException ie) {
-//				ie.printStackTrace();
-//			}
-//
-//		}
-//	}
-
-	public static void executeNode(DefaultMutableTreeNode node) {
-
-//		try {
-//			Thread.currentThread();
-//			Thread.sleep(500);
-//		} catch (InterruptedException ie) {
-//			ie.printStackTrace();
-//		}
+	/**
+	 * Funkcija koja sluzi za izvodjenje pojedinog cvora stabla. 
+	 * 
+	 * Ako je funkcija {@link hr.fer.zemris.optjava.dz12.Function.IF IF()} tenutni cvor, prvo se pogleda pomocu 
+	 * funkcije {@link #isFoodInFront()} ako je ispred mrava hrana i ako je izvodi se lijevo dijete funkcije IF(), 
+	 * a ako nema hrane, izvodi se desno dijete.
+	 * 
+	 * Ako je funkcija {@link hr.fer.zemris.optjava.dz12.Function.PR2 PR2()} trenutni cvor, izvodi se prvo lijevo
+	 * dijete cvora, a zatim desno.
+	 * 
+	 * Ako je funkcija {@link hr.fer.zemris.optjava.dz12.Function.PR3 PR3()} trenutni cvor, izvodi se prvo lijevo 
+	 * dijete, zatim srednje i potom desno dijete.
+	 * 
+	 * @param node cvor koji se trenutno izvodi, obicno root cvor
+	 * @param animate osvjezava li se pozicija mrava u gui-ju
+	 */
+	public static void executeNode(DefaultMutableTreeNode node, boolean animate) {
 
 		Expression e = (Expression) node.getUserObject();
 
@@ -376,91 +364,53 @@ public class Test {
 
 				// ako je hrana ispred, izvodi se prvi izraz
 				if (isFoodInFront()) {
-					executeNode(en.nextElement());
+					executeNode(en.nextElement(), animate);
 				} else {
 					// ako hrana nije ispred izvodi se drugi izraz, zato se
 					// poziva en.nextElement() radi micanja prvog clana
 					en.nextElement();
-					executeNode(en.nextElement());
+					executeNode(en.nextElement(), animate);
 				}
 			} else if (e.name == "PR2") { // ako je PR2 funkcija
-				executeNode(en.nextElement());
-				executeNode(en.nextElement());
+				executeNode(en.nextElement(), animate);
+				executeNode(en.nextElement(), animate);
 			} else { // ako je PR3 funkcija
-				executeNode(en.nextElement());
-				executeNode(en.nextElement());
-				executeNode(en.nextElement());
+				executeNode(en.nextElement(), animate);
+				executeNode(en.nextElement(), animate);
+				executeNode(en.nextElement(), animate);
 			}
 		} else {
+			// trenutni cvor je terminal
 			Terminal t = (Terminal) node.getUserObject();
-			executeTerminal(t.name);
+			executeTerminal(t, animate);
 		}
-//			else { // ako cvor sadrzi terminale
-//
-//			// dohvat podatka
-//			IFunction f = (IFunction) node.getUserObject();
-//			// lista terminala pojedine funkcije
-//			List<Expression> exp = f.getOutputs();
-//			
-//			if (e.name == "IF") {
-//
-//				// ako je hrana ispred, izvodi se prvi izraz
-//				if (isFoodInFront()) {
-//					executeTerminal(exp.get(0).name);
-//				} else {
-//					executeTerminal(exp.get(1).name);
-//				}
-//			} else if (e.name == "PR2") { // ako je PR2 funkcija
-//				executeTerminal(exp.get(0).name);
-//				executeTerminal(exp.get(1).name);
-//			} else { // ako je PR3 funkcija
-//				executeTerminal(exp.get(0).name);
-//				executeTerminal(exp.get(1).name);
-//				executeTerminal(exp.get(2).name);
-//			}
-//			
-////			executeTerminal(e.name);
-//		}
-
 	}
 
-	public static void executeTerminal(String name) {
+	/**
+	 * Funkcija koja sluzi za izvodjenje pojedinog terminala
+	 * 
+	 * @param t terminal koji se treba izvesti
+	 * @param animate azurira li se kretanje mrava u gui-ju
+	 */
+	public static void executeTerminal(Terminal t, boolean animate) {
 
-		if (name == "RIGHT") {
-			System.out.println("RIGHT");
-			rightTurn();
-		} else if (name == "LEFT") {
-			System.out.println("LEFT");
-			leftTurn();
+		if (t.action == Action.RIGHT) {
+			
+			rightTurn(animate);
+			// dodavanje akcije kako bi se moglo klikom na gumb ici akciju po akciju
+			actionsTaken.add(Action.RIGHT);
+			
+		} else if (t.action == Action.LEFT) {
+			
+			leftTurn(animate);
+			actionsTaken.add(Action.LEFT);
+			
 		} else {
-			System.out.println("MOVE");
-			move();
+			
+			move(animate);
+			actionsTaken.add(Action.MOVE);
+			
 		}
-
-	}
-
-	public void walkTree(DefaultMutableTreeNode tree, int numOfMoves) {
-
-		int i = 0;
-
-		while (i < numOfMoves) {
-
-			i++;
-		}
-	}
-
-	public static int[] generateMoves(int n) {
-
-		Random rand = new Random();
-
-		int[] moves = new int[n];
-
-		for (int i = 0; i < n; i++) {
-			moves[i] = rand.nextInt(3);
-			System.out.println();
-		}
-
-		return moves;
 	}
 
 	/**
@@ -507,35 +457,15 @@ public class Test {
 
 	public static void main(String[] args) {
 
-		Test test = new Test(32, 32);
+		Test test = new Test(32, 32, true);
 
 		int depth = 10;
 
 		DefaultMutableTreeNode rootnode = Util.makeTree(depth, rand);
 		System.out.println(rootnode.getUserObject());
 
-		executeNode(rootnode);
+		executeNode(rootnode, false);
 		System.out.println("gotovo");
-//		test.walk(20);
-
-//		DefaultMutableTreeNode node = new DefaultMutableTreeNode(new car("bugatti"));
-//		
-//		node.add(new DefaultMutableTreeNode(new car("nissan")));
-//		node.add(new DefaultMutableTreeNode(new car("ferrari")));
-//		 
-//        Enumeration<DefaultMutableTreeNode> en = node.breadthFirstEnumeration();
-//        while (en.hasMoreElements()) {
-//            System.out.println(en.nextElement());
-//        }
-
-//		loadMap("C:\\Users\\kuzmi\\OneDrive - fer.hr\\faks\\5sem\\ROPAERUJ\\12zad\\13-SantaFeAntTrail.txt");
-
-//		for (int i = 0; i < test.mapData.length; i++) {
-//			for(int j = 0; j < test.mapData[i].length; j++) {
-//				System.out.printf("%d", test.mapData[i][j]);
-//			}
-//			System.out.println("\n");
-//		}
 
 	}
 

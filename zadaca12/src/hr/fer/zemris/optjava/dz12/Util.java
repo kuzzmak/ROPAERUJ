@@ -127,54 +127,6 @@ public class Util {
 
 			grow(child, depth - 1, rand);
 		}
-
-//		for (int i = 0; i < fun.getNumberOfOutputs(); i++) {
-//			
-//			// zadnja dozvoljena razina
-//			if(depth == 0) {
-//				
-//				Expression e = terminals.get(rand.nextInt(terminals.size())).duplicate();
-//				fun.addOutput(e);
-//				
-//			}else {
-//				// ako je moguce dodati jos izraza
-//				if (fun.canAdd()) {
-//
-//					// nasumican izbor izraza
-//					if (rand.nextFloat() > 0.5) {
-//						Expression e = terminals.get(rand.nextInt(terminals.size())).duplicate();
-//						fun.addOutput(e);
-//					} else {
-//						Expression e = functions.get(rand.nextInt(functions.size())).duplicate();
-//						fun.addOutput(e);
-//					}
-//				}
-//			}
-//		}
-
-//		DefaultMutableTreeNode result = new DefaultMutableTreeNode(fun);
-//		for (Expression e : fun.getOutputs()) {
-//			node.add(new DefaultMutableTreeNode(e));
-//		}
-//
-//		Enumeration<DefaultMutableTreeNode> en = node.children();
-//
-//		while (en.hasMoreElements()) {
-//
-//			DefaultMutableTreeNode child = en.nextElement();
-//
-//			exp = (Expression) child.getUserObject();
-//
-//			if (exp.status == Status.FUNCTION) {
-//
-//				fun = (IFunction) child.getUserObject();
-//
-//				if (fun.canAdd()) {
-//					generateExpressions(child, depth - 1);
-//				}
-//			}
-//
-//		}
 	}
 	
 	/**
@@ -187,7 +139,7 @@ public class Util {
 	 */
 	public static DefaultMutableTreeNode makeTree(int depth, Random rand) {
 		
-		Expression root = functions.get(rand.nextInt(functions.size()));
+		Expression root = functions.get(rand.nextInt(functions.size())).duplicate();
 
 		DefaultMutableTreeNode rootnode = new DefaultMutableTreeNode(root);
 		
@@ -200,5 +152,4 @@ public class Util {
 		}
 		return rootnode;
 	}
-
 }
