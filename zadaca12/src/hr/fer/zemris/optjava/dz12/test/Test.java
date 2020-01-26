@@ -8,7 +8,9 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Random;
 
 import javax.swing.BoxLayout;
@@ -18,46 +20,53 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import hr.fer.zemris.optjava.dz12.Expression.Action;
 import hr.fer.zemris.optjava.dz12.Expression.Expression;
+import hr.fer.zemris.optjava.dz12.Expression.IF;
 import hr.fer.zemris.optjava.dz12.Expression.IFunction;
-
+import hr.fer.zemris.optjava.dz12.Expression.PR2;
+import hr.fer.zemris.optjava.dz12.Expression.PR3;
+import hr.fer.zemris.optjava.dz12.Expression.Status;
+import hr.fer.zemris.optjava.dz12.Expression.Terminal;
 
 public class Test {
 
 	JFrame frame = new JFrame();
-	JButton[][] grid;
-	int[][] mapData;
+	static JButton[][] grid;
+	static int[][] mapData;
 	Icon antIcon;
-	private int row = 0;
-	private int column = 0;
-	int width;
-	int height;
+	private static int row = 0;
+	private static int column = 0;
+	static int width;
+	static int height;
 
-	int degrees = 0;
+	static int degrees = 0;
 
 	// slika mrava u svakoj mogucoj orijentaciji
-	ImageIcon ant0;
-	ImageIcon ant90;
-	ImageIcon ant180;
-	ImageIcon ant270;
+	static ImageIcon ant0;
+	static ImageIcon ant90;
+	static ImageIcon ant180;
+	static ImageIcon ant270;
 
-	ImageIcon food;
+	static ImageIcon food;
 
-	Random rand;
-	
-	int foodEaten = 0;
-	
-	JLabel score = new JLabel("Score: 0");
+	static Random rand;
+
+	static int foodEaten = 0;
+
+	static JLabel score = new JLabel("Score: 0");
+
+	static List<Expression> functions = new ArrayList<>();
+	static List<Expression> terminals = new ArrayList<>();
 
 	public Test(int width, int height) {
 
-		this.rand = new Random();
+		rand = new Random();
 
-		this.width = width;
-		this.height = height;
+		Test.width = width;
+		Test.height = height;
 
 		JPanel container = new JPanel();
 		container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
@@ -96,7 +105,7 @@ public class Test {
 		food = resizeImageIcon(food);
 
 		loadMap("C:\\Users\\kuzmi\\OneDrive - fer.hr\\faks\\5sem\\ROPAERUJ\\12zad\\13-SantaFeAntTrail.txt");
-		
+
 		// panel s gumbima
 		JPanel buttonPanel = new JPanel();
 		container.add(buttonPanel);
@@ -127,28 +136,27 @@ public class Test {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				step();
+				move();
 
 			}
 		});
 
 		JButton isFood = new JButton("isFood");
 		isFood.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				if(isFoodInFront()) {
+
+				if (isFoodInFront()) {
 					System.out.println("hrana ispred");
-				}else {
+				} else {
 					System.out.println("hrana nije ispred");
 				}
-				
+
 			}
 		});
-		
+
 		buttonPanel.add(score);
-		
 		buttonPanel.add(left);
 		buttonPanel.add(step);
 		buttonPanel.add(right);
@@ -164,7 +172,7 @@ public class Test {
 	 * Funkcija koja okrece mrava lijevo za 90 stupnjeva
 	 * 
 	 */
-	public void leftTurn() {
+	public static void leftTurn() {
 		degrees += 270;
 		degrees = degrees % 360;
 		setAntIcon(degrees);
@@ -174,7 +182,7 @@ public class Test {
 	 * Funkcija koja okrece mrava desno za 90 stupnjeva
 	 * 
 	 */
-	public void rightTurn() {
+	public static void rightTurn() {
 		degrees += 90;
 		degrees = degrees % 360;
 		setAntIcon(degrees);
@@ -185,7 +193,7 @@ public class Test {
 	 * <code>degrees</code>
 	 * 
 	 */
-	public void step() {
+	public static void move() {
 		grid[row][column].setIcon(null);
 
 		switch (degrees) {
@@ -227,13 +235,13 @@ public class Test {
 		}
 
 		// ako se nalazi hrana na sljedecoj poziciji povecamo brojac
-		if(mapData[row][column] == 1) {
+		if (mapData[row][column] == 1) {
 			// hrana se uklanja
 			mapData[row][column] = 0;
 			foodEaten++;
 			score.setText("Score: " + String.valueOf(foodEaten));
 		}
-		
+
 		setAntIcon(degrees);
 	}
 
@@ -254,7 +262,7 @@ public class Test {
 	 * 
 	 * @param degrees kut pod kojim je mrav usmjeren
 	 */
-	public void setAntIcon(int degrees) {
+	public static void setAntIcon(int degrees) {
 
 		switch (degrees) {
 		case 0:
@@ -274,108 +282,173 @@ public class Test {
 		}
 	}
 
-	public boolean isFoodInFront() {
-		
+	/**
+	 * Funkcija za odredjivanje nalazi li se hrana ispred mrava ili ne
+	 * 
+	 * @return true ako se hrana nalazi ispred mrava, false inace
+	 */
+	public static boolean isFoodInFront() {
+
+		// pomocne varijeble kako se ne bi globalne column i row prepisale
 		int tempColumn = column;
 		int tempRow = row;
-		
-		if(degrees == 0) {
-			
+
+		// simulacija kretanja kao kod move()
+		if (degrees == 0) {
+
 			tempColumn++;
 			tempColumn += width;
 			tempColumn %= width;
-			
-		}else if(degrees == 90) {
-			
+
+		} else if (degrees == 90) {
+
 			tempRow++;
 			tempRow += height;
 			tempRow %= height;
-		}else if(degrees == 180) {
 			
+		} else if (degrees == 180) {
+
 			tempColumn--;
 			tempColumn += width;
 			tempColumn %= width;
-			
-		}else {
-		
+
+		} else {
+
 			tempRow--;
 			tempRow += height;
 			tempRow %= height;
 		}
-		
-		if(mapData[row][tempColumn] == 1) return true;
-		
+
+		if (mapData[row][tempColumn] == 1)
+			return true;
+
 		return false;
 	}
-	
-	public void walk(int numOfMoves) {
 
-		int[] moves = generateMoves(numOfMoves);
+//	public void walk(int numOfMoves) {
+//
+//		int[] moves = generateMoves(numOfMoves);
+//
+//		for (int i = 0; i < moves.length; i++) {
+//
+//			switch (moves[i]) {
+//
+//			case 0:
+//				leftTurn();
+//				break;
+//			case 1:
+//				rightTurn();
+//				break;
+//			case 2:
+//				move();
+//				break;
+//			default:
+//				break;
+//			}
+//
+//			try {
+//				Thread.currentThread();
+//				Thread.sleep(1000);
+//			} catch (InterruptedException ie) {
+//				ie.printStackTrace();
+//			}
+//
+//		}
+//	}
 
-		for (int i = 0; i < moves.length; i++) {
+	public static void executeNode(DefaultMutableTreeNode node) {
 
-			switch (moves[i]) {
+//		try {
+//			Thread.currentThread();
+//			Thread.sleep(500);
+//		} catch (InterruptedException ie) {
+//			ie.printStackTrace();
+//		}
 
-			case 0:
-				leftTurn();
-				break;
-			case 1:
-				rightTurn();
-				break;
-			case 2:
-				step();
-				break;
-			default:
-				break;
-			}
-
-			try {
-				Thread.currentThread();
-				Thread.sleep(1000);
-			} catch (InterruptedException ie) {
-				ie.printStackTrace();
-			}
-
-		}
-	}
-	
-	public void executeNode(DefaultMutableTreeNode node) {
-		
 		Expression e = (Expression) node.getUserObject();
-		
-		if(e.name == "IF") {
-			
+
+		// ako je trnutni cvor funkcija
+		if (e.status == Status.FUNCTION) {
+
 			Enumeration<DefaultMutableTreeNode> en = node.children();
-			
-			// ako je hrana ispred, izvodi se prvi izraz
-			if(isFoodInFront()) {
+
+			if (e.name == "IF") {
+
+				// ako je hrana ispred, izvodi se prvi izraz
+				if (isFoodInFront()) {
+					executeNode(en.nextElement());
+				} else {
+					// ako hrana nije ispred izvodi se drugi izraz, zato se
+					// poziva en.nextElement() radi micanja prvog clana
+					en.nextElement();
+					executeNode(en.nextElement());
+				}
+			} else if (e.name == "PR2") { // ako je PR2 funkcija
 				executeNode(en.nextElement());
-			}else {
-				// ako hrana nije ispred izvodi se drugi izraz, zato se 
-				// poziva en.nextElement() radi micanja prvog clana
-				en.nextElement();
+				executeNode(en.nextElement());
+			} else { // ako je PR3 funkcija
+				executeNode(en.nextElement());
+				executeNode(en.nextElement());
 				executeNode(en.nextElement());
 			}
+		}else {
+			Terminal t  = (Terminal) node.getUserObject();
+			executeTerminal(t.name);
 		}
-		
-		
-		
+//			else { // ako cvor sadrzi terminale
+//
+//			// dohvat podatka
+//			IFunction f = (IFunction) node.getUserObject();
+//			// lista terminala pojedine funkcije
+//			List<Expression> exp = f.getOutputs();
+//			
+//			if (e.name == "IF") {
+//
+//				// ako je hrana ispred, izvodi se prvi izraz
+//				if (isFoodInFront()) {
+//					executeTerminal(exp.get(0).name);
+//				} else {
+//					executeTerminal(exp.get(1).name);
+//				}
+//			} else if (e.name == "PR2") { // ako je PR2 funkcija
+//				executeTerminal(exp.get(0).name);
+//				executeTerminal(exp.get(1).name);
+//			} else { // ako je PR3 funkcija
+//				executeTerminal(exp.get(0).name);
+//				executeTerminal(exp.get(1).name);
+//				executeTerminal(exp.get(2).name);
+//			}
+//			
+////			executeTerminal(e.name);
+//		}
+
+	}
+
+	public static void executeTerminal(String name) {
+
+		if (name == "RIGHT") {
+			System.out.println("RIGHT");
+			rightTurn();
+		} else if (name == "LEFT") {
+			System.out.println("LEFT");
+			leftTurn();
+		} else {
+			System.out.println("MOVE");
+			move();
+		}
+
 	}
 
 	public void walkTree(DefaultMutableTreeNode tree, int numOfMoves) {
-		
+
 		int i = 0;
-		
-		while(i < numOfMoves) {
-			
-			
-			
+
+		while (i < numOfMoves) {
+
 			i++;
 		}
 	}
-	
-	
-	
+
 	public static int[] generateMoves(int n) {
 
 		Random rand = new Random();
@@ -406,7 +479,7 @@ public class Test {
 			width = Integer.parseInt(dimension[0]);
 			height = Integer.parseInt(dimension[1]);
 
-			// matrica koja sadrzi lokacije hrane 
+			// matrica koja sadrzi lokacije hrane
 			mapData = new int[height][width];
 
 			line = br.readLine();
@@ -419,8 +492,8 @@ public class Test {
 					if (line.charAt(column) == '1') {
 						mapData[row][column] = 1;
 						grid[row][column].setIcon(food);
-						
-					}else {
+
+					} else {
 						mapData[row][column] = 0;
 					}
 				}
@@ -432,8 +505,78 @@ public class Test {
 		}
 	}
 
+	public static void full(DefaultMutableTreeNode node, int depth) {
+		
+		IFunction fun = (IFunction) node.getUserObject();
+		
+		// ako je dubina 0 moraju se generirati terminali
+		if(depth == 0) {
+			
+			for (int i = 0; i < fun.getNumberOfOutputs(); i++) {
+				
+				Expression e = terminals.get(rand.nextInt(terminals.size())).duplicate();
+				fun.addOutput(e);
+				node.add(new DefaultMutableTreeNode(e));
+				
+			}
+			
+			return;
+			
+		}else {
+			// dubina nije 0, generiraju se funkcije
+			for (int i = 0; i < fun.getNumberOfOutputs(); i++) {
+
+				Expression e = functions.get(rand.nextInt(functions.size())).duplicate();
+				fun.addOutput(e);
+				node.add(new DefaultMutableTreeNode(e));
+			}
+		}
+
+//		// dodavanje novih cvorova
+//		for (Expression e : fun.getOutputs()) {
+//			node.add(new DefaultMutableTreeNode(e));
+//		}
+
+		// dohvat novo dodanih cvorova
+		Enumeration<DefaultMutableTreeNode> en = node.children();
+		
+		// za svaki dohvaceni cvor se rekurzivno generiraju novi cvorovi ovisno 
+		// o broju funkcija koje neki cvor moze imati i dubini na kojoj se cvor nalazi
+		while (en.hasMoreElements()) {
+			
+			DefaultMutableTreeNode child = en.nextElement();
+			
+			full(child, depth - 1);
+		}
+	}
+
 	public static void main(String[] args) {
+
 		Test test = new Test(32, 32);
+
+		functions.add(new IF());
+		functions.add(new PR2());
+		functions.add(new PR3());
+
+		terminals.add(new Terminal("RIGHT", Action.RIGHT));
+		terminals.add(new Terminal("LEFT", Action.LEFT));
+		terminals.add(new Terminal("MOVE", Action.MOVE));
+
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode(
+				functions.get(rand.nextInt(functions.size())).duplicate());
+
+		full(root, 1);
+
+		System.out.println("root\n" + root.getUserObject());
+
+		System.out.println("children");
+		Enumeration<DefaultMutableTreeNode> en = root.children();
+
+		while (en.hasMoreElements()) {
+			System.out.println(en.nextElement());
+		}
+		executeNode(root);
+		System.out.println("gotovo");
 //		test.walk(20);
 
 //		DefaultMutableTreeNode node = new DefaultMutableTreeNode(new car("bugatti"));
@@ -447,8 +590,6 @@ public class Test {
 //        }
 
 //		loadMap("C:\\Users\\kuzmi\\OneDrive - fer.hr\\faks\\5sem\\ROPAERUJ\\12zad\\13-SantaFeAntTrail.txt");
-
-		
 
 //		for (int i = 0; i < test.mapData.length; i++) {
 //			for(int j = 0; j < test.mapData[i].length; j++) {

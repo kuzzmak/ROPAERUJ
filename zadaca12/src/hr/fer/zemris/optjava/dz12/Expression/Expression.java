@@ -4,7 +4,7 @@ public abstract class Expression implements IExpression{
 
 	public String name;
 	
-	Status status;
+	public Status status;
 
 	@Override
 	public String toString() {

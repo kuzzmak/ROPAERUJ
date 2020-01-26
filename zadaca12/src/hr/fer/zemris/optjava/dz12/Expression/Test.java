@@ -24,7 +24,7 @@ public class Test {
 		terminals.add(new Terminal("Left", Action.LEFT));
 		terminals.add(new Terminal("Move", Action.MOVE));
 
-		makeTree(2);
+		makeTree(3);
 
 	}
 
@@ -81,7 +81,7 @@ public class Test {
 				fun = (IFunction) child.getUserObject();
 				
 				if(fun.canAdd()) {
-					generateExpressions(child, depth--);
+					generateExpressions(child, depth - 1);
 				}
 			}
 			
@@ -105,6 +105,7 @@ public class Test {
 				
 				Expression e = terminals.get(rand.nextInt(terminals.size())).duplicate();
 				fun.addOutput(e);
+				node.add(new DefaultMutableTreeNode(e));
 				
 			}
 			
@@ -116,13 +117,14 @@ public class Test {
 
 				Expression e = functions.get(rand.nextInt(functions.size())).duplicate();
 				fun.addOutput(e);
+				node.add(new DefaultMutableTreeNode(e));
 			}
 		}
 
-		// dodavanje novih cvorova
-		for (Expression e : fun.getOutputs()) {
-			node.add(new DefaultMutableTreeNode(e));
-		}
+//		// dodavanje novih cvorova
+//		for (Expression e : fun.getOutputs()) {
+//			node.add(new DefaultMutableTreeNode(e));
+//		}
 
 		// dohvat novo dodanih cvorova
 		Enumeration<DefaultMutableTreeNode> en = node.children();
@@ -145,20 +147,19 @@ public class Test {
 		DefaultMutableTreeNode rootnode = new DefaultMutableTreeNode(root);
 
 		System.out.println("root\n" + rootnode.getUserObject());
-		full(rootnode, depth);
-
+		generateExpressions(rootnode, depth);
+		
+		System.out.println("root children: " + rootnode.getChildCount());
 		System.out.println("children");
 		Enumeration<DefaultMutableTreeNode> en = rootnode.children();
 		
 		System.out.println();
-//		while (en.hasMoreElements()) {
-//			generateExpressions(en.nextElement(), 10);
-//		}
-		System.out.println(en.);
 		while (en.hasMoreElements()) {
-			System.out.println(en.nextElement());
+			DefaultMutableTreeNode e = en.nextElement();
+			System.out.println(e);
+			System.out.println(e.getChildCount());
 		}
-//		
+		
 //		System.out.println();
 //		
 //		en = rootnode.breadthFirstEnumeration();
