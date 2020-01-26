@@ -149,42 +149,44 @@ public class Test {
 
 		System.out.println("children");
 		Enumeration<DefaultMutableTreeNode> en = rootnode.children();
+		
+		System.out.println();
 //		while (en.hasMoreElements()) {
 //			generateExpressions(en.nextElement(), 10);
 //		}
-
+		System.out.println(en.);
 		while (en.hasMoreElements()) {
 			System.out.println(en.nextElement());
 		}
-		
-		System.out.println();
-		
-		en = rootnode.breadthFirstEnumeration();
-
-		while (en.hasMoreElements()) {
-			
-			DefaultMutableTreeNode n = en.nextElement();
-			
-			Expression e = (Expression) n.getUserObject();
-//			if(e.status == Status.TERMINAL) {
-//				Terminal t = (Terminal) n.getUserObject();
-//				System.out.println(t.action);
-//			}else {
-//				
-//				if(e.name == "IF") {
-//					IFunction f = (IFunction) n.getUserObject();
-//					
-//					System.out.println("prva akcija: ");
-//					System.out.println(f.getOutputs().get(0));
-//					System.out.println("druga akcija: ");
-//					System.out.println(f.getOutputs().get(1));
-//					
-//				}
-//				
-//			}
+//		
+//		System.out.println();
+//		
+//		en = rootnode.breadthFirstEnumeration();
+//
+//		while (en.hasMoreElements()) {
+//			
+//			DefaultMutableTreeNode n = en.nextElement();
+//			
+//			Expression e = (Expression) n.getUserObject();
+////			if(e.status == Status.TERMINAL) {
+////				Terminal t = (Terminal) n.getUserObject();
+////				System.out.println(t.action);
+////			}else {
+////				
+////				if(e.name == "IF") {
+////					IFunction f = (IFunction) n.getUserObject();
+////					
+////					System.out.println("prva akcija: ");
+////					System.out.println(f.getOutputs().get(0));
+////					System.out.println("druga akcija: ");
+////					System.out.println(f.getOutputs().get(1));
+////					
+////				}
+////				
+////			}
+////			System.out.println(e.name);
 //			System.out.println(e.name);
-			System.out.println(e.name);
-		}
+//		}
 
 
 	}

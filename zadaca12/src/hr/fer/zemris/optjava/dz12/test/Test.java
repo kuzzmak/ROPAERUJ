@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Random;
 
 import javax.swing.BoxLayout;
@@ -343,8 +344,18 @@ public class Test {
 		Expression e = (Expression) node.getUserObject();
 		
 		if(e.name == "IF") {
-			IFunction f = (IFunction) node.getUserObject();
-			executeNode(node);
+			
+			Enumeration<DefaultMutableTreeNode> en = node.children();
+			
+			// ako je hrana ispred, izvodi se prvi izraz
+			if(isFoodInFront()) {
+				executeNode(en.nextElement());
+			}else {
+				// ako hrana nije ispred izvodi se drugi izraz, zato se 
+				// poziva en.nextElement() radi micanja prvog clana
+				en.nextElement();
+				executeNode(en.nextElement());
+			}
 		}
 		
 		
