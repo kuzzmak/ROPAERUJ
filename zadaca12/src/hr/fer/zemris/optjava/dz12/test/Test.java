@@ -15,7 +15,9 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import hr.fer.zemris.optjava.dz12.Expression.Expression;
@@ -46,6 +48,8 @@ public class Test {
 	Random rand;
 	
 	int foodEaten = 0;
+	
+	JLabel score = new JLabel("Score: 0");
 
 	public Test(int width, int height) {
 
@@ -142,6 +146,8 @@ public class Test {
 			}
 		});
 		
+		buttonPanel.add(score);
+		
 		buttonPanel.add(left);
 		buttonPanel.add(step);
 		buttonPanel.add(right);
@@ -221,7 +227,10 @@ public class Test {
 
 		// ako se nalazi hrana na sljedecoj poziciji povecamo brojac
 		if(mapData[row][column] == 1) {
+			// hrana se uklanja
+			mapData[row][column] = 0;
 			foodEaten++;
+			score.setText("Score: " + String.valueOf(foodEaten));
 		}
 		
 		setAntIcon(degrees);
