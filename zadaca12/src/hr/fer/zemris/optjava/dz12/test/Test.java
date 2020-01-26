@@ -16,6 +16,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.tree.DefaultMutableTreeNode;
+
+import hr.fer.zemris.optjava.dz12.Expression.Expression;
+import hr.fer.zemris.optjava.dz12.Expression.IFunction;
 
 
 public class Test {
@@ -123,9 +127,25 @@ public class Test {
 			}
 		});
 
+		JButton isFood = new JButton("isFood");
+		isFood.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if(isFoodInFront()) {
+					System.out.println("hrana ispred");
+				}else {
+					System.out.println("hrana nije ispred");
+				}
+				
+			}
+		});
+		
 		buttonPanel.add(left);
 		buttonPanel.add(step);
 		buttonPanel.add(right);
+		buttonPanel.add(isFood);
 
 		frame.add(container);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -244,6 +264,40 @@ public class Test {
 		}
 	}
 
+	public boolean isFoodInFront() {
+		
+		int tempColumn = column;
+		int tempRow = row;
+		
+		if(degrees == 0) {
+			
+			tempColumn++;
+			tempColumn += width;
+			tempColumn %= width;
+			
+		}else if(degrees == 90) {
+			
+			tempRow++;
+			tempRow += height;
+			tempRow %= height;
+		}else if(degrees == 180) {
+			
+			tempColumn--;
+			tempColumn += width;
+			tempColumn %= width;
+			
+		}else {
+		
+			tempRow--;
+			tempRow += height;
+			tempRow %= height;
+		}
+		
+		if(mapData[row][tempColumn] == 1) return true;
+		
+		return false;
+	}
+	
 	public void walk(int numOfMoves) {
 
 		int[] moves = generateMoves(numOfMoves);
@@ -274,7 +328,34 @@ public class Test {
 
 		}
 	}
+	
+	public void executeNode(DefaultMutableTreeNode node) {
+		
+		Expression e = (Expression) node.getUserObject();
+		
+		if(e.name == "IF") {
+			IFunction f = (IFunction) node.getUserObject();
+			executeNode(node);
+		}
+		
+		
+		
+	}
 
+	public void walkTree(DefaultMutableTreeNode tree, int numOfMoves) {
+		
+		int i = 0;
+		
+		while(i < numOfMoves) {
+			
+			
+			
+			i++;
+		}
+	}
+	
+	
+	
 	public static int[] generateMoves(int n) {
 
 		Random rand = new Random();
@@ -331,9 +412,6 @@ public class Test {
 		}
 	}
 
-	
-	
-	
 	public static void main(String[] args) {
 		Test test = new Test(32, 32);
 //		test.walk(20);
