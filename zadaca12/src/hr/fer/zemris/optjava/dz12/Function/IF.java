@@ -1,7 +1,10 @@
-package hr.fer.zemris.optjava.dz12.Expression;
+package hr.fer.zemris.optjava.dz12.Function;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import hr.fer.zemris.optjava.dz12.Expression.Expression;
+import hr.fer.zemris.optjava.dz12.Expression.Status;
 
 public class IF extends Expression implements IFunction{
 

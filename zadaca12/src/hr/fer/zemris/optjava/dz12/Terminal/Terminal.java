@@ -1,4 +1,7 @@
-package hr.fer.zemris.optjava.dz12.Expression;
+package hr.fer.zemris.optjava.dz12.Terminal;
+
+import hr.fer.zemris.optjava.dz12.Expression.Expression;
+import hr.fer.zemris.optjava.dz12.Expression.Status;
 
 /**
  * Razred koji predstavlja terminale, odnosno listove stabla

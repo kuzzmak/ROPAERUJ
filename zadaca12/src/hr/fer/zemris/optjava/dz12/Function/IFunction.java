@@ -1,6 +1,8 @@
-package hr.fer.zemris.optjava.dz12.Expression;
+package hr.fer.zemris.optjava.dz12.Function;
 
 import java.util.List;
+
+import hr.fer.zemris.optjava.dz12.Expression.Expression;
 
 /**
  * Sucelje koje implementira pojedina funkcija

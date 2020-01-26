@@ -22,14 +22,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import hr.fer.zemris.optjava.dz12.Expression.Action;
+import hr.fer.zemris.optjava.dz12.Util;
 import hr.fer.zemris.optjava.dz12.Expression.Expression;
-import hr.fer.zemris.optjava.dz12.Expression.IF;
-import hr.fer.zemris.optjava.dz12.Expression.IFunction;
-import hr.fer.zemris.optjava.dz12.Expression.PR2;
-import hr.fer.zemris.optjava.dz12.Expression.PR3;
 import hr.fer.zemris.optjava.dz12.Expression.Status;
-import hr.fer.zemris.optjava.dz12.Expression.Terminal;
+import hr.fer.zemris.optjava.dz12.Function.IF;
+import hr.fer.zemris.optjava.dz12.Function.PR2;
+import hr.fer.zemris.optjava.dz12.Function.PR3;
+import hr.fer.zemris.optjava.dz12.Terminal.Action;
+import hr.fer.zemris.optjava.dz12.Terminal.Terminal;
 
 public class Test {
 
@@ -305,7 +305,7 @@ public class Test {
 			tempRow++;
 			tempRow += height;
 			tempRow %= height;
-			
+
 		} else if (degrees == 180) {
 
 			tempColumn--;
@@ -391,8 +391,8 @@ public class Test {
 				executeNode(en.nextElement());
 				executeNode(en.nextElement());
 			}
-		}else {
-			Terminal t  = (Terminal) node.getUserObject();
+		} else {
+			Terminal t = (Terminal) node.getUserObject();
 			executeTerminal(t.name);
 		}
 //			else { // ako cvor sadrzi terminale
@@ -505,77 +505,16 @@ public class Test {
 		}
 	}
 
-	public static void full(DefaultMutableTreeNode node, int depth) {
-		
-		IFunction fun = (IFunction) node.getUserObject();
-		
-		// ako je dubina 0 moraju se generirati terminali
-		if(depth == 0) {
-			
-			for (int i = 0; i < fun.getNumberOfOutputs(); i++) {
-				
-				Expression e = terminals.get(rand.nextInt(terminals.size())).duplicate();
-				fun.addOutput(e);
-				node.add(new DefaultMutableTreeNode(e));
-				
-			}
-			
-			return;
-			
-		}else {
-			// dubina nije 0, generiraju se funkcije
-			for (int i = 0; i < fun.getNumberOfOutputs(); i++) {
-
-				Expression e = functions.get(rand.nextInt(functions.size())).duplicate();
-				fun.addOutput(e);
-				node.add(new DefaultMutableTreeNode(e));
-			}
-		}
-
-//		// dodavanje novih cvorova
-//		for (Expression e : fun.getOutputs()) {
-//			node.add(new DefaultMutableTreeNode(e));
-//		}
-
-		// dohvat novo dodanih cvorova
-		Enumeration<DefaultMutableTreeNode> en = node.children();
-		
-		// za svaki dohvaceni cvor se rekurzivno generiraju novi cvorovi ovisno 
-		// o broju funkcija koje neki cvor moze imati i dubini na kojoj se cvor nalazi
-		while (en.hasMoreElements()) {
-			
-			DefaultMutableTreeNode child = en.nextElement();
-			
-			full(child, depth - 1);
-		}
-	}
-
 	public static void main(String[] args) {
 
 		Test test = new Test(32, 32);
 
-		functions.add(new IF());
-		functions.add(new PR2());
-		functions.add(new PR3());
+		int depth = 10;
 
-		terminals.add(new Terminal("RIGHT", Action.RIGHT));
-		terminals.add(new Terminal("LEFT", Action.LEFT));
-		terminals.add(new Terminal("MOVE", Action.MOVE));
+		DefaultMutableTreeNode rootnode = Util.makeTree(depth, rand);
+		System.out.println(rootnode.getUserObject());
 
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode(
-				functions.get(rand.nextInt(functions.size())).duplicate());
-
-		full(root, 1);
-
-		System.out.println("root\n" + root.getUserObject());
-
-		System.out.println("children");
-		Enumeration<DefaultMutableTreeNode> en = root.children();
-
-		while (en.hasMoreElements()) {
-			System.out.println(en.nextElement());
-		}
-		executeNode(root);
+		executeNode(rootnode);
 		System.out.println("gotovo");
 //		test.walk(20);
 
