@@ -289,6 +289,11 @@ public class Test {
 		return moves;
 	}
 
+	/**
+	 * Funkcija za ucitavanje Santa Fe mape iz datoteke
+	 * 
+	 * @param pathToMap staza do mape
+	 */
 	public void loadMap(String pathToMap) {
 
 		try (BufferedReader br = new BufferedReader(new FileReader(pathToMap))) {
@@ -300,6 +305,7 @@ public class Test {
 			width = Integer.parseInt(dimension[0]);
 			height = Integer.parseInt(dimension[1]);
 
+			// matrica koja sadrzi lokacije hrane 
 			mapData = new int[height][width];
 
 			line = br.readLine();
@@ -325,6 +331,9 @@ public class Test {
 		}
 	}
 
+	
+	
+	
 	public static void main(String[] args) {
 		Test test = new Test(32, 32);
 //		test.walk(20);
