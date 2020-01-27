@@ -144,23 +144,13 @@ public class Util {
 		DefaultMutableTreeNode rootnode = new DefaultMutableTreeNode(root);
 		
 		if(rand.nextFloat() > 0.5) {
-			System.out.println("grow");
 			grow(rootnode, depth - 1, rand);
 		}else {
-			System.out.println("full");
 			full(rootnode, depth - 1, rand);
 		}
 		return rootnode;
 	}
 	
-	public static void mutate(DefaultMutableTreeNode node, Random rand) {
-		
-		
-//		node.get
-		
-		
-		
-	}
 	
 	
 	

@@ -9,8 +9,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import hr.fer.zemris.optjava.dz12.Util;
 import hr.fer.zemris.optjava.dz12.Function.IFunction;
+import hr.fer.zemris.optjava.dz12.test.Test;
 
-public class Test {
+public class Test2 {
 
 	static List<Expression> functions = new ArrayList<>();
 	static List<Expression> terminals = new ArrayList<>();
@@ -37,7 +38,6 @@ public class Test {
 				if (parent != null) {
 
 					IFunction functionParent = (IFunction) parent.getUserObject();
-					IFunction functionChild = (IFunction) node.getUserObject();
 
 					// uklanjanje elementa liste djeteta iz liste roditelja
 					functionParent.removeOutput((Expression) node.getUserObject());
@@ -47,11 +47,7 @@ public class Test {
 
 					// stvaranje novog stabla umjesto uklonjenog cvora
 					DefaultMutableTreeNode newNode = Util.makeTree(maxDepth - currentDepth, rand);
-					
-					System.out.println();
-					System.out.println("novo: " + newNode.getUserObject());
-					System.out.println();
-					
+
 					parent.add(newNode);
 
 					functionParent = (IFunction) parent.getUserObject();
@@ -60,7 +56,8 @@ public class Test {
 					return;
 
 				} else {
-
+					
+					// rekurzivno pozivanje mutacije nad djecom 
 					Enumeration<DefaultMutableTreeNode> en = node.children();
 
 					while (en.hasMoreElements()) {
@@ -70,40 +67,62 @@ public class Test {
 			}
 		} else {
 			// terminalni cvor
-//			DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
-//			
-//			parent.remove(node);
-		}
+			if (rand.nextFloat() < p) {
+				
+				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
+				
+				IFunction functionParent = (IFunction) parent.getUserObject();
+				
+				functionParent.removeOutput((Expression) node.getUserObject());
+				
+				parent.remove(node);
+				
+				// stvaranje novog stabla umjesto uklonjenog cvora
+				DefaultMutableTreeNode newNode = Util.makeTree(maxDepth - currentDepth, rand);
 
+				parent.add(newNode);
+
+				functionParent = (IFunction) parent.getUserObject();
+				functionParent.addOutput((Expression) newNode.getUserObject());
+			}
+		}
 	}
 
 	public static void main(String[] args) {
 
-		int depth = 3;
+//		int depth = 3;
+//
+//		DefaultMutableTreeNode rootnode = Util.makeTree(depth, rand);
+//
+//		System.out.println(rootnode.getUserObject());
+//
+//		Enumeration<DefaultMutableTreeNode> en = rootnode.children();
+//
+//		while (en.hasMoreElements()) {
+//			DefaultMutableTreeNode e = en.nextElement();
+//			System.out.println(e);
+//		}
+//
+//		mutate(rootnode, rootnode.getDepth(), rand, 0.3f);
+//
+//		en = rootnode.children();
+//
+//		System.out.println();
+//		System.out.println(rootnode.getUserObject());
+//		while (en.hasMoreElements()) {
+//			DefaultMutableTreeNode e = en.nextElement();
+//			System.out.println(e);
+//		}
+
+		Test test = new Test(32, 32, true);
+
+		int depth = 10;
 
 		DefaultMutableTreeNode rootnode = Util.makeTree(depth, rand);
-
-		System.out.println("root\n" + rootnode.getUserObject());
-
-		Enumeration<DefaultMutableTreeNode> en = rootnode.children();
-
-		while (en.hasMoreElements()) {
-			DefaultMutableTreeNode e = en.nextElement();
-			System.out.println(e);
-		}
-
-		System.out.println("dubina: " + rootnode.getDepth());
-
+		
 		mutate(rootnode, rootnode.getDepth(), rand, 0.3f);
-
-		en = rootnode.children();
-
-		System.out.println();
-		System.out.println("root\n" + rootnode.getUserObject());
-		while (en.hasMoreElements()) {
-			DefaultMutableTreeNode e = en.nextElement();
-			System.out.println(e);
-		}
-
+		
+		Test.executeNode(rootnode, true);
+		
 	}
 }
