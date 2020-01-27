@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -20,8 +21,11 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import hr.fer.zemris.optjava.dz12.Util;
 import hr.fer.zemris.optjava.dz12.Expression.Expression;
 import hr.fer.zemris.optjava.dz12.Expression.Status;
 import hr.fer.zemris.optjava.dz12.Terminal.Action;
@@ -34,6 +38,8 @@ public class Test {
 	static JButton[][] grid;
 	// matrica s hranom
 	static int[][] mapData;
+	// pomocna matrica s hranom
+	static int[][] tempMapData;
 	// broj stupaca mape
 	static int width;
 	// broj redaka mape
@@ -44,15 +50,15 @@ public class Test {
 	static ImageIcon ant90;
 	static ImageIcon ant180;
 	static ImageIcon ant270;
-	
+
 	// slike strelice u svakoj poziciji
 	static ImageIcon arrow0;
 	static ImageIcon arrow90;
 	static ImageIcon arrow180;
 	static ImageIcon arrow270;
-	
+
 	// slika hrane
-		static ImageIcon food;
+	static ImageIcon food;
 
 	// brojac pojedene hrane, fitnes
 	static int foodEaten = 0;
@@ -61,16 +67,24 @@ public class Test {
 	// tenutni stupac mrava
 	private static int column = 0;
 	// usmjerenje mrava, moze biti 0, 90, 180 i 270
-		static int degrees = 0;
+	static int degrees = 0;
 	// labela koja prikazuje broj pojedene hrane
 	static JLabel score = new JLabel("Score: 0");
 	// lista akcija koje su se dogodile do sada slijedno jedna iza druge
 	static List<Action> actionsTaken = new ArrayList<>();
+	// brojac za kretanje korak po korak
+	static int currentStep = 0;
+	// maksimalan broj koraka koje mrav moze napraviti
+	static int maxStepsAllowed;
 	// slika strelice usmjerenja mrava
 	static JLabel arrowPicture;
-	
+	// za ispis koraka mrava
+	static JTextArea textArea;
+
 	static Random rand;
-	
+
+	private final static AtomicBoolean isDone = new AtomicBoolean(false);
+
 	public Test(int width, int height, boolean animate) {
 
 		rand = new Random();
@@ -81,8 +95,8 @@ public class Test {
 		// glavni container
 		JPanel container = new JPanel();
 		container.setLayout(new BoxLayout(container, BoxLayout.X_AXIS));
-		
-		// lijevi container s 
+
+		// lijevi container s
 		JPanel containerLeft = new JPanel();
 		containerLeft.setLayout(new BoxLayout(containerLeft, BoxLayout.Y_AXIS));
 
@@ -114,14 +128,15 @@ public class Test {
 
 		ant270 = new ImageIcon("pictures/ant270.png");
 		ant270 = resizeImageIcon(ant270);
-		
-		// ucitavanje slika strelice koja pokazuje usmjerenje mrava posto je ikona mrava premala
+
+		// ucitavanje slika strelice koja pokazuje usmjerenje mrava posto je ikona mrava
+		// premala
 		arrow0 = new ImageIcon("pictures/arrow0.png");
-		
+
 		arrow90 = new ImageIcon("pictures/arrow90.png");
-		
+
 		arrow180 = new ImageIcon("pictures/arrow180.png");
-		
+
 		arrow270 = new ImageIcon("pictures/arrow270.png");
 
 		// ucitavanje slike hrane
@@ -155,12 +170,22 @@ public class Test {
 			}
 		});
 
+		JButton move = new JButton("step");
+		move.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				move(animate);
+
+			}
+		});
+
 		JButton step = new JButton("step");
 		step.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				move(animate);
+				step(true);
 
 			}
 		});
@@ -178,18 +203,40 @@ public class Test {
 				}
 			}
 		});
-		
+
+		JButton automatic = new JButton("Automatic");
+		automatic.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				automatic(true, 500);
+			}
+		});
+
 		// container sa slikom strelice
 		JPanel containerRight = new JPanel();
 		containerRight.setLayout(new BoxLayout(containerRight, BoxLayout.Y_AXIS));
-		
+
 		containerRight.add(Box.createHorizontalGlue());
 		JLabel direction = new JLabel("Usmjerenje mrava");
 		containerRight.add(direction);
-		
+
 		arrowPicture = new JLabel(arrow0);
 		containerRight.add(arrowPicture);
-		
+
+		// TODO napraviti da text area funkcionira
+//		textArea = new JTextArea();
+//		JScrollPane scrollPane = new JScrollPane(textArea);
+//		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+//		
+//		textArea.setColumns(5);
+//        textArea.setLineWrap(true);
+//        textArea.setRows(5);
+//        textArea.setWrapStyleWord(true);
+//		
+//		containerRight.add(textArea);
+
 		container.add(containerLeft);
 		container.add(containerRight);
 
@@ -198,6 +245,8 @@ public class Test {
 		buttonPanel.add(step);
 		buttonPanel.add(right);
 		buttonPanel.add(isFood);
+		buttonPanel.add(step);
+		buttonPanel.add(automatic);
 
 		frame.add(container);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -206,37 +255,109 @@ public class Test {
 	}
 
 	/**
+	 * Funkcija za automatsko izvodjenje generiranog stabla
+	 * 
+	 * @param animate prikazuju li se pokreti mrava ili ne
+	 * @param sleep   vrijeme izmedju dva koraka u ms
+	 */
+	public static void automatic(boolean animate, long sleep) {
+
+		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+			@Override
+			public Void doInBackground() {
+					
+					for (int i = 0; i < actionsTaken.size(); i++) {
+						
+            			step(animate);
+            			
+            			try {
+							Thread.sleep(sleep);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+                	}
+				return (null);
+			}
+		};
+		
+		worker.execute();
+	}
+
+	/**
+	 * Funkcija koja sluzi za kretanje korak po korak mrava po mapi
+	 * 
+	 * @param animate prikazuju li se pokreti mrava ili ne
+	 */
+	public static void step(boolean animate) {
+
+		if (currentStep < actionsTaken.size()) {
+			Action a = actionsTaken.get(currentStep);
+
+			if (a == Action.LEFT) {
+				leftTurn(animate);
+			} else if (a == Action.RIGHT) {
+				rightTurn(animate);
+			} else {
+				move(animate);
+			}
+
+			currentStep++;
+		} else {
+			System.out.println("Nema vise koraka.");
+		}
+	}
+
+	/**
+	 * Funkcija za vracanje parametara igre na pocetne vrijednosti
+	 * 
+	 */
+	public static void reset() {
+
+		row = 0;
+		column = 0;
+		foodEaten = 0;
+		score.setText("Score: 0");
+		tempMapData = mapData.clone();
+	}
+
+	/**
 	 * Funkcija koja okrece mrava lijevo za 90 stupnjeva
+	 * 
 	 * @param animate prikazuje li se ili ne pomak mrava na polju
 	 * 
 	 */
 	public static void leftTurn(boolean animate) {
 		degrees += 270;
 		degrees = degrees % 360;
-		if(animate) setAntIcon(degrees);
-		
+		if (animate)
+			setAntIcon(degrees);
+
 	}
 
 	/**
 	 * Funkcija koja okrece mrava desno za 90 stupnjeva
+	 * 
 	 * @param animate prikazuje li se ili ne pomak mrava na polju
 	 * 
 	 */
 	public static void rightTurn(boolean animate) {
 		degrees += 90;
 		degrees = degrees % 360;
-		if(animate) setAntIcon(degrees);
+		if (animate)
+			setAntIcon(degrees);
 	}
 
 	/**
 	 * Funkcija koja pomice mrava za jedan korak u smjeru odredjenom s
 	 * <code>degrees</code>
+	 * 
 	 * @param animate prikazuje li se ili ne pomak mrava na polju
 	 * 
 	 */
 	public static void move(boolean animate) {
-		
-		if(animate) grid[row][column].setIcon(null);
+
+		if (animate)
+			grid[row][column].setIcon(null);
 
 		switch (degrees) {
 
@@ -277,14 +398,15 @@ public class Test {
 		}
 
 		// ako se nalazi hrana na sljedecoj poziciji povecamo brojac
-		if (mapData[row][column] == 1) {
+		if (tempMapData[row][column] == 1) {
 			// hrana se uklanja
-			mapData[row][column] = 0;
+			tempMapData[row][column] = 0;
 			foodEaten++;
 			score.setText("Score: " + String.valueOf(foodEaten));
 		}
 
-		if(animate) setAntIcon(degrees);
+		if (animate)
+			setAntIcon(degrees);
 	}
 
 	/**
@@ -372,19 +494,21 @@ public class Test {
 	}
 
 	/**
-	 * Funkcija koja sluzi za izvodjenje pojedinog cvora stabla. 
+	 * Funkcija koja sluzi za izvodjenje pojedinog cvora stabla.
 	 * 
-	 * Ako je funkcija {@link hr.fer.zemris.optjava.dz12.Function.IF IF()} tenutni cvor, prvo se pogleda pomocu 
-	 * funkcije {@link #isFoodInFront()} ako je ispred mrava hrana i ako je izvodi se lijevo dijete funkcije IF(), 
-	 * a ako nema hrane, izvodi se desno dijete.
+	 * Ako je funkcija {@link hr.fer.zemris.optjava.dz12.Function.IF IF()} tenutni
+	 * cvor, prvo se pogleda pomocu funkcije {@link #isFoodInFront()} ako je ispred
+	 * mrava hrana i ako je izvodi se lijevo dijete funkcije IF(), a ako nema hrane,
+	 * izvodi se desno dijete.
 	 * 
-	 * Ako je funkcija {@link hr.fer.zemris.optjava.dz12.Function.PR2 PR2()} trenutni cvor, izvodi se prvo lijevo
-	 * dijete cvora, a zatim desno.
+	 * Ako je funkcija {@link hr.fer.zemris.optjava.dz12.Function.PR2 PR2()}
+	 * trenutni cvor, izvodi se prvo lijevo dijete cvora, a zatim desno.
 	 * 
-	 * Ako je funkcija {@link hr.fer.zemris.optjava.dz12.Function.PR3 PR3()} trenutni cvor, izvodi se prvo lijevo 
-	 * dijete, zatim srednje i potom desno dijete.
+	 * Ako je funkcija {@link hr.fer.zemris.optjava.dz12.Function.PR3 PR3()}
+	 * trenutni cvor, izvodi se prvo lijevo dijete, zatim srednje i potom desno
+	 * dijete.
 	 * 
-	 * @param node cvor koji se trenutno izvodi, obicno root cvor
+	 * @param node    cvor koji se trenutno izvodi, obicno root cvor
 	 * @param animate osvjezava li se pozicija mrava u gui-ju
 	 */
 	public static void executeNode(DefaultMutableTreeNode node, boolean animate) {
@@ -425,27 +549,27 @@ public class Test {
 	/**
 	 * Funkcija koja sluzi za izvodjenje pojedinog terminala
 	 * 
-	 * @param t terminal koji se treba izvesti
+	 * @param t       terminal koji se treba izvesti
 	 * @param animate azurira li se kretanje mrava u gui-ju
 	 */
 	public static void executeTerminal(Terminal t, boolean animate) {
 
 		if (t.action == Action.RIGHT) {
-			
+
 			rightTurn(animate);
 			// dodavanje akcije kako bi se moglo klikom na gumb ici akciju po akciju
 			actionsTaken.add(Action.RIGHT);
-			
+
 		} else if (t.action == Action.LEFT) {
-			
+
 			leftTurn(animate);
 			actionsTaken.add(Action.LEFT);
-			
+
 		} else {
-			
+
 			move(animate);
 			actionsTaken.add(Action.MOVE);
-			
+
 		}
 	}
 
@@ -489,19 +613,26 @@ public class Test {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		tempMapData = mapData.clone();
 	}
 
 	public static void main(String[] args) {
 
 		Test test = new Test(32, 32, true);
 
-//		int depth = 10;
-//
-//		DefaultMutableTreeNode rootnode = Util.makeTree(depth, rand);
-//		System.out.println(rootnode.getUserObject());
-//
-//		executeNode(rootnode, false);
-//		System.out.println("gotovo");
+		int depth = 10;
+
+		DefaultMutableTreeNode rootnode = Util.makeTree(depth, rand);
+
+		Enumeration<DefaultMutableTreeNode> en = rootnode.children();
+
+		while (en.hasMoreElements()) {
+			System.out.println(en.nextElement());
+		}
+		executeNode(rootnode, false);
+		reset();
+		System.out.println("exec gotov");
 
 	}
 
