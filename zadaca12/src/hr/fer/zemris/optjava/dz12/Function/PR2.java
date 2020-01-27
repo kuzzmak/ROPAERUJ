@@ -41,7 +41,7 @@ public class PR2 extends Expression implements IFunction {
 
 	@Override
 	public String toString() {
-		return "PR2 [" + outputs + "]";
+		return "PR2 " + outputs;
 	}
 	
 	@Override
@@ -57,6 +57,11 @@ public class PR2 extends Expression implements IFunction {
 	@Override
 	public Expression duplicate() {
 		return new PR2(this.name, this.status, this.numberOfOutputs, new ArrayList<>());
+	}
+	
+	@Override
+	public void removeOutput(Expression epxression) {
+		outputs.remove(epxression);
 	}
 
 }

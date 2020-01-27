@@ -152,4 +152,16 @@ public class Util {
 		}
 		return rootnode;
 	}
+	
+	public static void mutate(DefaultMutableTreeNode node, Random rand) {
+		
+		
+//		node.get
+		
+		
+		
+	}
+	
+	
+	
 }

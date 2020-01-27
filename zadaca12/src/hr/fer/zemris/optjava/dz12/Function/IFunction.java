@@ -40,4 +40,11 @@ public interface IFunction {
 	 * @return lista izlaznih izraza
 	 */
 	public List<Expression> getOutputs();
+	
+	/**
+	 * Funkcija za uklanjanje izraza iz liste izlaza
+	 * 
+	 * @param epxression izraz koji je potrebno ukloniti
+	 */
+	public void removeOutput(Expression epxression);
 }
