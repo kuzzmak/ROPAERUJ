@@ -13,8 +13,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,12 +22,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import hr.fer.zemris.optjava.dz12.Util;
 import hr.fer.zemris.optjava.dz12.Expression.Expression;
 import hr.fer.zemris.optjava.dz12.Expression.Status;
-import hr.fer.zemris.optjava.dz12.Function.IF;
-import hr.fer.zemris.optjava.dz12.Function.PR2;
-import hr.fer.zemris.optjava.dz12.Function.PR3;
 import hr.fer.zemris.optjava.dz12.Terminal.Action;
 import hr.fer.zemris.optjava.dz12.Terminal.Terminal;
 
@@ -42,15 +38,21 @@ public class Test {
 	static int width;
 	// broj redaka mape
 	static int height;
-	
 
 	// slika mrava u svakoj mogucoj orijentaciji
 	static ImageIcon ant0;
 	static ImageIcon ant90;
 	static ImageIcon ant180;
 	static ImageIcon ant270;
+	
+	// slike strelice u svakoj poziciji
+	static ImageIcon arrow0;
+	static ImageIcon arrow90;
+	static ImageIcon arrow180;
+	static ImageIcon arrow270;
+	
 	// slika hrane
-	static ImageIcon food;
+		static ImageIcon food;
 
 	// brojac pojedene hrane, fitnes
 	static int foodEaten = 0;
@@ -64,6 +66,8 @@ public class Test {
 	static JLabel score = new JLabel("Score: 0");
 	// lista akcija koje su se dogodile do sada slijedno jedna iza druge
 	static List<Action> actionsTaken = new ArrayList<>();
+	// slika strelice usmjerenja mrava
+	static JLabel arrowPicture;
 	
 	static Random rand;
 	
@@ -74,11 +78,16 @@ public class Test {
 		Test.width = width;
 		Test.height = height;
 
+		// glavni container
 		JPanel container = new JPanel();
-		container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+		container.setLayout(new BoxLayout(container, BoxLayout.X_AXIS));
+		
+		// lijevi container s 
+		JPanel containerLeft = new JPanel();
+		containerLeft.setLayout(new BoxLayout(containerLeft, BoxLayout.Y_AXIS));
 
 		JPanel gridPanel = new JPanel(new GridLayout(height, width));
-		container.add(gridPanel);
+		containerLeft.add(gridPanel);
 
 		grid = new JButton[height][width];
 
@@ -92,19 +101,28 @@ public class Test {
 		}
 
 		// postavljanje inicijalnog mrava
-		ant0 = new ImageIcon("pictures/ant0.jpg");
+		ant0 = new ImageIcon("pictures/ant0.png");
 		ant0 = resizeImageIcon(ant0);
 		grid[0][0].setIcon(ant0);
 
 		// ucitavanje ostalih slika mrava
-		ant90 = new ImageIcon("pictures/ant90.jpg");
+		ant90 = new ImageIcon("pictures/ant90.png");
 		ant90 = resizeImageIcon(ant90);
 
-		ant180 = new ImageIcon("pictures/ant180.jpg");
+		ant180 = new ImageIcon("pictures/ant180.png");
 		ant180 = resizeImageIcon(ant180);
 
-		ant270 = new ImageIcon("pictures/ant270.jpg");
+		ant270 = new ImageIcon("pictures/ant270.png");
 		ant270 = resizeImageIcon(ant270);
+		
+		// ucitavanje slika strelice koja pokazuje usmjerenje mrava posto je ikona mrava premala
+		arrow0 = new ImageIcon("pictures/arrow0.png");
+		
+		arrow90 = new ImageIcon("pictures/arrow90.png");
+		
+		arrow180 = new ImageIcon("pictures/arrow180.png");
+		
+		arrow270 = new ImageIcon("pictures/arrow270.png");
 
 		// ucitavanje slike hrane
 		food = new ImageIcon("pictures/food.png");
@@ -114,7 +132,7 @@ public class Test {
 
 		// panel s gumbima
 		JPanel buttonPanel = new JPanel();
-		container.add(buttonPanel);
+		containerLeft.add(buttonPanel);
 
 		// gumb za okret mrava udesno
 		JButton right = new JButton("right");
@@ -158,9 +176,22 @@ public class Test {
 				} else {
 					System.out.println("hrana nije ispred");
 				}
-
 			}
 		});
+		
+		// container sa slikom strelice
+		JPanel containerRight = new JPanel();
+		containerRight.setLayout(new BoxLayout(containerRight, BoxLayout.Y_AXIS));
+		
+		containerRight.add(Box.createHorizontalGlue());
+		JLabel direction = new JLabel("Usmjerenje mrava");
+		containerRight.add(direction);
+		
+		arrowPicture = new JLabel(arrow0);
+		containerRight.add(arrowPicture);
+		
+		container.add(containerLeft);
+		container.add(containerRight);
 
 		buttonPanel.add(score);
 		buttonPanel.add(left);
@@ -183,6 +214,7 @@ public class Test {
 		degrees += 270;
 		degrees = degrees % 360;
 		if(animate) setAntIcon(degrees);
+		
 	}
 
 	/**
@@ -263,7 +295,7 @@ public class Test {
 	 */
 	public ImageIcon resizeImageIcon(ImageIcon imageIcon) {
 		Image image = imageIcon.getImage();
-		Image newimg = image.getScaledInstance(10, 10, java.awt.Image.SCALE_SMOOTH);
+		Image newimg = image.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
 		return new ImageIcon(newimg);
 	}
 
@@ -277,15 +309,19 @@ public class Test {
 		switch (degrees) {
 		case 0:
 			grid[row][column].setIcon(ant0);
+			arrowPicture.setIcon(arrow0);
 			break;
 		case 90:
 			grid[row][column].setIcon(ant90);
+			arrowPicture.setIcon(arrow90);
 			break;
 		case 180:
 			grid[row][column].setIcon(ant180);
+			arrowPicture.setIcon(arrow180);
 			break;
 		case 270:
 			grid[row][column].setIcon(ant270);
+			arrowPicture.setIcon(arrow270);
 			break;
 		default:
 			break;
@@ -299,7 +335,7 @@ public class Test {
 	 */
 	public static boolean isFoodInFront() {
 
-		// pomocne varijeble kako se ne bi globalne column i row prepisale
+		// pomocne varijable kako se ne bi globalne column i row prepisale
 		int tempColumn = column;
 		int tempRow = row;
 
@@ -329,7 +365,7 @@ public class Test {
 			tempRow %= height;
 		}
 
-		if (mapData[row][tempColumn] == 1)
+		if (mapData[tempRow][tempColumn] == 1)
 			return true;
 
 		return false;
@@ -459,13 +495,13 @@ public class Test {
 
 		Test test = new Test(32, 32, true);
 
-		int depth = 10;
-
-		DefaultMutableTreeNode rootnode = Util.makeTree(depth, rand);
-		System.out.println(rootnode.getUserObject());
-
-		executeNode(rootnode, false);
-		System.out.println("gotovo");
+//		int depth = 10;
+//
+//		DefaultMutableTreeNode rootnode = Util.makeTree(depth, rand);
+//		System.out.println(rootnode.getUserObject());
+//
+//		executeNode(rootnode, false);
+//		System.out.println("gotovo");
 
 	}
 

@@ -128,30 +128,108 @@ public class Util {
 			grow(child, depth - 1, rand);
 		}
 	}
-	
+
 	/**
-	 * Funkcija za generiranje stabla dubine <code>depth</code> gdje full
-	 * i grow metoda imaju jednaku sansu za generiranje stabla
+	 * Funkcija za generiranje stabla dubine <code>depth</code> gdje full i grow
+	 * metoda imaju jednaku sansu za generiranje stabla
 	 * 
 	 * @param depth zeljena dubina stabla
-	 * @param rand generator slucajnih brojeva
+	 * @param rand  generator slucajnih brojeva
 	 * @return generirano stablo
 	 */
 	public static DefaultMutableTreeNode makeTree(int depth, Random rand) {
-		
+
 		Expression root = functions.get(rand.nextInt(functions.size())).duplicate();
 
 		DefaultMutableTreeNode rootnode = new DefaultMutableTreeNode(root);
-		
-		if(rand.nextFloat() > 0.5) {
+
+		if (rand.nextFloat() > 0.5) {
 			grow(rootnode, depth - 1, rand);
-		}else {
+		} else {
 			full(rootnode, depth - 1, rand);
 		}
 		return rootnode;
 	}
-	
-	
-	
-	
+
+	/**
+	 * Funkcija za mutaciju pojedinog stabla, proces krece od root cvora i rekurzivno kroz svu djecu
+	 * gdje svaki funkcijski cvor ima vjerojatnost mutacije 2 * <code>p</code>, a terminalni <code>p</code>.
+	 * Pod pojmom mutacije se misli sljedece. Neka je cvor c trenutni cvor i ako je odredjeno da se treba 
+	 * vrsiti mutacija nad njim, dohvaca se njegov roditelj ako cvor c nije root cvor, brise se sadrzaj
+	 * cvora c iz liste izraza roditelja, uklanja se cvor c iz djece roditelja i stvara se novo stablo
+	 * s dubinom maksimalna dopustena dubina - dubina cvora c. Postupak se nastavlja kroz svu djecu.
+	 * 
+	 * @param node cvor ili stablo nad kojim se vrsi mutacija
+	 * @param maxDepth maksimalna dopustena dubina stabla
+	 * @param rand generator slucajnih brojeva
+	 * @param p vjerojatnost mutacije
+	 */
+	public static void mutate(DefaultMutableTreeNode node, int maxDepth, Random rand, float p) {
+
+		Expression exp = (Expression) node.getUserObject();
+
+		// dubina na kojoj se nalazi cvor
+		int currentDepth = node.getDepth();
+
+		// ako je cvor funkcija
+		if (exp.status == Status.FUNCTION) {
+
+			// vjerojatnost mutacije funkcijskih cvorova je dvostruko veca od terminalnih
+			// cvorova
+			if (rand.nextFloat() < 2 * p) {
+
+				// roditelj trenutnog cvora ako nije root
+				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
+
+				if (parent != null) {
+
+					IFunction functionParent = (IFunction) parent.getUserObject();
+
+					// uklanjanje elementa liste djeteta iz liste roditelja
+					functionParent.removeOutput((Expression) node.getUserObject());
+
+					// uklanja se cvor koji se mutira iz roditelja
+					parent.remove(node);
+
+					// stvaranje novog stabla umjesto uklonjenog cvora
+					DefaultMutableTreeNode newNode = Util.makeTree(maxDepth - currentDepth, rand);
+
+					parent.add(newNode);
+
+					functionParent = (IFunction) parent.getUserObject();
+					functionParent.addOutput((Expression) newNode.getUserObject());
+
+					return;
+
+				} else {
+
+					// rekurzivno pozivanje mutacije nad djecom
+					Enumeration<DefaultMutableTreeNode> en = node.children();
+
+					while (en.hasMoreElements()) {
+						mutate(en.nextElement(), maxDepth, rand, p);
+					}
+				}
+			}
+		} else {
+			// terminalni cvor
+			if (rand.nextFloat() < p) {
+
+				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
+
+				IFunction functionParent = (IFunction) parent.getUserObject();
+
+				functionParent.removeOutput((Expression) node.getUserObject());
+
+				parent.remove(node);
+
+				DefaultMutableTreeNode newNode = Util.makeTree(maxDepth - currentDepth, rand);
+
+				parent.add(newNode);
+
+				functionParent = (IFunction) parent.getUserObject();
+				functionParent.addOutput((Expression) newNode.getUserObject());
+			}
+		}
+	}
 }
