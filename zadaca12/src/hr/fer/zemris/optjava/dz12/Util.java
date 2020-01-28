@@ -1,5 +1,6 @@
 package hr.fer.zemris.optjava.dz12;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -152,17 +153,19 @@ public class Util {
 	}
 
 	/**
-	 * Funkcija za mutaciju pojedinog stabla, proces krece od root cvora i rekurzivno kroz svu djecu
-	 * gdje svaki funkcijski cvor ima vjerojatnost mutacije 2 * <code>p</code>, a terminalni <code>p</code>.
-	 * Pod pojmom mutacije se misli sljedece. Neka je cvor c trenutni cvor i ako je odredjeno da se treba 
-	 * vrsiti mutacija nad njim, dohvaca se njegov roditelj ako cvor c nije root cvor, brise se sadrzaj
-	 * cvora c iz liste izraza roditelja, uklanja se cvor c iz djece roditelja i stvara se novo stablo
-	 * s dubinom maksimalna dopustena dubina - dubina cvora c. Postupak se nastavlja kroz svu djecu.
+	 * Funkcija za mutaciju pojedinog stabla, proces krece od root cvora i
+	 * rekurzivno kroz svu djecu gdje svaki funkcijski cvor ima vjerojatnost
+	 * mutacije 2 * <code>p</code>, a terminalni <code>p</code>. Pod pojmom mutacije
+	 * se misli sljedece. Neka je cvor c trenutni cvor i ako je odredjeno da se
+	 * treba vrsiti mutacija nad njim, dohvaca se njegov roditelj ako cvor c nije
+	 * root cvor, brise se sadrzaj cvora c iz liste izraza roditelja, uklanja se
+	 * cvor c iz djece roditelja i stvara se novo stablo s dubinom maksimalna
+	 * dopustena dubina - dubina cvora c. Postupak se nastavlja kroz svu djecu.
 	 * 
-	 * @param node cvor ili stablo nad kojim se vrsi mutacija
+	 * @param node     cvor ili stablo nad kojim se vrsi mutacija
 	 * @param maxDepth maksimalna dopustena dubina stabla
-	 * @param rand generator slucajnih brojeva
-	 * @param p vjerojatnost mutacije
+	 * @param rand     generator slucajnih brojeva
+	 * @param p        vjerojatnost mutacije
 	 */
 	public static void mutate(DefaultMutableTreeNode node, int maxDepth, Random rand, float p) {
 
@@ -230,6 +233,108 @@ public class Util {
 				functionParent = (IFunction) parent.getUserObject();
 				functionParent.addOutput((Expression) newNode.getUserObject());
 			}
+		}
+	}
+
+	/**
+	 * Funkcija za dobivanje liste svih cvorova iz stabla
+	 * 
+	 * @param node stablo iz kojeg se dobiva lista
+	 * @return lista cvorova
+	 */
+	public static List<DefaultMutableTreeNode> fromNodeToList(DefaultMutableTreeNode node) {
+
+		List<DefaultMutableTreeNode> nodes = new ArrayList<>();
+
+		Enumeration<DefaultMutableTreeNode> bfs = node.breadthFirstEnumeration();
+
+		while (bfs.hasMoreElements()) {
+			nodes.add(bfs.nextElement());
+		}
+
+		return nodes;
+	}
+
+	/**
+	 * Funkcija za stvaranje kopije stabla
+	 * 
+	 * @param node stablo kojem treba stvoriti kopiju
+	 * @return kopija stabla
+	 */
+	public static DefaultMutableTreeNode deepCopy(DefaultMutableTreeNode node, 
+			DefaultMutableTreeNode copy) {
+
+		Expression e = (Expression) node.getUserObject();
+
+//		// ako je terminal doda ga se u novi cvor i izlazi iz funkcije
+//		if (e.status == Status.TERMINAL) {
+//			IFunction functionParent = (IFunction) ((DefaultMutableTreeNode)parent.getParent()).getUserObject();
+//
+//			Expression eChild = (Expression) parent.getUserObject();
+//
+//			
+//			copy = new DefaultMutableTreeNode(eChild);
+//			functionParent.addOutput(eChild);
+//			return copy;
+//		}
+		
+		if(copy == null) copy = new DefaultMutableTreeNode(newExpresion(e));
+
+		IFunction f = (IFunction) copy.getUserObject();
+
+		Enumeration<DefaultMutableTreeNode> children = node.children();
+
+		for (int i = 0; i < f.getNumberOfOutputs(); i++) {
+
+			Expression eChild = (Expression) children.nextElement().getUserObject();
+
+			Expression newExp = newExpresion(eChild);
+
+			copy.add(new DefaultMutableTreeNode(newExp));
+//			if(eChild.status == Status.FUNCTION) {
+			f.addOutput(newExp);
+//			}
+		}
+
+		int numOfChildren = node.getChildCount();
+
+		for (int i = 0; i < numOfChildren; i++) {
+			
+			Expression ex = (Expression)((DefaultMutableTreeNode) node.getChildAt(i)).getUserObject();
+			
+			if(ex.status == Status.FUNCTION) {
+				deepCopy((DefaultMutableTreeNode) node.getChildAt(i), (DefaultMutableTreeNode) copy.getChildAt(i));
+		
+			}
+		}
+		return copy;
+	}
+
+	/**
+	 * Funkcija za vracanje nove instance nekog izraza
+	 * 
+	 * @param e izraz cija se nova instanca treba
+	 * @return nova instanca izraza
+	 */
+	public static Expression newExpresion(Expression e) {
+
+		if (e.status == Status.FUNCTION) {
+
+			if (e.name == "IF")
+				return new IF();
+			else if (e.name == "PR2")
+				return new PR2();
+			else
+				return new PR3();
+
+		} else {
+			if (e.name == "RIGHT")
+				return new Terminal("RIGHT", Action.RIGHT);
+			else if (e.name == "LEFT")
+				return new Terminal("LEFT", Action.LEFT);
+			else
+				return new Terminal("MOVE", Action.MOVE);
+
 		}
 	}
 }

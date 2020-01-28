@@ -16,16 +16,20 @@ public class Test2 {
 	static Random rand = new Random();
 
 	// TODO napraviti da su prosljedjene enumeracije umjesto roditelja
-	public static void cross(DefaultMutableTreeNode parent1, DefaultMutableTreeNode parent2, Random rand) {
+	public static void cross(DefaultMutableTreeNode parent01, DefaultMutableTreeNode parent02, Random rand) {
 
 		// stvaranje kopija roditelja nad kojima se rade izmjene
 
-		// prvo dijete koje je kopija roditelja i na njemu se rade izmjene
-		DefaultMutableTreeNode parent01 = parent1;
-// 		
-// 		
-// 		DefaultMutableTreeNode parent2 = parent01;
+//		Expression e1 = (Expression) parent01.getUserObject();
+//		Expression e2 = (Expression) parent02.getUserObject();
+//		
+//		// prvo dijete koje je kopija roditelja i na njemu se rade izmjene
+//		DefaultMutableTreeNode parent1 = new DefaultMutableTreeNode(e1.duplicate());
+// 		DefaultMutableTreeNode parent2 = new DefaultMutableTreeNode(e2.duplicate());
 
+		DefaultMutableTreeNode parent1 = Util.deepCopy(parent01, null);
+		DefaultMutableTreeNode parent2 = Util.deepCopy(parent02, null);
+		
 		// maksimalne dubine obaju roditelja
 		int parent1Depth = parent1.getDepth();
 		int parent2Depth = parent2.getDepth();
@@ -54,8 +58,8 @@ public class Test2 {
 		System.out.println("maxDepth: " + maxDepth);
 
 		// lista cvorova dobivena obilaskom prvog i drugog roditelja u sirinu
-		List<DefaultMutableTreeNode> nodes1 = fromNodeToList(parent1);
-		List<DefaultMutableTreeNode> nodes2 = fromNodeToList(parent2);
+		List<DefaultMutableTreeNode> nodes1 = Util.fromNodeToList(parent1);
+		List<DefaultMutableTreeNode> nodes2 = Util.fromNodeToList(parent2);
 
 		int index = rand.nextInt(nodes1.size());
 		// dohvat odabranog cvora
@@ -123,51 +127,6 @@ public class Test2 {
 		}
 
 	}
-
-	/**
-	 * Funkcija za dobivanje liste svih cvorova iz stabla
-	 * 
-	 * @param node stablo iz kojeg se dobiva lista
-	 * @return lista cvorova
-	 */
-	public static List<DefaultMutableTreeNode> fromNodeToList(DefaultMutableTreeNode node) {
-
-		List<DefaultMutableTreeNode> nodes = new ArrayList<>();
-
-		Enumeration<DefaultMutableTreeNode> bfs = node.breadthFirstEnumeration();
-
-		while (bfs.hasMoreElements()) {
-			nodes.add(bfs.nextElement());
-		}
-
-		return nodes;
-	}
-
-	
-	private static DefaultMutableTreeNode deepCopy(DefaultMutableTreeNode node) {
-		
-		Expression e = (Expression) node.getUserObject();
-		
-		DefaultMutableTreeNode copy = new DefaultMutableTreeNode(e.duplicate());
-		
-//		if(e.status == Status.TERMINAL) {
-//			return copy;
-//		}
-//		
-//		IFunction function = ((IFunction) node.getUserObject()).copy();
-		
-		if(node.isLeaf()) {
-			return copy;
-		}else {
-			
-			int numOfChildren = node.getChildCount();
-			
-			for(int i = 0; i < numOfChildren; i++) {
-				copy.add(deepCopy((DefaultMutableTreeNode)node.getChildAt(i)));
-			}
-			return copy;
-		}
-	}
 	
 
 	public static void main(String[] args) {
@@ -177,28 +136,39 @@ public class Test2 {
 		DefaultMutableTreeNode parent1 = Util.makeTree(depth, rand);
 
 		DefaultMutableTreeNode parent2 = Util.makeTree(depth, rand);
+		
+//		Expression e = (Expression) parent1.getUserObject();
+//		
+//		DefaultMutableTreeNode par1 = new DefaultMutableTreeNode(e.duplicate());
+//		
+		Random rand = new Random();
 
-//		Random rand = new Random();
-//
-//		cross(parent1, parent2, rand);
-		
-		DefaultMutableTreeNode newParent = deepCopy(parent1);
-		
-		IFunction fn = (IFunction) newParent.getUserObject();
-		fn.addOutput(new IF());
-		newParent.add(new DefaultMutableTreeNode(new IF()));
+		cross(parent1, parent2, rand);
+//		
+//		
+//		
+//		Expression e = new IF();
 		
 		
-		System.out.println("parent1");
-		Enumeration<DefaultMutableTreeNode> en = parent1.children();
-		while (en.hasMoreElements()) {
-			System.out.println(en.nextElement());
-		}
-		System.out.println();
-		en = newParent.children();
-		while (en.hasMoreElements()) {
-			System.out.println(en.nextElement());
-		}
+		
+		
+//		DefaultMutableTreeNode newParent = deepCopy(parent1);
+//		
+//		IFunction fn = (IFunction) newParent.getUserObject();
+//		fn.addOutput(new IF());
+//		newParent.add(new DefaultMutableTreeNode(new IF()));
+//		
+//		
+//		System.out.println("parent1");
+//		Enumeration<DefaultMutableTreeNode> en = parent1.children();
+//		while (en.hasMoreElements()) {
+//			System.out.println(en.nextElement());
+//		}
+//		System.out.println();
+//		en = newParent.children();
+//		while (en.hasMoreElements()) {
+//			System.out.println(en.nextElement());
+//		}
 
 	}
 }
