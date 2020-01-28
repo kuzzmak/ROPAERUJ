@@ -31,13 +31,11 @@ import hr.fer.zemris.optjava.dz12.Terminal.Action;
 import hr.fer.zemris.optjava.dz12.Terminal.Terminal;
 
 public class AntTrail {
-	
-	private String pathToMap;
-	private int maxIterations;
-	private int populationSize;
-	private int minFitness;
 
-	JFrame frame = new JFrame();
+	private static int maxIterations;
+	private static int populationSize;
+	private static int minFitness;
+
 	// matrica gumba koji predstavljaju pojedino polje
 	static JButton[][] grid;
 	// matrica s hranom
@@ -86,15 +84,30 @@ public class AntTrail {
 	static JTextArea textArea;
 
 	static Random rand;
-	//fitnes pojedinog stabla
+	// fitnes pojedinog stabla
 	static int[] fitness;
 	
-	public AntTrail(String patToMap, int maxIterations, int populationSize, int minFitness) {
+	private static List<DefaultMutableTreeNode> population = new ArrayList<>();
+
+	public AntTrail(String pathToMap, int maxIterations, int populationSize, int minFitness) {
+
+		AntTrail.maxIterations = maxIterations;
+		AntTrail.populationSize = populationSize;
+		AntTrail.minFitness = minFitness;
 
 		rand = new Random();
 
-		AntTrail.width = width;
-		AntTrail.height = height;
+		loadMap(pathToMap);
+
+	}
+	
+	public static void run() {
+		
+	}
+
+	public static void gui() {
+
+		JFrame frame = new JFrame();
 
 		// glavni container
 		JPanel container = new JPanel();
@@ -107,31 +120,41 @@ public class AntTrail {
 		JPanel gridPanel = new JPanel(new GridLayout(height, width));
 		containerLeft.add(gridPanel);
 
+		// ucitavanje slike hrane
+		food = new ImageIcon("pictures/food.png");
+		food = Util.resizeImageIcon(food);
+
 		grid = new JButton[height][width];
 
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
+
 				JButton button = new JButton();
 				button.setPreferredSize(new Dimension(20, 20));
 				grid[i][j] = button;
+
+				if (mapData[i][j] == 1) {
+					grid[i][j].setIcon(food);
+				}
+
 				gridPanel.add(button);
 			}
 		}
 
 		// postavljanje inicijalnog mrava
 		ant0 = new ImageIcon("pictures/ant0.png");
-		ant0 = resizeImageIcon(ant0);
+		ant0 = Util.resizeImageIcon(ant0);
 		grid[0][0].setIcon(ant0);
 
 		// ucitavanje ostalih slika mrava
 		ant90 = new ImageIcon("pictures/ant90.png");
-		ant90 = resizeImageIcon(ant90);
+		ant90 = Util.resizeImageIcon(ant90);
 
 		ant180 = new ImageIcon("pictures/ant180.png");
-		ant180 = resizeImageIcon(ant180);
+		ant180 = Util.resizeImageIcon(ant180);
 
 		ant270 = new ImageIcon("pictures/ant270.png");
-		ant270 = resizeImageIcon(ant270);
+		ant270 = Util.resizeImageIcon(ant270);
 
 		// ucitavanje slika strelice koja pokazuje usmjerenje mrava posto je ikona mrava
 		// premala
@@ -143,11 +166,7 @@ public class AntTrail {
 
 		arrow270 = new ImageIcon("pictures/arrow270.png");
 
-		// ucitavanje slike hrane
-		food = new ImageIcon("pictures/food.png");
-		food = resizeImageIcon(food);
-
-		loadMap(pathToMap);
+		boolean animate = true;
 
 		// panel s gumbima
 		JPanel buttonPanel = new JPanel();
@@ -230,16 +249,16 @@ public class AntTrail {
 		containerRight.add(arrowPicture);
 
 		// TODO napraviti da text area funkcionira
-//		textArea = new JTextArea();
-//		JScrollPane scrollPane = new JScrollPane(textArea);
-//		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-//		
-//		textArea.setColumns(5);
-//        textArea.setLineWrap(true);
-//        textArea.setRows(5);
-//        textArea.setWrapStyleWord(true);
-//		
-//		containerRight.add(textArea);
+//				textArea = new JTextArea();
+//				JScrollPane scrollPane = new JScrollPane(textArea);
+//				scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+//				
+//				textArea.setColumns(5);
+//		        textArea.setLineWrap(true);
+//		        textArea.setRows(5);
+//		        textArea.setWrapStyleWord(true);
+//				
+//				containerRight.add(textArea);
 
 		container.add(containerLeft);
 		container.add(containerRight);
@@ -257,23 +276,35 @@ public class AntTrail {
 		frame.pack();
 		frame.setVisible(true);
 	}
-	
+
 	/**
 	 * Funkcija za evaluaciju pojedine populacije stabala
 	 * 
 	 * @param population populacija koja se evaluira
 	 */
 	public static void evaluate(List<DefaultMutableTreeNode> population) {
-		
+
 		fitness = new int[population.size()];
+		reset();
 		
-		for(int i = 0; i < population.size(); i++) {
-			
+		for (int i = 0; i < population.size(); i++) {
+
 			executeNode(population.get(i), false);
-			automatic(false, 0);
 			fitness[i] = foodEaten;
 			reset();
 		}
+	}
+	
+	public static int findBest() {
+		
+		int best = 0;
+		int index = 0;
+		
+		for(int i = 0; i < fitness.length; i++) {
+			if(fitness[i] > best) index = i;
+		}
+		
+		return index;
 	}
 
 	/**
@@ -283,27 +314,33 @@ public class AntTrail {
 	 * @param sleep   vrijeme izmedju dva koraka u ms
 	 */
 	public static void automatic(boolean animate, long sleep) {
+		
+		
+		
+		
 
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 			@Override
 			public Void doInBackground() {
-					
-					for (int i = 0; i < actionsTaken.size(); i++) {
-						
-            			step(animate);
-            			
-            			if(sleep != 0) {
-	            			try {
-								Thread.sleep(sleep);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-            			}
-                	}
+
+				for (int i = 0; i < actionsTaken.size(); i++) {
+
+//					step(animate);
+//				
+//					if (sleep != 0) {
+//						try {
+//							Thread.sleep(sleep);
+//						} catch (InterruptedException e) {
+//							e.printStackTrace();
+//						}
+//					}
+					reset();
+					executeNode(population.get(findBest()), animate);
+				}
 				return (null);
 			}
 		};
-		
+
 		worker.execute();
 	}
 
@@ -316,7 +353,7 @@ public class AntTrail {
 
 		if (currentStep < actionsTaken.size()) {
 			Action a = actionsTaken.get(currentStep);
-
+			System.out.println(a);
 			if (a == Action.LEFT) {
 				leftTurn(animate);
 			} else if (a == Action.RIGHT) {
@@ -339,6 +376,7 @@ public class AntTrail {
 
 		row = 0;
 		column = 0;
+		degrees = 0;
 		foodEaten = 0;
 		currentStep = 0;
 		score.setText("Score: 0");
@@ -433,18 +471,6 @@ public class AntTrail {
 
 		if (animate)
 			setAntIcon(degrees);
-	}
-
-	/**
-	 * Funkcija za reskaliranje slika mrava i hrane
-	 * 
-	 * @param imageIcon slika koja se reskalira
-	 * @return reskalirana slika
-	 */
-	public ImageIcon resizeImageIcon(ImageIcon imageIcon) {
-		Image image = imageIcon.getImage();
-		Image newimg = image.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
-		return new ImageIcon(newimg);
 	}
 
 	/**
@@ -612,8 +638,8 @@ public class AntTrail {
 
 			String[] dimension = line.split("x");
 
-			width = Integer.parseInt(dimension[0]);
-			height = Integer.parseInt(dimension[1]);
+			AntTrail.width = Integer.parseInt(dimension[0]);
+			AntTrail.height = Integer.parseInt(dimension[1]);
 
 			// matrica koja sadrzi lokacije hrane
 			mapData = new int[height][width];
@@ -627,8 +653,6 @@ public class AntTrail {
 				for (int column = 0; column < height; column++) {
 					if (line.charAt(column) == '1') {
 						mapData[row][column] = 1;
-						grid[row][column].setIcon(food);
-
 					} else {
 						mapData[row][column] = 0;
 					}
@@ -643,20 +667,19 @@ public class AntTrail {
 		tempMapData = mapData.clone();
 	}
 
-	
-	public static void main(String[] args) {
+//	public static void main(String[] args) {
 
-		AntTrail test = new AntTrail(32, 32, true);
+//		AntTrail test = new AntTrail(32, 32, true);
 
-		int populationSize = 20;
-		int maxDepth = 10;
-		Random rand = new Random();
-		
-		List<DefaultMutableTreeNode> population = Util.makePopulation(populationSize, maxDepth, rand);
-		
-		AntTrail.evaluate(population);
-		
-		System.out.println(Arrays.toString(AntTrail.fitness));
-	}
+//		int populationSize = 20;
+//		int maxDepth = 10;
+//		Random rand = new Random();
+//
+//		List<DefaultMutableTreeNode> population = Util.makePopulation(populationSize, maxDepth, rand);
+//
+//		AntTrail.evaluate(population);
+//
+//		System.out.println(Arrays.toString(AntTrail.fitness));
+//	}
 
 }

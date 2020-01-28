@@ -1,11 +1,13 @@
 package hr.fer.zemris.optjava.dz12;
 
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
 
+import javax.swing.ImageIcon;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import hr.fer.zemris.optjava.dz12.Expression.Expression;
@@ -424,5 +426,17 @@ public class Util {
 		}
 		
 		return population;
+	}
+	
+	/**
+	 * Funkcija za reskaliranje slika mrava i hrane
+	 * 
+	 * @param imageIcon slika koja se reskalira
+	 * @return reskalirana slika
+	 */
+	public static ImageIcon resizeImageIcon(ImageIcon imageIcon) {
+		Image image = imageIcon.getImage();
+		Image newimg = image.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
+		return new ImageIcon(newimg);
 	}
 }
