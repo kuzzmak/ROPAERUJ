@@ -56,7 +56,9 @@ public class IF extends Expression implements IFunction{
 	
 	@Override
 	public Expression duplicate() {
-		return new IF(this.name, this.status, this.numberOfOutputs, new ArrayList<>());
+		List<Expression> copy = new ArrayList<>();
+		copy.addAll(this.outputs);
+		return new IF(this.name, this.status, this.numberOfOutputs, copy);
 	}
 
 	@Override

@@ -56,7 +56,9 @@ public class PR3 extends Expression implements IFunction {
 
 	@Override
 	public Expression duplicate() {
-		return new PR3(this.name, this.status, this.numberOfOutputs, new ArrayList<>());
+		List<Expression> copy = new ArrayList<>();
+		copy.addAll(this.outputs);
+		return new PR3(this.name, this.status, this.numberOfOutputs, copy);
 	}
 	
 	@Override
