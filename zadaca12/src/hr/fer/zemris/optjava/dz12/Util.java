@@ -19,7 +19,9 @@ import hr.fer.zemris.optjava.dz12.Terminal.Terminal;
 
 public class Util {
 
+	// lista mogucih funkcija u nekom cvoru
 	static List<Expression> functions = Arrays.asList(new IF(), new PR2(), new PR3());
+	// lista mogucih terminala u nekom cvoru
 	static List<Expression> terminals = Arrays.asList(new Terminal("RIGHT", Action.RIGHT),
 			new Terminal("LEFT", Action.LEFT), new Terminal("MOVE", Action.MOVE));
 
@@ -256,28 +258,19 @@ public class Util {
 	}
 
 	/**
-	 * Funkcija za stvaranje kopije stabla
+	 * Funkcija za stvaranje kopije stabla koja radi na principu rekurzivne rekonstrukcije 
+	 * izvornog stabla. Za svaki cvor stvori se isti takav u novom stablu.
 	 * 
 	 * @param node stablo kojem treba stvoriti kopiju
-	 * @return kopija stabla
+	 * @param copy novo stablo koje se konstruira rekurzivnim prolaskom kroz <code>node</code>
+	 * @return kopija stabla <code>node</code>
 	 */
 	public static DefaultMutableTreeNode deepCopy(DefaultMutableTreeNode node, 
 			DefaultMutableTreeNode copy) {
 
 		Expression e = (Expression) node.getUserObject();
 
-//		// ako je terminal doda ga se u novi cvor i izlazi iz funkcije
-//		if (e.status == Status.TERMINAL) {
-//			IFunction functionParent = (IFunction) ((DefaultMutableTreeNode)parent.getParent()).getUserObject();
-//
-//			Expression eChild = (Expression) parent.getUserObject();
-//
-//			
-//			copy = new DefaultMutableTreeNode(eChild);
-//			functionParent.addOutput(eChild);
-//			return copy;
-//		}
-		
+		// izvodi se prilikom prvog ulaska u funkciju 
 		if(copy == null) copy = new DefaultMutableTreeNode(newExpresion(e));
 
 		IFunction f = (IFunction) copy.getUserObject();
@@ -291,9 +284,7 @@ public class Util {
 			Expression newExp = newExpresion(eChild);
 
 			copy.add(new DefaultMutableTreeNode(newExp));
-//			if(eChild.status == Status.FUNCTION) {
 			f.addOutput(newExp);
-//			}
 		}
 
 		int numOfChildren = node.getChildCount();
@@ -303,11 +294,89 @@ public class Util {
 			Expression ex = (Expression)((DefaultMutableTreeNode) node.getChildAt(i)).getUserObject();
 			
 			if(ex.status == Status.FUNCTION) {
+				
 				deepCopy((DefaultMutableTreeNode) node.getChildAt(i), (DefaultMutableTreeNode) copy.getChildAt(i));
-		
 			}
 		}
 		return copy;
+	}
+	
+	/**
+	 * Funkcija za krizanje dva stabla. Krizanje radi tako da se prvo naprave kopije 
+	 * roditelja nad kojima ce se kasnije raditi izmjene. Nakon toga se svi cvorovi, svakog 
+	 * roditelja posebno dodaju u listu iz koje se nasumicno bira neki cvor iz prvog i drugog 
+	 * stabla. Moguce je izabrati cvorove kojima je dubina manja od najvece dubine prvog roditelja
+	 * i najvece dubine drugog roditelja cime se nikada ne moze izabrati root cvor. 
+	 * Kada su odabrani cvorovi, oni se brisu iz roditelja i kopiraju u suprotnog roditelja
+	 * cime postupak zavrsava.
+	 * 
+	 * @param parent01 prvo stablo za krizanje
+	 * @param parent02 drugo stablo za krizanje
+	 * @param rand generator nasumicnih brojeva
+	 * @return lista djece
+	 */
+	public static List<DefaultMutableTreeNode> cross(DefaultMutableTreeNode parent01, 
+			DefaultMutableTreeNode parent02, Random rand) {
+
+		DefaultMutableTreeNode parent1 = deepCopy(parent01, null);
+		DefaultMutableTreeNode parent2 = deepCopy(parent02, null);
+		
+		// maksimalne dubine obaju roditelja
+		int parent1Depth = parent1.getDepth();
+		int parent2Depth = parent2.getDepth();
+
+		// dubina zajednicka obama roditeljima
+		int maxDepth = Math.min(parent1Depth, parent2Depth);
+
+		// lista cvorova dobivena obilaskom prvog i drugog roditelja u sirinu
+		List<DefaultMutableTreeNode> nodes1 = fromNodeToList(parent1);
+		List<DefaultMutableTreeNode> nodes2 = fromNodeToList(parent2);
+
+		int index = rand.nextInt(nodes1.size());
+		// dohvat odabranog cvora
+		DefaultMutableTreeNode chosen1 = nodes1.get(index);
+
+		// potrebno izabrati cvor koji ima barem za jedan manje svoju dubinu
+		// kako se ne bi cijelo stablo prenijelo u novo
+		while (chosen1.getDepth() >= maxDepth) {
+			index = rand.nextInt(nodes1.size());
+			chosen1 = nodes1.get(index);
+		}
+
+		index = rand.nextInt(nodes2.size());
+
+		DefaultMutableTreeNode chosen2 = nodes2.get(index);
+
+		while (chosen2.getDepth() >= maxDepth) {
+			index = rand.nextInt(nodes2.size());
+			chosen2 = nodes2.get(index);
+		}
+
+		// uklanjanje izabranih cvorova iz roditelja
+		DefaultMutableTreeNode parentOfChosen1 = (DefaultMutableTreeNode) chosen1.getParent();
+		// dohvat funkcije u kojoj su spremljeni izrazi
+		IFunction functionParentOfChosen1 = (IFunction) parentOfChosen1.getUserObject();
+		// uklanjanje elementa liste djeteta iz liste roditelja
+		functionParentOfChosen1.removeOutput((Expression) chosen1.getUserObject());
+		// uklanja se cvor iz prvog roditelja
+		parentOfChosen1.remove(chosen1);
+
+		// identicno za drugog roditelja
+		DefaultMutableTreeNode parentOfChosen2 = (DefaultMutableTreeNode) chosen2.getParent();
+
+		IFunction functionParentOfChosen2 = (IFunction) parentOfChosen2.getUserObject();
+
+		functionParentOfChosen2.removeOutput((Expression) chosen2.getUserObject());
+
+		// dodavanje odabranih cvorova iz suprotnih roditelja
+		parentOfChosen1.add(chosen2);
+		parentOfChosen2.add(chosen1);
+
+		// dodavanje izrava u outpute pojedine funkcije 
+		functionParentOfChosen1.addOutput((Expression) chosen2.getUserObject());
+		functionParentOfChosen2.addOutput((Expression) chosen1.getUserObject());
+		
+		return new ArrayList<>(Arrays.asList(new DefaultMutableTreeNode[] {parent1, parent2}));
 	}
 
 	/**
@@ -334,7 +403,26 @@ public class Util {
 				return new Terminal("LEFT", Action.LEFT);
 			else
 				return new Terminal("MOVE", Action.MOVE);
-
 		}
+	}
+	
+	/**
+	 * Funkcija za stvaranje djece stabala
+	 * 
+	 * @param populationSize velicina populacije
+	 * @param maxDepth maksimalna dubina pojedinog stabla
+	 * @param rand generator nasumicnih brojeva
+	 * @return lista stabala
+	 */
+	public static List<DefaultMutableTreeNode> makePopulation(int populationSize, int maxDepth, Random rand){
+		
+		List<DefaultMutableTreeNode> population = new ArrayList<>();
+		
+		for(int i = 0; i < populationSize; i++) {
+			
+			population.add(makeTree(maxDepth, rand));
+		}
+		
+		return population;
 	}
 }

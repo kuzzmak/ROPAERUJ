@@ -1,4 +1,4 @@
-package hr.fer.zemris.optjava.dz12.test;
+package hr.fer.zemris.optjava.dz12;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -9,10 +9,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -25,13 +25,17 @@ import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import hr.fer.zemris.optjava.dz12.Util;
 import hr.fer.zemris.optjava.dz12.Expression.Expression;
 import hr.fer.zemris.optjava.dz12.Expression.Status;
 import hr.fer.zemris.optjava.dz12.Terminal.Action;
 import hr.fer.zemris.optjava.dz12.Terminal.Terminal;
 
-public class Test {
+public class AntTrail {
+	
+	private String pathToMap;
+	private int maxIterations;
+	private int populationSize;
+	private int minFitness;
 
 	JFrame frame = new JFrame();
 	// matrica gumba koji predstavljaju pojedino polje
@@ -82,15 +86,15 @@ public class Test {
 	static JTextArea textArea;
 
 	static Random rand;
-
-	private final static AtomicBoolean isDone = new AtomicBoolean(false);
-
-	public Test(int width, int height, boolean animate) {
+	//fitnes pojedinog stabla
+	static int[] fitness;
+	
+	public AntTrail(String patToMap, int maxIterations, int populationSize, int minFitness) {
 
 		rand = new Random();
 
-		Test.width = width;
-		Test.height = height;
+		AntTrail.width = width;
+		AntTrail.height = height;
 
 		// glavni container
 		JPanel container = new JPanel();
@@ -143,7 +147,7 @@ public class Test {
 		food = new ImageIcon("pictures/food.png");
 		food = resizeImageIcon(food);
 
-		loadMap("C:\\Users\\kuzmi\\OneDrive - fer.hr\\faks\\5sem\\ROPAERUJ\\12zad\\13-SantaFeAntTrail.txt");
+		loadMap(pathToMap);
 
 		// panel s gumbima
 		JPanel buttonPanel = new JPanel();
@@ -253,6 +257,24 @@ public class Test {
 		frame.pack();
 		frame.setVisible(true);
 	}
+	
+	/**
+	 * Funkcija za evaluaciju pojedine populacije stabala
+	 * 
+	 * @param population populacija koja se evaluira
+	 */
+	public static void evaluate(List<DefaultMutableTreeNode> population) {
+		
+		fitness = new int[population.size()];
+		
+		for(int i = 0; i < population.size(); i++) {
+			
+			executeNode(population.get(i), false);
+			automatic(false, 0);
+			fitness[i] = foodEaten;
+			reset();
+		}
+	}
 
 	/**
 	 * Funkcija za automatsko izvodjenje generiranog stabla
@@ -270,11 +292,13 @@ public class Test {
 						
             			step(animate);
             			
-            			try {
-							Thread.sleep(sleep);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+            			if(sleep != 0) {
+	            			try {
+								Thread.sleep(sleep);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+            			}
                 	}
 				return (null);
 			}
@@ -316,7 +340,9 @@ public class Test {
 		row = 0;
 		column = 0;
 		foodEaten = 0;
+		currentStep = 0;
 		score.setText("Score: 0");
+		actionsTaken = new ArrayList<>();
 		tempMapData = mapData.clone();
 	}
 
@@ -617,23 +643,20 @@ public class Test {
 		tempMapData = mapData.clone();
 	}
 
+	
 	public static void main(String[] args) {
 
-		Test test = new Test(32, 32, true);
+		AntTrail test = new AntTrail(32, 32, true);
 
-		int depth = 10;
-
-		DefaultMutableTreeNode rootnode = Util.makeTree(depth, rand);
-
-		Enumeration<DefaultMutableTreeNode> en = rootnode.children();
-
-		while (en.hasMoreElements()) {
-			System.out.println(en.nextElement());
-		}
-		executeNode(rootnode, false);
-		reset();
-		System.out.println("exec gotov");
-
+		int populationSize = 20;
+		int maxDepth = 10;
+		Random rand = new Random();
+		
+		List<DefaultMutableTreeNode> population = Util.makePopulation(populationSize, maxDepth, rand);
+		
+		AntTrail.evaluate(population);
+		
+		System.out.println(Arrays.toString(AntTrail.fitness));
 	}
 
 }
