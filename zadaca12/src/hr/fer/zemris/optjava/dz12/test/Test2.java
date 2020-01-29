@@ -11,21 +11,7 @@ import hr.fer.zemris.optjava.dz12.Function.PR3;
 
 public class Test2 {
 
-	public static int numberOfNodes(DefaultMutableTreeNode node) {
-		
-		int result = 1;
-		
-		Enumeration<DefaultMutableTreeNode> children = node.children();
-		
-		result += node.getChildCount();
-		
-		while(children.hasMoreElements()) {
-			
-			result += numberOfNodes(children.nextElement()) - 1;
-			
-		}
-		return result;
-	}
+	
 	
 	public static void main(String[] args) {
 
@@ -41,7 +27,11 @@ public class Test2 {
 		
 		System.out.println(root);
 		
-		System.out.println(numberOfNodes(root));
+		System.out.println(Util.numberOfNodes(root));
 		
+		Util.mutate(root, maxDepth, rand, 0.3f, maxNodes);
+		
+		System.out.println(root);
+		System.out.println(Util.numberOfNodes(root));
 	}
 }

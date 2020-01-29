@@ -27,8 +27,10 @@ public class Util {
 	static List<Expression> terminals = Arrays.asList(new Terminal("RIGHT", Action.RIGHT),
 			new Terminal("LEFT", Action.LEFT), new Terminal("MOVE", Action.MOVE));
 
+	// varijable za pratiti trenutnu velicinu stabla
 	public static int emptySpaces = 1;
 	public static int currentNodes = 1;
+	public static boolean mutated = false;
 
 	/**
 	 * Funkcija za generiranje potpunog stabla dubine <code>depth</code>
@@ -144,10 +146,9 @@ public class Util {
 			// ako je razina != 0 onda se stvara ili terminal ili funkciju
 			for (int i = 0; i < fun.getNumberOfOutputs(); i++) {
 
-				Expression e = rand.nextFloat() > 0.5 ? 
-						terminals.get(rand.nextInt(terminals.size())).duplicate() : 
-							functions.get(rand.nextInt(functions.size())).duplicate();
-				
+				Expression e = rand.nextFloat() > 0.5 ? terminals.get(rand.nextInt(terminals.size())).duplicate()
+						: functions.get(rand.nextInt(functions.size())).duplicate();
+
 				if (maxNodes <= currentNodes + emptySpaces) {
 
 					e = terminals.get(rand.nextInt(terminals.size())).duplicate();
@@ -157,16 +158,16 @@ public class Util {
 					currentNodes += 1;
 
 					break;
-					
+
 				} else {
-					
+
 					fun.addOutput(e);
 					node.add(new DefaultMutableTreeNode(e));
-					if(e.status == Status.FUNCTION) {
+					if (e.status == Status.FUNCTION) {
 						emptySpaces += ((IFunction) e).getNumberOfOutputs();
 						emptySpaces -= 1;
 						currentNodes += 1;
-					}else {
+					} else {
 						emptySpaces -= 1;
 						currentNodes += 1;
 					}
@@ -224,8 +225,10 @@ public class Util {
 	 * @param rand     generator slucajnih brojeva
 	 * @param p        vjerojatnost mutacije
 	 */
-	public static void mutate(DefaultMutableTreeNode node, int maxDepth, Random rand, float p) {
+	public static void mutate(DefaultMutableTreeNode node, int maxDepth, Random rand, float p, int maxNodes) {
 
+		if(mutated) return;
+		
 		Expression exp = (Expression) node.getUserObject();
 
 		// dubina na kojoj se nalazi cvor
@@ -250,18 +253,18 @@ public class Util {
 
 					// uklanja se cvor koji se mutira iz roditelja
 					parent.remove(node);
-
-					int maxNodes = 0;
 					
+					int currentNodeCount = numberOfNodes(parent);
+
 					// stvaranje novog stabla umjesto uklonjenog cvora
-					DefaultMutableTreeNode newNode = Util.makeTree(maxDepth - currentDepth, rand, maxNodes);
+					DefaultMutableTreeNode newNode = Util.makeTree(maxDepth - currentDepth, rand, maxNodes - currentNodeCount);
 
 					parent.add(newNode);
 
 					functionParent = (IFunction) parent.getUserObject();
 					functionParent.addOutput((Expression) newNode.getUserObject());
 
-					return;
+					mutated = true;
 
 				} else {
 
@@ -269,7 +272,7 @@ public class Util {
 					Enumeration<DefaultMutableTreeNode> en = node.children();
 
 					while (en.hasMoreElements()) {
-						mutate(en.nextElement(), maxDepth, rand, p);
+						mutate(en.nextElement(), maxDepth, rand, p, maxNodes);
 					}
 				}
 			}
@@ -284,17 +287,21 @@ public class Util {
 				functionParent.removeOutput((Expression) node.getUserObject());
 
 				parent.remove(node);
-
-				int maxNodes = 0;
 				
-				DefaultMutableTreeNode newNode = Util.makeTree(maxDepth - currentDepth, rand, maxNodes);
+				int currentNodeCount = numberOfNodes(parent);
+
+				DefaultMutableTreeNode newNode = Util.makeTree(maxDepth - currentDepth, rand, maxNodes - currentNodeCount);
 
 				parent.add(newNode);
 
 				functionParent = (IFunction) parent.getUserObject();
 				functionParent.addOutput((Expression) newNode.getUserObject());
+				
+				mutated = true;;
 			}
 		}
+		
+		return;
 	}
 
 	/**
@@ -475,7 +482,8 @@ public class Util {
 	 * @param rand           generator nasumicnih brojeva
 	 * @return lista stabala
 	 */
-	public static List<DefaultMutableTreeNode> makePopulation(int populationSize, int maxDepth, Random rand, int maxNodes) {
+	public static List<DefaultMutableTreeNode> makePopulation(int populationSize, int maxDepth, Random rand,
+			int maxNodes) {
 
 		List<DefaultMutableTreeNode> population = new ArrayList<>();
 
@@ -499,6 +507,25 @@ public class Util {
 		return new ImageIcon(newimg);
 	}
 
-//	public static void select()
+	/**
+	 * Funkcija za izracunavanje broja cvorova stabla
+	 * 
+	 * @param node stablo ciji se cvorovi izracunavaju
+	 * @return broj cvorova stabla
+	 */
+	public static int numberOfNodes(DefaultMutableTreeNode node) {
 
+		int result = 1;
+
+		Enumeration<DefaultMutableTreeNode> children = node.children();
+
+		result += node.getChildCount();
+
+		while (children.hasMoreElements()) {
+
+			result += numberOfNodes(children.nextElement()) - 1;
+
+		}
+		return result;
+	}
 }
