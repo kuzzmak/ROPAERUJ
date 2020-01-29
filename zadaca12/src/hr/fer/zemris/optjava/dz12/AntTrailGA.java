@@ -18,13 +18,13 @@ public class AntTrailGA {
 		int minFitness = 90;
 		String pathToResult = "result.txt";
 		
-		int maxDepth = 3;
+		int maxDepth = 10;
 		int maxSteps = 600;
 		
 		AntTrail at = new AntTrail(pathToMap, maxIterations, populationSize, minFitness, maxDepth, maxSteps);
 		at.run();
 		
-		AntTrail.gui();
+//		AntTrail.gui();
 //		
 //		int maxDepth = 10;
 //		Random rand = new Random();

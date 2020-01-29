@@ -177,6 +177,33 @@ public class AntTrail {
 //			currentIteration++;
 //		}
 	}
+	
+	public DefaultMutableTreeNode selectParent() {
+		
+		float sum = 0;
+		
+		List<Float> tempFit = new ArrayList<>();
+		tempFit.addAll(fitness);
+		
+		for(int i = 0; i < fitness.size(); i++) {
+			sum += fitness.get(i);
+		}
+		
+		for(int i = 0; i < tempFit.size(); i++) {
+			tempFit.set(i, tempFit.get(i) / sum);
+		}
+		
+		float p = rand.nextFloat();
+		
+		float cumSum = 0;
+		
+		for(int i = 0; i < tempFit.size(); i++) {
+			cumSum += tempFit.get(i);
+			if(cumSum > p) return population.get(i);
+		}
+		
+		return population.get(population.size() - 1);
+	}
 
 	public static void gui() {
 
@@ -359,23 +386,17 @@ public class AntTrail {
 
 		fitness = new ArrayList<>();
 		reset();
-		actionsTaken = new ArrayList<>();
+		
 
 		for (int i = 0; i < population.size(); i++) {
 
 			executeNode(population.get(i), false);
-			if(i == 0) {
-				System.out.println(actionsTaken);
-			}
-			for(int j = 0; j < maxSteps; j++) {
-				if(j > actionsTaken.size()) break;
-				step(false);
-			}
-			actionsTaken = new ArrayList<>();
-			System.out.println(foodEaten);
+			System.out.println(actionsTaken.size());
+			
 			fitness.add((float) foodEaten);
 			reset();
 		}
+		
 		
 		System.out.println("eva i :" + fitness);
 		
@@ -468,7 +489,7 @@ public class AntTrail {
 		foodEaten = 0;
 		currentStep = 0;
 		score.setText("Score: 0");
-//		actionsTaken = new ArrayList<>();
+		actionsTaken = new ArrayList<>();
 		tempMapData = new int[height][width];
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
