@@ -2,15 +2,16 @@ package hr.fer.zemris.optjava.dz12;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -35,6 +36,8 @@ public class AntTrail {
 	private static int maxIterations;
 	private static int populationSize;
 	private static int minFitness;
+	private static int maxDepth;
+	private static int maxSteps;
 
 	// matrica gumba koji predstavljaju pojedino polje
 	static JButton[][] grid;
@@ -85,24 +88,94 @@ public class AntTrail {
 
 	static Random rand;
 	// fitnes pojedinog stabla
-	static int[] fitness;
-	
+	static List<Float> fitness;
+
 	private static List<DefaultMutableTreeNode> population = new ArrayList<>();
 
-	public AntTrail(String pathToMap, int maxIterations, int populationSize, int minFitness) {
+	public AntTrail(String pathToMap, int maxIterations, int populationSize, int minFitness, int maxDepth,
+			int maxSteps) {
 
 		AntTrail.maxIterations = maxIterations;
 		AntTrail.populationSize = populationSize;
 		AntTrail.minFitness = minFitness;
+		AntTrail.maxDepth = maxDepth;
+		AntTrail.maxSteps = maxSteps;
 
 		rand = new Random();
 
 		loadMap(pathToMap);
+	}
 
+	public static List<DefaultMutableTreeNode> sortList(List<DefaultMutableTreeNode> population, List<Float> fitness) {
+
+		List<DefaultMutableTreeNode> sorted = new ArrayList<>();
+		
+		List<Float> tempFit = new ArrayList<>();
+		tempFit.addAll(fitness);
+		
+		while(sorted.size() < population.size()) {
+			
+			int index = findBest(tempFit);
+			
+			sorted.add(population.get(index));
+			
+			tempFit.set(index, (float) -1);
+		}
+		
+	    return sorted;
 	}
 	
 	public static void run() {
+
+		population = Util.makePopulation(populationSize, maxDepth, rand);
+		System.out.println("prije sorta");
+
+		for (int i = 0; i < population.size(); i++) {
+
+			executeNode(population.get(i), false);
+			System.out.println("hrana: " + foodEaten);
+			reset();
+
+		}
+
+		System.out.println();
+		evaluate(population);
 		
+		System.out.println("fit: " + fitness);
+		System.out.println();
+		List<DefaultMutableTreeNode> sorted = sortList(population, fitness);
+		
+		sortList(population, fitness);
+		
+		System.out.println("poslije sorta");
+		for (int i = 0; i < sorted.size(); i++) {
+
+			executeNode(sorted.get(i), false);
+			System.out.println("hrana: " + foodEaten);
+			reset();
+
+		}
+
+//		int currentIteration = 0;
+//		
+//		float currentBestFit = Float.MIN_VALUE;
+//		
+//		
+//		while(currentIteration < maxIterations && currentBestFit < minFitness) {
+//			
+//			List<DefaultMutableTreeNode> offSpring = new ArrayList<>();
+//			
+//			while(offSpring.size() < population.size()) {
+//				
+//				
+//				
+//				
+//				
+//			}
+//			
+//			
+//			currentIteration++;
+//		}
 	}
 
 	public static void gui() {
@@ -284,28 +357,47 @@ public class AntTrail {
 	 */
 	public static void evaluate(List<DefaultMutableTreeNode> population) {
 
-		fitness = new int[population.size()];
+		fitness = new ArrayList<>();
 		reset();
-		
+		actionsTaken = new ArrayList<>();
+
 		for (int i = 0; i < population.size(); i++) {
 
 			executeNode(population.get(i), false);
-			fitness[i] = foodEaten;
+			if(i == 0) {
+				System.out.println(actionsTaken);
+			}
+			for(int j = 0; j < maxSteps; j++) {
+				if(j > actionsTaken.size()) break;
+				step(false);
+			}
+			actionsTaken = new ArrayList<>();
+			System.out.println(foodEaten);
+			fitness.add((float) foodEaten);
 			reset();
 		}
+		
+		System.out.println("eva i :" + fitness);
+		
+		System.out.println(population.get(0));
 	}
-	
-	public static int findBest() {
-		
-		int best = 0;
+
+	public static int findBest(List<Float> fitness) {
+
+		Float best = (float) -1;
 		int index = 0;
-		
-		for(int i = 0; i < fitness.length; i++) {
-			if(fitness[i] > best) index = i;
+
+		for (int i = 0; i < fitness.size(); i++) {
+			if (fitness.get(i) > best) {
+				index = i;
+				best = fitness.get(index);
+			}
 		}
-		
+
 		return index;
 	}
+	
+	
 
 	/**
 	 * Funkcija za automatsko izvodjenje generiranog stabla
@@ -314,10 +406,6 @@ public class AntTrail {
 	 * @param sleep   vrijeme izmedju dva koraka u ms
 	 */
 	public static void automatic(boolean animate, long sleep) {
-		
-		
-		
-		
 
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 			@Override
@@ -335,7 +423,7 @@ public class AntTrail {
 //						}
 //					}
 					reset();
-					executeNode(population.get(findBest()), animate);
+					executeNode(population.get(findBest(fitness)), animate);
 				}
 				return (null);
 			}
@@ -351,9 +439,10 @@ public class AntTrail {
 	 */
 	public static void step(boolean animate) {
 
-		if (currentStep < actionsTaken.size()) {
+		if (currentStep < actionsTaken.size() && currentStep < maxSteps) {
+			
 			Action a = actionsTaken.get(currentStep);
-			System.out.println(a);
+
 			if (a == Action.LEFT) {
 				leftTurn(animate);
 			} else if (a == Action.RIGHT) {
@@ -361,11 +450,10 @@ public class AntTrail {
 			} else {
 				move(animate);
 			}
-
-			currentStep++;
 		} else {
-			System.out.println("Nema vise koraka.");
+			return;
 		}
+		currentStep++;
 	}
 
 	/**
@@ -380,8 +468,13 @@ public class AntTrail {
 		foodEaten = 0;
 		currentStep = 0;
 		score.setText("Score: 0");
-		actionsTaken = new ArrayList<>();
-		tempMapData = mapData.clone();
+//		actionsTaken = new ArrayList<>();
+		tempMapData = new int[height][width];
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				tempMapData[i][j] = mapData[i][j] == 1 ? 1 : 0;
+			}
+		}
 	}
 
 	/**
@@ -664,7 +757,12 @@ public class AntTrail {
 			e.printStackTrace();
 		}
 
-		tempMapData = mapData.clone();
+		tempMapData = new int[height][width];
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				tempMapData[i][j] = mapData[i][j] == 1 ? 1 : 0;
+			}
+		}
 	}
 
 //	public static void main(String[] args) {

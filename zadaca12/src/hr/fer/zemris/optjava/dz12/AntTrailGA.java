@@ -18,18 +18,22 @@ public class AntTrailGA {
 		int minFitness = 90;
 		String pathToResult = "result.txt";
 		
-		AntTrail at = new AntTrail(pathToMap, maxIterations, populationSize, minFitness);
+		int maxDepth = 3;
+		int maxSteps = 600;
+		
+		AntTrail at = new AntTrail(pathToMap, maxIterations, populationSize, minFitness, maxDepth, maxSteps);
+		at.run();
 		
 		AntTrail.gui();
-		
-		int maxDepth = 10;
-		Random rand = new Random();
-		
-		List<DefaultMutableTreeNode> population = Util.makePopulation(populationSize, maxDepth, rand);
-		
-		AntTrail.evaluate(population);
-		System.out.println(Arrays.toString(AntTrail.fitness));
-		AntTrail.walkTree(population.get(0));
+//		
+//		int maxDepth = 10;
+//		Random rand = new Random();
+//		
+//		List<DefaultMutableTreeNode> population = Util.makePopulation(populationSize, maxDepth, rand);
+//		
+//		AntTrail.evaluate(population);
+//		System.out.println(Arrays.toString(AntTrail.fitness));
+//		AntTrail.walkTree(population.get(0));
 		
 	}
 	
