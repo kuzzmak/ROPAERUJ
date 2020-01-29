@@ -14,6 +14,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -38,6 +39,10 @@ public class AntTrail {
 	private static int minFitness;
 	private static int maxDepth;
 	private static int maxSteps;
+	private static float p;
+	private static int k;
+	private static int maxInitialDepth;
+	private static int maxNodes;
 
 	// matrica gumba koji predstavljaju pojedino polje
 	static JButton[][] grid;
@@ -93,13 +98,17 @@ public class AntTrail {
 	private static List<DefaultMutableTreeNode> population = new ArrayList<>();
 
 	public AntTrail(String pathToMap, int maxIterations, int populationSize, int minFitness, int maxDepth,
-			int maxSteps) {
+			int maxSteps, float p, int k, int maxInitialDepth, int maxNodes) {
 
 		AntTrail.maxIterations = maxIterations;
 		AntTrail.populationSize = populationSize;
 		AntTrail.minFitness = minFitness;
 		AntTrail.maxDepth = maxDepth;
 		AntTrail.maxSteps = maxSteps;
+		AntTrail.p = p;
+		AntTrail.k = k;
+		AntTrail.maxInitialDepth = maxInitialDepth;
+		AntTrail.maxNodes = maxNodes;
 
 		rand = new Random();
 
@@ -127,66 +136,80 @@ public class AntTrail {
 	
 	public static void run() {
 
-		population = Util.makePopulation(populationSize, maxDepth, rand);
-		System.out.println("prije sorta");
-
-		for (int i = 0; i < population.size(); i++) {
-
-			executeNode(population.get(i), false);
-			System.out.println("hrana: " + foodEaten);
-			reset();
-
-		}
-
-		System.out.println();
+		population = Util.makePopulation(populationSize, maxInitialDepth, rand, maxNodes);
+		
 		evaluate(population);
 		
-		System.out.println("fit: " + fitness);
-		System.out.println();
-		List<DefaultMutableTreeNode> sorted = sortList(population, fitness);
+//		population = sortList(population, fitness);
+
+		int currentIteration = 0;
 		
-		sortList(population, fitness);
+		float currentBestFit = Float.MIN_VALUE;
 		
-		System.out.println("poslije sorta");
-		for (int i = 0; i < sorted.size(); i++) {
+		
+		while(currentIteration < maxIterations && currentBestFit < minFitness) {
+			
+			List<DefaultMutableTreeNode> offSpring = new ArrayList<>();
+			
+			// dodavanje prvih firstN najboljih jedinki u novu populaciju
+			offSpring.add(population.get(findBest(fitness)));
+			
+			while(offSpring.size() < population.size()) {
+				
+				DefaultMutableTreeNode parent01 = tournamentSelect(k, population, rand);
+				DefaultMutableTreeNode parent02 = tournamentSelect(k, population, rand);
+				
+				while(parent01 == parent02) parent02 = selectParent(population);
+				
+				List<DefaultMutableTreeNode> children = Util.cross(parent01, parent02, rand);
+				
+				DefaultMutableTreeNode child1 = children.get(0);
+				
+				DefaultMutableTreeNode child2 = children.get(1);
+				
+//				Util.mutate(child1, maxDepth, rand, p);
+//				Util.mutate(child2, maxDepth, rand, p);
+				
+				offSpring.add(child1);
+				offSpring.add(child2);
+			}
 
-			executeNode(sorted.get(i), false);
-			System.out.println("hrana: " + foodEaten);
-			reset();
-
-		}
-
-//		int currentIteration = 0;
-//		
-//		float currentBestFit = Float.MIN_VALUE;
-//		
-//		
-//		while(currentIteration < maxIterations && currentBestFit < minFitness) {
+			evaluate(offSpring);
+//			offSpring = sortList(offSpring, fitness);
+			
+			population = new ArrayList<>();
+			// uzimanje prvih populationSize
+			population.addAll(offSpring);
+			
+//			int max = 0;
 //			
-//			List<DefaultMutableTreeNode> offSpring = new ArrayList<>();
-//			
-//			while(offSpring.size() < population.size()) {
-//				
-//				
-//				
-//				
-//				
+//			for(int i = 0; i < populationSize; i++) {
+//				if(population.get(i).getDepth() > max) max = population.get(i).getDepth(); 
 //			}
-//			
-//			
-//			currentIteration++;
-//		}
+			
+			currentBestFit = fitness.get(findBest(fitness));
+			
+			System.out.println("iter: " + currentIteration + ", bestfit: " + currentBestFit);
+			
+			currentIteration++;
+		}
 	}
 	
-	public DefaultMutableTreeNode selectParent() {
+	/**
+	 * Funkcija za odabir roditelja proporcionalnom selekcijom iz populacije.
+	 * 
+	 * @param population populacija iz koje se bira roditelj
+	 * @return odabran roditelj iz populacije 
+	 */
+	public static DefaultMutableTreeNode selectParent(List<DefaultMutableTreeNode> population) {
 		
 		float sum = 0;
 		
 		List<Float> tempFit = new ArrayList<>();
 		tempFit.addAll(fitness);
 		
-		for(int i = 0; i < fitness.size(); i++) {
-			sum += fitness.get(i);
+		for(int i = 0; i < tempFit.size(); i++) {
+			sum += tempFit.get(i);
 		}
 		
 		for(int i = 0; i < tempFit.size(); i++) {
@@ -204,6 +227,39 @@ public class AntTrail {
 		
 		return population.get(population.size() - 1);
 	}
+	
+	/**
+	 * Funkcija za odabir roditelja k turnirskom selekcijom
+	 * 
+	 * @param k broj turnira
+	 * @param population populacija iz koje se bira roditelj
+	 * @param rand generator slucajnih brojeva
+	 * @return izabran roditelj
+	 */
+	public static DefaultMutableTreeNode tournamentSelect(int k, List<DefaultMutableTreeNode> population, Random rand) {
+		
+		List<Integer> indexes = new ArrayList<>();
+		
+		int index = rand.nextInt(population.size());
+		
+		while(indexes.size() < k) {
+			
+			while(indexes.contains(index)) index = rand.nextInt(population.size());
+			
+			indexes.add(index);
+		}
+		
+		int best = indexes.get(0);
+		
+		for(int i = 0; i < k; i++) {
+			
+			if(fitness.get(i) > fitness.get(best)) best = i;
+		}
+		
+		return population.get(best);
+	}
+	
+	
 
 	public static void gui() {
 
@@ -391,16 +447,10 @@ public class AntTrail {
 		for (int i = 0; i < population.size(); i++) {
 
 			executeNode(population.get(i), false);
-			System.out.println(actionsTaken.size());
 			
 			fitness.add((float) foodEaten);
 			reset();
 		}
-		
-		
-		System.out.println("eva i :" + fitness);
-		
-		System.out.println(population.get(0));
 	}
 
 	public static int findBest(List<Float> fitness) {
@@ -414,7 +464,6 @@ public class AntTrail {
 				best = fitness.get(index);
 			}
 		}
-
 		return index;
 	}
 	

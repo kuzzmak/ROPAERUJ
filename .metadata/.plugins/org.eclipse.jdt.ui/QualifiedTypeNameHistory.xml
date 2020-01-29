@@ -56,8 +56,8 @@
 <fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz12.Terminal.Action"/>
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
-<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz12.AntTrail"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="java.util.Comparator"/>
 <fullyQualifiedTypeName name="javax.swing.tree.DefaultMutableTreeNode"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="hr.fer.zemris.optjava.dz12.AntTrail"/>
 </qualifiedTypeNameHistroy>
