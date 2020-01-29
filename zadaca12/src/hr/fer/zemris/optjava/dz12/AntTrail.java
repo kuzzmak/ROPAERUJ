@@ -443,11 +443,10 @@ public class AntTrail {
 		fitness = new ArrayList<>();
 		reset();
 		
-
+		
 		for (int i = 0; i < population.size(); i++) {
 
 			executeNode(population.get(i), false);
-			
 			fitness.add((float) foodEaten);
 			reset();
 		}

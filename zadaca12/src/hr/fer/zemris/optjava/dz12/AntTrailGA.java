@@ -14,13 +14,13 @@ public class AntTrailGA {
 		
 		String pathToMap = "C:\\Users\\kuzmi\\OneDrive - fer.hr\\faks\\5sem\\ROPAERUJ\\12zad\\13-SantaFeAntTrail.txt";
 		int maxIterations = 100;
-		int populationSize = 500;
+		int populationSize = 10;
 		int minFitness = 89;
 		String pathToResult = "result.txt";
 		
 		int maxInitialDepth = 6;
 		int maxDepth = 20;
-		int maxNodes = 200;
+		int maxNodes = 10;
 		int maxSteps = 600;
 		float p = 0.14f;
 		int k = 7;
@@ -35,8 +35,13 @@ public class AntTrailGA {
 				k,
 				maxInitialDepth,
 				maxNodes);
-		at.run();
 		
+		List<DefaultMutableTreeNode> population = Util.makePopulation(populationSize, maxInitialDepth, new Random(), maxNodes);
+		population.forEach(System.out::println);
+		at.evaluate(population);
+		for(int i = 0; i < populationSize; i++) {
+			System.out.println(Util.numberOfNodes(population.get(i)));
+		}
 //		AntTrail.gui();
 //		
 //		int maxDepth = 10;

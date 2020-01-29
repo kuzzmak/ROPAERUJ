@@ -52,7 +52,7 @@ public class Util {
 		}
 
 		// ako je dubina 0 moraju se generirati terminali
-		if (depth == 0 || maxNodes <= currentNodes + emptySpaces) {
+		if (depth == 0 || currentNodes + emptySpaces == maxNodes) {
 
 			for (int i = 0; i < fun.getNumberOfOutputs(); i++) {
 
@@ -72,7 +72,7 @@ public class Util {
 				Expression e = functions.get(rand.nextInt(functions.size())).duplicate();
 
 				// potrebno staviti terminale
-				if (maxNodes <= currentNodes + emptySpaces) {
+				if (maxNodes < currentNodes + emptySpaces + ((IFunction) e).getNumberOfOutputs()) {
 
 					e = terminals.get(rand.nextInt(terminals.size())).duplicate();
 					fun.addOutput(e);
@@ -80,8 +80,8 @@ public class Util {
 					emptySpaces -= 1;
 					currentNodes += 1;
 
-					break;
 				} else {
+					
 					fun.addOutput(e);
 					node.add(new DefaultMutableTreeNode(e));
 					emptySpaces += ((IFunction) e).getNumberOfOutputs();
@@ -112,7 +112,7 @@ public class Util {
 	 * @param depth dubina novo stvorenog stabla
 	 */
 	public static void grow(DefaultMutableTreeNode node, int depth, Random rand, int maxNodes) {
-
+		
 		Expression exp = (Expression) node.getUserObject();
 
 		// ako je node terminal odmah se izlazi iz funkcije
@@ -128,7 +128,7 @@ public class Util {
 		}
 
 		// stvaranje terminala ako je maksimalna dubina
-		if (depth == 0 || maxNodes <= currentNodes + emptySpaces) {
+		if (depth == 0 || maxNodes < currentNodes + emptySpaces) {
 
 			for (int i = 0; i < fun.getNumberOfOutputs(); i++) {
 
@@ -157,12 +157,11 @@ public class Util {
 					emptySpaces -= 1;
 					currentNodes += 1;
 
-					break;
-
 				} else {
 
 					fun.addOutput(e);
 					node.add(new DefaultMutableTreeNode(e));
+					
 					if (e.status == Status.FUNCTION) {
 						emptySpaces += ((IFunction) e).getNumberOfOutputs();
 						emptySpaces -= 1;
