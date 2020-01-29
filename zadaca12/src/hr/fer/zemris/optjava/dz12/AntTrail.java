@@ -96,7 +96,7 @@ public class AntTrail {
 	static List<Float> fitness;
 
 	private static List<DefaultMutableTreeNode> population = new ArrayList<>();
-
+	
 	public AntTrail(String pathToMap, int maxIterations, int populationSize, int minFitness, int maxDepth,
 			int maxSteps, float p, int k, int maxInitialDepth, int maxNodes) {
 
@@ -114,38 +114,16 @@ public class AntTrail {
 
 		loadMap(pathToMap);
 	}
-
-	public static List<DefaultMutableTreeNode> sortList(List<DefaultMutableTreeNode> population, List<Float> fitness) {
-
-		List<DefaultMutableTreeNode> sorted = new ArrayList<>();
-		
-		List<Float> tempFit = new ArrayList<>();
-		tempFit.addAll(fitness);
-		
-		while(sorted.size() < population.size()) {
-			
-			int index = findBest(tempFit);
-			
-			sorted.add(population.get(index));
-			
-			tempFit.set(index, (float) -1);
-		}
-		
-	    return sorted;
-	}
 	
-	public static void run() {
+	public static DefaultMutableTreeNode run() {
 
 		population = Util.makePopulation(populationSize, maxInitialDepth, rand, maxNodes);
 		
 		evaluate(population);
 		
-//		population = sortList(population, fitness);
-
 		int currentIteration = 0;
 		
 		float currentBestFit = Float.MIN_VALUE;
-		
 		
 		while(currentIteration < maxIterations && currentBestFit < minFitness) {
 			
@@ -167,25 +145,20 @@ public class AntTrail {
 				
 				DefaultMutableTreeNode child2 = children.get(1);
 				
-//				Util.mutate(child1, maxDepth, rand, p);
-//				Util.mutate(child2, maxDepth, rand, p);
+//				System.out.println("parent: " + Util.numberOfNodes(parent01));
+//				System.out.println("child: " + Util.numberOfNodes(child1));
+				Util.mutate(child1, maxDepth, rand, p, maxNodes);
+				Util.mutate(child2, maxDepth, rand, p, maxNodes);
 				
 				offSpring.add(child1);
 				offSpring.add(child2);
 			}
 
 			evaluate(offSpring);
-//			offSpring = sortList(offSpring, fitness);
 			
 			population = new ArrayList<>();
 			// uzimanje prvih populationSize
 			population.addAll(offSpring);
-			
-//			int max = 0;
-//			
-//			for(int i = 0; i < populationSize; i++) {
-//				if(population.get(i).getDepth() > max) max = population.get(i).getDepth(); 
-//			}
 			
 			currentBestFit = fitness.get(findBest(fitness));
 			
@@ -193,6 +166,14 @@ public class AntTrail {
 			
 			currentIteration++;
 		}
+		
+		DefaultMutableTreeNode best = population.get(findBest(fitness));
+		
+		// pripremanje akcija za kretanje mrava
+		executeNode(best, false);
+		reset();
+		
+		return best;
 	}
 	
 	/**
@@ -259,8 +240,10 @@ public class AntTrail {
 		return population.get(best);
 	}
 	
-	
-
+	/**
+	 * Funkcija za pokretanje gui-ja
+	 * 
+	 */
 	public static void gui() {
 
 		JFrame frame = new JFrame();
@@ -322,64 +305,15 @@ public class AntTrail {
 
 		arrow270 = new ImageIcon("pictures/arrow270.png");
 
-		boolean animate = true;
-
 		// panel s gumbima
 		JPanel buttonPanel = new JPanel();
 		containerLeft.add(buttonPanel);
-
-		// gumb za okret mrava udesno
-		JButton right = new JButton("right");
-		right.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				rightTurn(animate);
-
-			}
-		});
-
-		JButton left = new JButton("left");
-		left.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				leftTurn(animate);
-
-			}
-		});
-
-		JButton move = new JButton("step");
-		move.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				move(animate);
-
-			}
-		});
 
 		JButton step = new JButton("step");
 		step.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
 				step(true);
-
-			}
-		});
-
-		JButton isFood = new JButton("isFood");
-		isFood.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				if (isFoodInFront()) {
-					System.out.println("hrana ispred");
-				} else {
-					System.out.println("hrana nije ispred");
-				}
 			}
 		});
 
@@ -388,11 +322,10 @@ public class AntTrail {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
 				automatic(true, 500);
 			}
 		});
-
+		
 		// container sa slikom strelice
 		JPanel containerRight = new JPanel();
 		containerRight.setLayout(new BoxLayout(containerRight, BoxLayout.Y_AXIS));
@@ -404,26 +337,10 @@ public class AntTrail {
 		arrowPicture = new JLabel(arrow0);
 		containerRight.add(arrowPicture);
 
-		// TODO napraviti da text area funkcionira
-//				textArea = new JTextArea();
-//				JScrollPane scrollPane = new JScrollPane(textArea);
-//				scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-//				
-//				textArea.setColumns(5);
-//		        textArea.setLineWrap(true);
-//		        textArea.setRows(5);
-//		        textArea.setWrapStyleWord(true);
-//				
-//				containerRight.add(textArea);
-
 		container.add(containerLeft);
 		container.add(containerRight);
 
 		buttonPanel.add(score);
-		buttonPanel.add(left);
-		buttonPanel.add(step);
-		buttonPanel.add(right);
-		buttonPanel.add(isFood);
 		buttonPanel.add(step);
 		buttonPanel.add(automatic);
 
@@ -442,16 +359,23 @@ public class AntTrail {
 
 		fitness = new ArrayList<>();
 		reset();
-		
+		actionsTaken = new ArrayList<>();
 		
 		for (int i = 0; i < population.size(); i++) {
 
 			executeNode(population.get(i), false);
 			fitness.add((float) foodEaten);
 			reset();
+			actionsTaken = new ArrayList<>();
 		}
 	}
 
+	/**
+	 * Funkcija za pronalazak indeksa jedinke koja ima nejveci fitnes
+	 * 
+	 * @param fitness lista u kojoj se pretrazuje
+	 * @return indeks najbolje jedinke
+	 */
 	public static int findBest(List<Float> fitness) {
 
 		Float best = (float) -1;
@@ -466,8 +390,6 @@ public class AntTrail {
 		return index;
 	}
 	
-	
-
 	/**
 	 * Funkcija za automatsko izvodjenje generiranog stabla
 	 * 
@@ -479,20 +401,18 @@ public class AntTrail {
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 			@Override
 			public Void doInBackground() {
-
+				
 				for (int i = 0; i < actionsTaken.size(); i++) {
 
-//					step(animate);
-//				
-//					if (sleep != 0) {
-//						try {
-//							Thread.sleep(sleep);
-//						} catch (InterruptedException e) {
-//							e.printStackTrace();
-//						}
-//					}
-					reset();
-					executeNode(population.get(findBest(fitness)), animate);
+					step(animate);
+				
+					if (sleep != 0) {
+						try {
+							Thread.sleep(sleep);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
 				}
 				return (null);
 			}
@@ -537,7 +457,6 @@ public class AntTrail {
 		foodEaten = 0;
 		currentStep = 0;
 		score.setText("Score: 0");
-		actionsTaken = new ArrayList<>();
 		tempMapData = new int[height][width];
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
@@ -833,20 +752,4 @@ public class AntTrail {
 			}
 		}
 	}
-
-//	public static void main(String[] args) {
-
-//		AntTrail test = new AntTrail(32, 32, true);
-
-//		int populationSize = 20;
-//		int maxDepth = 10;
-//		Random rand = new Random();
-//
-//		List<DefaultMutableTreeNode> population = Util.makePopulation(populationSize, maxDepth, rand);
-//
-//		AntTrail.evaluate(population);
-//
-//		System.out.println(Arrays.toString(AntTrail.fitness));
-//	}
-
 }

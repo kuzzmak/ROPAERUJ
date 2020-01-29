@@ -1,6 +1,8 @@
 package hr.fer.zemris.optjava.dz12;
 
 import java.awt.Image;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -81,7 +83,7 @@ public class Util {
 					currentNodes += 1;
 
 				} else {
-					
+
 					fun.addOutput(e);
 					node.add(new DefaultMutableTreeNode(e));
 					emptySpaces += ((IFunction) e).getNumberOfOutputs();
@@ -112,7 +114,7 @@ public class Util {
 	 * @param depth dubina novo stvorenog stabla
 	 */
 	public static void grow(DefaultMutableTreeNode node, int depth, Random rand, int maxNodes) {
-		
+
 		Expression exp = (Expression) node.getUserObject();
 
 		// ako je node terminal odmah se izlazi iz funkcije
@@ -161,7 +163,7 @@ public class Util {
 
 					fun.addOutput(e);
 					node.add(new DefaultMutableTreeNode(e));
-					
+
 					if (e.status == Status.FUNCTION) {
 						emptySpaces += ((IFunction) e).getNumberOfOutputs();
 						emptySpaces -= 1;
@@ -226,8 +228,9 @@ public class Util {
 	 */
 	public static void mutate(DefaultMutableTreeNode node, int maxDepth, Random rand, float p, int maxNodes) {
 
-		if(mutated) return;
-		
+		if (mutated)
+			return;
+
 		Expression exp = (Expression) node.getUserObject();
 
 		// dubina na kojoj se nalazi cvor
@@ -252,11 +255,12 @@ public class Util {
 
 					// uklanja se cvor koji se mutira iz roditelja
 					parent.remove(node);
-					
+
 					int currentNodeCount = numberOfNodes(parent);
 
 					// stvaranje novog stabla umjesto uklonjenog cvora
-					DefaultMutableTreeNode newNode = Util.makeTree(maxDepth - currentDepth, rand, maxNodes - currentNodeCount);
+					DefaultMutableTreeNode newNode = Util.makeTree(maxDepth - currentDepth, rand,
+							maxNodes - currentNodeCount);
 
 					parent.add(newNode);
 
@@ -286,20 +290,22 @@ public class Util {
 				functionParent.removeOutput((Expression) node.getUserObject());
 
 				parent.remove(node);
-				
+
 				int currentNodeCount = numberOfNodes(parent);
 
-				DefaultMutableTreeNode newNode = Util.makeTree(maxDepth - currentDepth, rand, maxNodes - currentNodeCount);
+				DefaultMutableTreeNode newNode = Util.makeTree(maxDepth - currentDepth, rand,
+						maxNodes - currentNodeCount);
 
 				parent.add(newNode);
 
 				functionParent = (IFunction) parent.getUserObject();
 				functionParent.addOutput((Expression) newNode.getUserObject());
-				
-				mutated = true;;
+
+				mutated = true;
+				;
 			}
 		}
-		
+
 		return;
 	}
 
@@ -414,7 +420,7 @@ public class Util {
 
 		DefaultMutableTreeNode chosen2 = nodes2.get(index);
 
-		while (chosen2.getDepth() >= maxDepth) {
+		while (chosen2.getDepth() != chosen1.getDepth()) {
 			index = rand.nextInt(nodes2.size());
 			chosen2 = nodes2.get(index);
 		}
@@ -488,7 +494,10 @@ public class Util {
 
 		for (int i = 0; i < populationSize; i++) {
 
-			population.add(makeTree(maxDepth, rand, maxNodes));
+			// svako stablo je izmedju dubine 1 i maxDepth
+			int nodeDepth = rand.nextInt(maxDepth - 1) + 1;
+			
+			population.add(makeTree(nodeDepth, rand, maxNodes));
 		}
 
 		return population;
@@ -526,5 +535,23 @@ public class Util {
 
 		}
 		return result;
+	}
+
+	/**
+	 * Funnkcija za spremanje najboljeg rezultata u datoteku
+	 * 
+	 * @param path staza do datoteke
+	 * @param best najbolja jedinka
+	 */
+	public static void saveResult(String path, DefaultMutableTreeNode best) {
+
+		try {
+			FileWriter writer = new FileWriter(path);
+			writer.write(best.getUserObject().toString());
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 }
